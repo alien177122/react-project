@@ -1,0 +1,30 @@
+:root {
+  --bg: #0d0d0d;
+  --surface: #141414;
+  --card: #1a1a1a;
+  --border: #252525;
+  --accent: #e8ff3a;
+  --red: #ff4d4d;
+  --green: #3affb8;
+  --blue: #5ba4ff;
+  --orange: #ff9f40;
+  --text: #e0e0d8;
+  --muted: #666;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}

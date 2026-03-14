@@ -993,10 +993,40 @@ table.pt tr:hover td { background: #1e1e1e; }
   line-height: 1.75;
 }
 
+/* ── Таблицы теории (% ПМ, RPE) ──────────────────────── */
+
+/* Обёртка для двух таблиц рядом */
+.theory-tables-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Карточка-обёртка одной справочной таблицы */
+.theory-table-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Заголовок справочной таблицы */
+.theory-table-title {
+  padding: 10px 14px;
+  background: #1d1d1d;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 /* Мобильная адаптация для вкладки Теория */
 @media (max-width: 600px) {
   .theory-grid { grid-template-columns: 1fr; }
   .theory-top3 { grid-template-columns: 1fr; }
+  .theory-tables-wrap { grid-template-columns: 1fr; }
   .tier-row { flex-direction: column; gap: 10px; }
   .tier-badge { width: 36px; height: 36px; font-size: 20px; }
 }

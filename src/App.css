@@ -366,3 +366,637 @@ table.pt tr:hover td { background: #1e1e1e; }
 .table-scroll {
   overflow-x: auto;
 }
+
+/* ===== TAB BAR ===== */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 20px 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  position: relative;
+  bottom: -1px;
+}
+.tab-btn:hover { color: #ccc; }
+.tab-active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}
+.tab-locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.tab-locked:hover { color: var(--muted); }
+
+/* ===== TRAINING DAY CARD ===== */
+.training-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.training-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #1d1d1d;
+  border-bottom: 1px solid var(--border);
+}
+.training-card-day {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+.training-card-name {
+  font-size: 13px;
+  color: var(--muted);
+  flex: 1;
+}
+.training-card-week {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Preview (next day) */
+.training-card-preview {
+  opacity: 0.55;
+  border-color: #1e1e1e;
+}
+.training-card-preview:hover { opacity: 0.75; }
+
+/* Deload week accent */
+.training-card-deload {
+  border-color: #1a3a1a;
+  border-left: 3px solid var(--green);
+}
+.training-card-deload .training-card-head {
+  background: #0d1a09;
+}
+.training-card-deload .training-card-week {
+  color: var(--green);
+}
+
+/* ===== TRAINING PROGRESS BAR ===== */
+.training-progress {
+  margin-bottom: 32px;
+}
+.training-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.training-progress-bar {
+  height: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.training-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  min-width: 0;
+}
+
+/* ===== COMPLETE BUTTON ===== */
+.btn-complete {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 24px;
+  background: var(--accent);
+  color: #0d0d0d;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-complete:hover { opacity: 0.85; }
+
+/* Next day label */
+.next-day-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* ===== LOCKED VIEW ===== */
+.locked-view {
+  text-align: center;
+  padding: 64px 20px;
+}
+.locked-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.locked-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.locked-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 420px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+.locked-missing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.locked-missing-item {
+  font-size: 12px;
+  color: #ff4d4d;
+  font-weight: 400;
+}
+
+/* ===== PROGRAM COMPLETE ===== */
+.program-complete {
+  text-align: center;
+  padding: 48px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.program-complete-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+.program-complete-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.program-complete-stat {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.program-complete-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== AUTH ===== */
+.auth-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 32px;
+  max-width: 400px;
+}
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.auth-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  padding: 8px 20px 10px;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.auth-tab:hover { color: var(--text); }
+.auth-tab-active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.auth-error {
+  font-size: 12px;
+  color: var(--red);
+  padding: 8px 12px;
+  background: rgba(255,77,77,0.08);
+  border: 1px solid rgba(255,77,77,0.25);
+  border-radius: 3px;
+}
+
+/* ===== EXERCISE WHEEL ===== */
+.ew-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.ew-trigger:hover { border-color: var(--accent); }
+.ew-trigger-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ew-trigger-icon {
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+.ew-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: ew-fade 0.15s ease;
+}
+@keyframes ew-fade {
+  from { opacity: 0; } to { opacity: 1; }
+}
+.ew-modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 380px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ew-scale 0.2s ease;
+}
+@keyframes ew-scale {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+.ew-modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.ew-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  width: 380px; /* увеличено с 300px для лучшей читаемости подписей */
+}
+.ew-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 16px;
+  justify-content: center;
+}
+.ew-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.ew-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .ew-modal { padding: 16px; max-width: 360px; }
+  .ew-modal-title { font-size: 18px; }
+  .ew-svg { width: 300px; }
+}
+
+/* ===== WAVE BAR ACTIVE ===== */
+.wave-bar.wave-active {
+  opacity: 1 !important;
+  outline: 1.5px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ===== SAVED ITEM ACTIVE ===== */
+.saved-item-active {
+  border-color: var(--accent) !important;
+}
+
+/* ===== VOLUME DONUT ===== */
+.donut-wrap {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+.donut-svg-wrap {
+  flex-shrink: 0;
+}
+.donut-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 8px;
+}
+.donut-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.donut-cat-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.donut-cat-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.donut-cat-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+.donut-cat-pct {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: auto;
+}
+.donut-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: default;
+  transition: background 0.15s;
+}
+.donut-row-hov {
+  background: rgba(255,255,255,0.05);
+}
+.donut-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.donut-name {
+  font-size: 12px;
+  color: var(--text);
+  flex: 1;
+}
+.donut-val {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 600px) {
+  .donut-wrap {
+    flex-direction: column;
+    align-items: center;
+  }
+  .donut-legend {
+    width: 100%;
+    padding-top: 0;
+  }
+}
+
+/* ============================================================
+   THEORY TAB — вкладка "Теория"
+   Секция 01: карточки понятий (theory-grid / theory-card)
+   Секция 02: tier-лист добавок (tier-list / tier-row)
+   Секция 03: топ-3 рекомендации (theory-top3 / theory-top3-card)
+   ============================================================ */
+
+/* Сетка карточек понятий — адаптивная, минимум 300px на колонку */
+.theory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+/* Одна карточка понятия */
+.theory-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px 22px;
+  transition: border-color 0.15s;
+}
+.theory-card:hover {
+  border-color: #3a3a3a;
+}
+
+/* Заголовок карточки — акцентный жёлтый */
+.theory-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+/* Тело карточки — обычный текст */
+.theory-card-body {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+/* ── Tier list ─────────────────────────────────────────────── */
+
+/* Вертикальный список тиров */
+.tier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Одна строка тира: бейдж слева + контент справа */
+.tier-row {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: border-color 0.15s;
+}
+.tier-row:hover {
+  border-color: #3a3a3a;
+}
+
+/* Квадратный цветной бейдж с буквой тира */
+.tier-badge {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.04em;
+}
+
+/* Правая часть строки тира */
+.tier-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Подзаголовок тира (цветной текст) */
+.tier-label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+  font-weight: 500;
+}
+
+/* Обёртка пилюль-добавок */
+.tier-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+  margin-bottom: 9px;
+}
+
+/* Одна пилюля — название добавки */
+.tier-item {
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 9px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* Пояснительный текст под списком добавок */
+.tier-note {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ── Топ-3 карточки ─────────────────────────────────────────── */
+
+/* Сетка из трёх карточек рекомендаций */
+.theory-top3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 14px;
+}
+
+/* Одна карточка топ-3 */
+.theory-top3-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px 22px;
+  transition: border-color 0.15s;
+}
+.theory-top3-card:hover {
+  border-color: #3a3a3a;
+}
+
+/* Крупный порядковый номер в цвет добавки */
+.theory-top3-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+/* Название добавки */
+.theory-top3-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+/* Дозировка в моноширинном шрифте */
+.theory-top3-dose {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 13px;
+}
+
+/* Описание добавки */
+.theory-top3-desc {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+/* Мобильная адаптация для вкладки Теория */
+@media (max-width: 600px) {
+  .theory-grid { grid-template-columns: 1fr; }
+  .theory-top3 { grid-template-columns: 1fr; }
+  .tier-row { flex-direction: column; gap: 10px; }
+  .tier-badge { width: 36px; height: 36px; font-size: 20px; }
+}

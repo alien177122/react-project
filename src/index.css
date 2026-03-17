@@ -2,14 +2,14 @@
   --bg: #0d0d0d;
   --surface: #141414;
   --card: #1a1a1a;
-  --border: #252525;
-  --accent: #e8ff3a;
-  --red: #ff4d4d;
-  --green: #3affb8;
-  --blue: #5ba4ff;
-  --orange: #ff9f40;
-  --text: #e0e0d8;
-  --muted: #666;
+  --border: #31221a;
+  --accent: #ffd34a;
+  --red: #ff5a36;
+  --green: #ffb347;
+  --blue: #ff8740;
+  --orange: #ff9f2e;
+  --text: #f2e7dc;
+  --muted: #9e7f6b;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }

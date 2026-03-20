@@ -32,3 +32,47 @@ export interface TrainingDayDef { dayNumber: 1|2|3; name: string; exerciseKeys: 
 
 // Метаданные мышцы для VolumeDonut
 export interface MuscleMeta { label: string; color: string; catKey: string }
+
+export interface FileWorkspacePaths {
+  baseDir: string
+  inboxDir: string
+  analysisDir: string
+}
+
+export interface FileWorkspaceOcrConfig {
+  baseUrl: string
+  model: string
+}
+
+export interface FileAnalysis {
+  kind: string
+  summary: string
+  preview: string
+  metadata: Record<string, string | number | boolean>
+  suggestedUse: string[]
+  generatedAt: string
+  source: {
+    name: string
+    relativePath: string
+    sizeBytes: number
+    sizeLabel: string
+    modifiedAt: string
+  }
+}
+
+export interface WorkspaceFileEntry {
+  name: string
+  relativePath: string
+  extension: string
+  sizeBytes: number
+  sizeLabel: string
+  modifiedAt: string
+  hasAnalysis: boolean
+  analysis: FileAnalysis | null
+}
+
+export interface FileWorkspaceResponse {
+  paths: FileWorkspacePaths
+  ocr: FileWorkspaceOcrConfig
+  files: WorkspaceFileEntry[]
+}

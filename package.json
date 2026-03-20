@@ -10,7 +10,22 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server/index.js",
-    "public": "node scripts/public-run.mjs"
+    "public": "node scripts/public-run.mjs",
+    "public:quick": "node scripts/public-run.mjs --quick",
+    "public:stable": "node scripts/public-run.mjs --stable",
+    "public:status": "node scripts/public-status.mjs",
+    "public:launchd:install": "node scripts/public-launchd-install.mjs",
+    "public:launchd:remove": "node scripts/public-launchd-remove.mjs",
+    "docker:build": "docker compose --env-file .env.docker build",
+    "docker:up": "docker compose --env-file .env.docker up -d",
+    "docker:down": "docker compose --env-file .env.docker down",
+    "docker:logs": "docker compose --env-file .env.docker logs -f app",
+    "docker:status": "docker compose --env-file .env.docker ps",
+    "files:status": "node scripts/files-status.mjs",
+    "files:analyze": "node scripts/files-analyze.mjs",
+    "files:watch": "node scripts/files-watch.mjs",
+    "ollama:pull-glm-ocr": "ollama pull glm-ocr",
+    "test": "node --test --experimental-strip-types tests/**/*.test.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -35,6 +50,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "playwright": "^1.58.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

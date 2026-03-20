@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './src/App.css'
-
-// Типы
-import type { UserData, SavedExercise } from './src/types'
 
 // Данные
 import { EXERCISES, TRAINING_DAYS, EX_COUNT, TYPE_LABELS } from './src/data/exercises'
 
 // Утилиты
-import { calc1RM, calcWorkingWeight } from './src/utils/calc'
-import { jwtName, loadUser, saveUser, apiAuth } from './src/utils/api'
+import { calcWorkingWeight } from './src/utils/calc'
 
 // Компоненты
 import TheoryTab from './src/components/TheoryTab'
@@ -17,6 +13,10 @@ import VolumeDonut from './src/components/VolumeDonut'
 import ProgressionBlock from './src/components/ProgressionBlock'
 import TrainingDayCard from './src/components/TrainingDayCard'
 import ExerciseWheel from './src/components/ExerciseWheel'
+import FileWorkspaceTab from './src/components/FileWorkspaceTab'
+import { useAuthSession } from './src/hooks/useAuthSession'
+import { useCalculatorState } from './src/hooks/useCalculatorState'
+import { useTrainingProgram } from './src/hooks/useTrainingProgram'
 
 // ============================================================
 // APP — главный компонент, управляет всем состоянием приложения
@@ -24,167 +24,71 @@ import ExerciseWheel from './src/components/ExerciseWheel'
 //   → handleCalculate / handleComplete → saveUser
 // ============================================================
 function App() {
-  // --- Аутентификация ---
-  const [token, setToken]       = useState(() => localStorage.getItem('gym_token') || '')
-  const [userName, setUserName] = useState(() => {
-    const t = localStorage.getItem('gym_token') || ''
-    return t ? (jwtName(t) || '') : ''
-  })
+  const {
+    token,
+    userName,
+    userData,
+    setUserData,
+    authMode,
+    setAuthMode,
+    nameInput,
+    setNameInput,
+    passInput,
+    setPassInput,
+    pass2Input,
+    setPass2Input,
+    authError,
+    setAuthError,
+    authLoading,
+    handleAuth,
+    handleLogout: logout,
+  } = useAuthSession()
 
-  // --- Данные пользователя ---
-  const [userData, setUserData]         = useState<UserData | null>(null)
+  const [activeTab, setActiveTab] = useState<'calculator' | 'training' | 'theory' | 'files'>('calculator')
 
-  // --- Форма калькулятора ---
-  const [selectedExercise, setSelectedExercise] = useState('bench')
-  const [testWeight, setTestWeight]     = useState('')
-  const [testBodyWeight, setTestBodyWeight] = useState('')
-  const [testExtraWeight, setTestExtraWeight] = useState('')
-  const [testReps, setTestReps]         = useState('')
-  const [activeResult, setActiveResult] = useState<SavedExercise | null>(null)
+  const {
+    selectedExercise,
+    selectExercise,
+    testWeight,
+    setTestWeight,
+    testBodyWeight,
+    setTestBodyWeight,
+    testExtraWeight,
+    setTestExtraWeight,
+    testReps,
+    setTestReps,
+    activeResult,
+    handleCalculate,
+    handleDelete,
+    handleSelectSaved,
+    resetCalculatorState,
+  } = useCalculatorState({ token, userName, userData, setUserData })
 
-  // --- Навигация по вкладкам ---
-  const [activeTab, setActiveTab]       = useState<'calculator' | 'training' | 'theory'>('calculator')
-
-  // --- Форма авторизации ---
-  const [authMode, setAuthMode]     = useState<'login' | 'register'>('login')
-  const [nameInput, setNameInput]   = useState('')
-  const [passInput, setPassInput]   = useState('')
-  const [pass2Input, setPass2Input] = useState('')
-  const [authError, setAuthError]   = useState('')
-  const [authLoading, setAuthLoading] = useState(false)
-
-  // --- Отдых между микроциклами ---
-  const [restDismissed, setRestDismissed] = useState(false)
-
-  // Загружаем данные пользователя после входа
-  useEffect(() => {
-    if (userName && token) {
-      loadUser(userName, token).then(d => {
-        if (d) setUserData(d)
-        else { setToken(''); setUserName(''); localStorage.removeItem('gym_token') }
-      })
-    }
-  }, [userName, token])
-
-  // allSaved=true когда для всех упражнений введён 1ПМ → разблокирует вкладку "Тренировка"
-  const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
-    : false
-
-  // Прогресс 8-недельного цикла (24 тренировки = 8 недель × 3 дня)
-  const completedSessions = userData?.trainingProgress?.completedSessions ?? 0
-  const currentDayIdx  = completedSessions % 3
-  const currentWeekIdx = Math.floor(completedSessions / 3)
-  const programDone    = completedSessions >= 24
-  const nextSessions   = completedSessions + 1
-  const nextDayIdx     = nextSessions % 3
-  const nextWeekIdx    = Math.floor(nextSessions / 3)
-
-  // Граница микроцикла: только что завершены все 3 дня недели → предлагаем отдых
-  const isMicrocycleBreak = completedSessions > 0 && completedSessions % 3 === 0 && !programDone && !restDismissed
-  const completedMicrocycle = Math.floor(completedSessions / 3) // номер завершённого микроцикла (1–8)
-
-  // Возвращает упражнения с весами для конкретного дня и недели
-  function getTrainingExercises(dayIdx: number, weekIdx: number) {
-    return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
-      const cfg = EXERCISES[key]
-      const saved = userData?.exercises.find(e => e.exerciseKey === key)
-      if (!saved) return null
-      const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
-      const scheme = cfg.weekSchemes[weekIdx]
-      const isPullup = !!cfg.isPullup
-      const extraWeight = isPullup && saved.bodyWeight != null
-        ? totalWeight - saved.bodyWeight
-        : undefined
-      return { key, name: cfg.name, weight: totalWeight, scheme, totalReps: scheme.sets * scheme.reps, isPullup, extraWeight }
-    }).filter((x): x is NonNullable<typeof x> => x !== null)
-  }
-
-  // Список упражнений без сохранённого 1ПМ
-  const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
-    .map(([, ex]) => ex.name)
-
-  // --- Вход / регистрация ---
-  async function handleAuth() {
-    const name = nameInput.trim()
-    const pass = passInput
-    if (!name || !pass) { setAuthError('Заполни все поля'); return }
-    if (authMode === 'register' && pass !== pass2Input) { setAuthError('Пароли не совпадают'); return }
-    setAuthLoading(true); setAuthError('')
-    const res = await apiAuth(authMode === 'login' ? 'login' : 'register', { name, password: pass })
-    setAuthLoading(false)
-    if (res.error) { setAuthError(res.error); return }
-    const tok = res.token!
-    localStorage.setItem('gym_token', tok)
-    setToken(tok); setUserName(res.name!)
-    setNameInput(''); setPassInput(''); setPass2Input('')
-  }
+  const {
+    allSaved,
+    missingExercises,
+    completedSessions,
+    currentDayIdx,
+    currentWeekIdx,
+    programDone,
+    nextSessions,
+    nextDayIdx,
+    nextWeekIdx,
+    isMicrocycleBreak,
+    completedMicrocycle,
+    currentTrainingExercises,
+    nextTrainingExercises,
+    handleComplete,
+    handleReset,
+    setRestDismissed,
+    resetTrainingState,
+  } = useTrainingProgram({ token, userData, setUserData })
 
   function handleLogout() {
-    localStorage.removeItem('gym_token')
-    setToken(''); setUserName(''); setUserData(null)
-    setActiveResult(null); setActiveTab('calculator')
-  }
-
-  // Главный расчёт: вес × повторения → 1ПМ → сохранение
-  function handleCalculate() {
-    const cfg = EXERCISES[selectedExercise]
-    let totalWeight: number
-    let bodyWeightVal: number | undefined
-
-    if (cfg.isPullup) {
-      const bw = parseFloat(testBodyWeight)
-      const ew = parseFloat(testExtraWeight) || 0
-      if (!bw || bw < 1) return
-      totalWeight = bw + ew
-      bodyWeightVal = bw
-    } else {
-      totalWeight = parseFloat(testWeight)
-      if (!totalWeight || totalWeight < 1) return
-    }
-
-    const r = parseInt(testReps)
-    if (!r || r < 1) return
-
-    const oneRM = Math.round(calc1RM(totalWeight, r) * 10) / 10
-    const saved: SavedExercise = {
-      exerciseKey: selectedExercise, testWeight: totalWeight, testReps: r, oneRM,
-      date: new Date().toLocaleDateString('ru-RU'),
-      bodyWeight: bodyWeightVal,
-    }
-    const updated: UserData = {
-      ...userData!, name: userName,
-      exercises: [...(userData?.exercises.filter(e => e.exerciseKey !== selectedExercise) || []), saved],
-    }
-    setUserData(updated); setActiveResult(saved)
-    setTestWeight(''); setTestReps(''); setTestBodyWeight(''); setTestExtraWeight('')
-    saveUser(updated, token)
-  }
-
-  function handleDelete(key: string) {
-    if (!userData) return
-    const updated: UserData = { ...userData, exercises: userData.exercises.filter(e => e.exerciseKey !== key) }
-    setUserData(updated)
-    if (activeResult?.exerciseKey === key) setActiveResult(null)
-    saveUser(updated, token)
-  }
-
-  function handleSelectSaved(saved: SavedExercise) {
-    setActiveResult(saved); setSelectedExercise(saved.exerciseKey)
-  }
-
-  function handleComplete() {
-    if (!userData || programDone) return
-    const updated: UserData = { ...userData, trainingProgress: { completedSessions: completedSessions + 1 } }
-    setUserData(updated); saveUser(updated, token)
-    setRestDismissed(false)
-  }
-
-  function handleReset() {
-    if (!userData) return
-    const updated: UserData = { ...userData, trainingProgress: { completedSessions: 0 } }
-    setUserData(updated); saveUser(updated, token)
+    logout()
+    resetCalculatorState()
+    resetTrainingState()
+    setActiveTab('calculator')
   }
 
   // --- Auth screen ---
@@ -192,7 +96,7 @@ function App() {
     <>
       <div className="hero">
         <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>УМНАЯ ПРОГА 1.1</h1>
+        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
         <p>Рассчитай рабочие веса на 8 недель по своему 1ПМ. Реальные схемы с волновой периодизацией.</p>
       </div>
       <div className="auth-card">
@@ -238,7 +142,7 @@ function App() {
     <>
       <div className="hero">
         <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>УМНАЯ ПРОГА 1.1</h1>
+        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
       </div>
       <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '48px 0' }}>Загрузка данных...</div>
     </>
@@ -255,12 +159,11 @@ function App() {
       })
     : []
   const w1 = weekRows[0], w8 = weekRows[weekRows.length - 1]
-
   return (
     <>
       <div className="hero">
         <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>УМНАЯ ПРОГА 1.1</h1>
+        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
         <p>Введи тестовый вес и повторения — получи расклад рабочих весов с реальными схемами на 8 недель</p>
       </div>
 
@@ -293,6 +196,10 @@ function App() {
           onClick={() => setActiveTab('theory')}>
           Теория
         </button>
+        <button className={`tab-btn${activeTab === 'files' ? ' tab-active' : ''}`}
+          onClick={() => setActiveTab('files')}>
+          Файлы
+        </button>
       </div>
 
       {/* ====== CALCULATOR TAB ====== */}
@@ -306,10 +213,7 @@ function App() {
             <div className="input-grid">
               <div className="input-group">
                 <label className="input-label">Упражнение</label>
-                <ExerciseWheel value={selectedExercise} onChange={key => {
-                  setSelectedExercise(key)
-                  setTestWeight(''); setTestBodyWeight(''); setTestExtraWeight(''); setTestReps('')
-                }} savedExercises={userData.exercises} />
+                <ExerciseWheel value={selectedExercise} onChange={selectExercise} savedExercises={userData.exercises} />
               </div>
 
               {EXERCISES[selectedExercise].isPullup ? (<>
@@ -394,7 +298,7 @@ function App() {
                 &nbsp;·&nbsp; <strong>Жирный</strong> в «Схема» = отклонение от 4 подходов.
                 <br /><br />
                 <strong>Цвет объёма:</strong>{' '}
-                <span style={{ color: 'var(--accent)', fontWeight: 600 }}>жёлтый ≥28</span>&nbsp;·&nbsp;
+                <span style={{ color: '#ffb347', fontWeight: 600 }}>оранжевый ≥28</span>&nbsp;·&nbsp;
                 <span style={{ color: '#aaa' }}>серый 17–27</span>&nbsp;·&nbsp;
                 <span style={{ color: '#ff4d4d', fontWeight: 600 }}>красный ≤16</span>
               </div>
@@ -456,6 +360,9 @@ function App() {
       {/* ====== THEORY TAB ====== */}
       {activeTab === 'theory' && <TheoryTab />}
 
+      {/* ====== FILES TAB ====== */}
+      {activeTab === 'files' && <FileWorkspaceTab token={token} />}
+
       {/* ====== TRAINING TAB ====== */}
       {activeTab === 'training' && (
         <>
@@ -506,13 +413,13 @@ function App() {
                 <div className="section">
                   <div className="section-header">
                     <span className="section-num">01</span>
-                    <span className="section-title">Микроцикл {completedMicrocycle} завершён</span>
+                    <span className="section-title">Завершён {completedMicrocycle}-й микроцикл</span>
                   </div>
                   <div className="rest-card">
                     <div className="rest-card-icon">&#127881;</div>
                     <div className="rest-card-title">Праздник! Время отдохнуть</div>
                     <div className="rest-card-subtitle">
-                      Микроцикл {completedMicrocycle} из 8 пройден — {completedSessions} тренировок позади
+                      {completedMicrocycle}-й микроцикл из 8 пройден — {completedSessions} тренировок позади
                     </div>
                     <div className="rest-card-body">
                       <div className="rest-card-rec">
@@ -538,7 +445,7 @@ function App() {
                       </div>
                     </div>
                     <div className="rest-card-next">
-                      Следующий микроцикл: <strong>Неделя {completedMicrocycle + 1}</strong> · День 1 · {TRAINING_DAYS[0].name}
+                      Следующий микроцикл: <strong>{completedMicrocycle + 1}-й</strong> · День 1 · {TRAINING_DAYS[0].name}
                     </div>
                   </div>
                   <button className="btn-complete" onClick={() => setRestDismissed(true)}>Начать следующий микроцикл</button>
@@ -553,7 +460,7 @@ function App() {
                     <TrainingDayCard
                       dayDef={TRAINING_DAYS[currentDayIdx]}
                       weekIndex={currentWeekIdx}
-                      exercises={getTrainingExercises(currentDayIdx, currentWeekIdx)}
+                      exercises={currentTrainingExercises}
                     />
                     <button className="btn-complete" onClick={handleComplete}>Завершить тренировку</button>
                   </div>
@@ -568,7 +475,7 @@ function App() {
                       <TrainingDayCard
                         dayDef={TRAINING_DAYS[nextDayIdx]}
                         weekIndex={nextWeekIdx}
-                        exercises={getTrainingExercises(nextDayIdx, nextWeekIdx)}
+                        exercises={nextTrainingExercises}
                         isPreview
                       />
                     </div>

@@ -2,11 +2,18 @@ import { spawn } from 'node:child_process'
 import net from 'node:net'
 import process from 'node:process'
 import { setTimeout as delay } from 'node:timers/promises'
+import { assertStableConfig, DEFAULT_PUBLIC_PORT, getPublicConfig } from './public-utils.mjs'
 
-const DEFAULT_PORT = Number(process.env.PUBLIC_PORT) || 3001
 const HEALTH_TIMEOUT_MS = 20_000
 const TUNNEL_TIMEOUT_MS = 30_000
 const SERVER_BOOTSTRAP = "import './server/index.js'; setInterval(() => {}, 1_000_000)"
+
+function parseArgs(argv) {
+  return {
+    mode: argv.includes('--stable') ? 'stable' : argv.includes('--quick') ? 'quick' : 'auto',
+    shouldBuild: !argv.includes('--no-build'),
+  }
+}
 
 function commandExists(command, args = ['--version']) {
   return new Promise((resolve) => {
@@ -45,6 +52,12 @@ async function findFreePort(startPort) {
   throw new Error(`No free port found near ${startPort}`)
 }
 
+async function assertPortAvailable(port) {
+  if (!await canListen(port)) {
+    throw new Error(`PUBLIC_PORT ${port} is already in use. Stable mode requires a fixed free port that matches the Cloudflare route.`)
+  }
+}
+
 async function waitForHealth(port) {
   const startedAt = Date.now()
   while (Date.now() - startedAt < HEALTH_TIMEOUT_MS) {
@@ -55,6 +68,18 @@ async function waitForHealth(port) {
     await delay(300)
   }
   throw new Error(`Server did not become healthy within ${HEALTH_TIMEOUT_MS}ms`)
+}
+
+async function waitForPublicHealth(baseUrl, timeoutMs = TUNNEL_TIMEOUT_MS) {
+  const startedAt = Date.now()
+  while (Date.now() - startedAt < timeoutMs) {
+    try {
+      const res = await fetch(`${baseUrl}/api/health`)
+      if (res.ok) return
+    } catch {}
+    await delay(500)
+  }
+  throw new Error(`Public URL did not become healthy within ${timeoutMs}ms: ${baseUrl}`)
 }
 
 function stripAnsi(text) {
@@ -76,7 +101,7 @@ function pipeWithPrefix(stream, prefix, onLine) {
   })
 }
 
-function waitForTunnelUrl(child) {
+function waitForQuickTunnelUrl(child) {
   return new Promise((resolve, reject) => {
     const startedAt = Date.now()
     let url = null
@@ -121,16 +146,36 @@ function spawnManaged(command, args, options = {}) {
 }
 
 async function main() {
+  const args = parseArgs(process.argv.slice(2))
+  const config = getPublicConfig()
+  const stableMode = args.mode === 'stable' || (args.mode === 'auto' && Boolean(config.tunnelToken && config.publicHostname))
+
   if (!await commandExists('cloudflared')) {
     throw new Error('cloudflared is not installed. Install it first to expose the app publicly.')
   }
 
-  console.log('[public] Building frontend...')
-  await runOrFail(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'build'])
+  if (stableMode) {
+    assertStableConfig(config)
+  }
 
-  const port = await findFreePort(DEFAULT_PORT)
+  console.log(`[public] Mode: ${stableMode ? 'stable tunnel' : 'quick tunnel'}`)
+
+  if (args.shouldBuild) {
+    console.log('[public] Building frontend...')
+    await runOrFail(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'build'], {
+      cwd: config.cwd,
+      env: config.env,
+    })
+  } else {
+    console.log('[public] Skipping frontend build (--no-build)')
+  }
+
+  const port = stableMode
+    ? (await assertPortAvailable(config.localPort || DEFAULT_PUBLIC_PORT), config.localPort || DEFAULT_PUBLIC_PORT)
+    : await findFreePort(config.localPort || DEFAULT_PUBLIC_PORT)
   const server = spawnManaged('node', ['--input-type=module', '-e', SERVER_BOOTSTRAP], {
-    env: { ...process.env, PORT: String(port) },
+    cwd: config.cwd,
+    env: { ...config.env, PORT: String(port) },
   })
   pipeWithPrefix(server.stdout, '[server]')
   pipeWithPrefix(server.stderr, '[server]')
@@ -157,11 +202,18 @@ async function main() {
 
   await waitForHealth(port)
   console.log(`[public] Server is healthy on http://127.0.0.1:${port}`)
-  if (!process.env.JWT_SECRET) {
+  if (!config.env.JWT_SECRET) {
     console.warn('[public] JWT_SECRET is not set. The server is using the built-in dev secret.')
   }
 
-  tunnel = spawnManaged('cloudflared', ['tunnel', '--url', `http://127.0.0.1:${port}`, '--no-autoupdate'])
+  const tunnelArgs = stableMode
+    ? ['tunnel', 'run', '--token', config.tunnelToken, '--no-autoupdate']
+    : ['tunnel', '--url', `http://127.0.0.1:${port}`, '--no-autoupdate']
+
+  tunnel = spawnManaged('cloudflared', tunnelArgs, {
+    cwd: config.cwd,
+    env: config.env,
+  })
   tunnel.on('exit', code => {
     if (!shuttingDown) {
       console.error(`[tunnel] exited unexpectedly with code ${code ?? 'null'}`)
@@ -169,7 +221,9 @@ async function main() {
     }
   })
 
-  const url = await waitForTunnelUrl(tunnel)
+  const url = stableMode
+    ? (await waitForPublicHealth(config.publicUrl), config.publicUrl)
+    : await waitForQuickTunnelUrl(tunnel)
   console.log('')
   console.log(`[public] App is reachable on the internet: ${url}`)
   console.log('[public] Press Ctrl+C to stop the server and tunnel.')

@@ -34,7 +34,7 @@ export function volumeClass(t: number): string {
 
 // Цвет столбца волнового графика — совпадает с цветом объёмного класса
 export function barColor(t: number): string {
-  if (t >= 28) return 'var(--accent,#ffd34a)'
-  if (t <= 16) return 'var(--red,#ff5a36)'
-  return 'var(--orange,#ff9f2e)'
+  if (t >= 28) return 'var(--accent,#ff6b35)'
+  if (t <= 16) return '#ff4d4d'
+  return '#ff9f40'
 }

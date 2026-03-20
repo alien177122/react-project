@@ -1,0 +1,16 @@
+.DS_Store
+.git
+.gitignore
+.env.local
+.env.public
+.env.public.local
+.env.docker
+node_modules
+dist
+logs
+docker-data
+gym.db
+workspace-files/inbox
+workspace-files/analysis
+tests
+playwright-report

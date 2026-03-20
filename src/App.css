@@ -162,26 +162,125 @@ select.input-field option {
 }
 .btn-danger:hover { border-color: #ff4d4d; }
 
+.files-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.file-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 18px;
+}
+
+.file-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.file-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  word-break: break-word;
+}
+
+.file-card-meta,
+.file-card-summary {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.file-card-summary {
+  margin-bottom: 12px;
+}
+
+.file-card-preview {
+  margin: 0 0 12px;
+  padding: 12px;
+  background: #111;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: #d7d7d7;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.file-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.file-card-tag {
+  background: #2a1810;
+  border: 1px solid #3a2218;
+  color: #e8b080;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.file-card-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-card-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 8px;
+}
+
+.file-card-meta-row strong {
+  color: #fff;
+  text-align: right;
+}
+
 /* INSIGHT BOX */
 .insight {
-  background: #0e170b;
-  border: 1px solid #2a3a1a;
+  background: #1a100b;
+  border: 1px solid #3a2218;
   border-left: 3px solid var(--accent);
   border-radius: 4px;
   padding: 16px 20px;
   font-size: 13px;
-  color: #8caa78;
+  color: #c49070;
   line-height: 1.75;
   margin-bottom: 24px;
 }
 .insight strong { color: var(--accent); }
 .insight code {
   font-family: 'Courier New', monospace;
-  background: #1a2a10;
+  background: #2a1810;
   padding: 1px 5px;
   border-radius: 2px;
   font-size: 12px;
-  color: #c8e080;
+  color: #e8b080;
 }
 
 /* 1RM RESULT */
@@ -274,14 +373,14 @@ table.pt tr:hover td { background: #1e1e1e; }
 .w-sr b { color: #fff; }
 
 /* Volume colour coding */
-.v-hi { color: var(--accent); font-weight: 600; }
+.v-hi { color: #ffb347; font-weight: 600; }
 .v-md { color: #aaa; }
 .v-lo { color: #ff4d4d; font-weight: 600; }
 
 /* Deload row */
 .rr td { background: #0d1a09 !important; }
-.rr td:first-child { border-left: 2px solid #3affb8; padding-left: 8px; }
-.rr .w-label { color: #3affb8; }
+.rr td:first-child { border-left: 2px solid var(--green); padding-left: 8px; }
+.rr .w-label { color: var(--green); }
 
 /* WAVE / TREND CHART */
 .wave-wrap {
@@ -311,12 +410,12 @@ table.pt tr:hover td { background: #1e1e1e; }
 
 /* NOTE BOX */
 .note-box {
-  background: #111b0f;
-  border: 1px solid #2a3a1a;
+  background: #1a100c;
+  border: 1px solid #3a2218;
   border-radius: 4px;
   padding: 14px 18px;
   font-size: 12.5px;
-  color: #8aa876;
+  color: #b8907a;
   line-height: 1.65;
   margin-top: 14px;
 }
@@ -408,14 +507,14 @@ table.pt tr:hover td { background: #1e1e1e; }
   }
   .tab-bar {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     gap: 0;
     align-items: stretch;
   }
   .tab-btn {
     min-width: 0;
-    padding: 12px 8px 14px;
-    font-size: 16px;
+    padding: 12px 6px 14px;
+    font-size: 15px;
     text-align: center;
   }
 }
@@ -1066,7 +1165,7 @@ table.pt tr:hover td { background: #1e1e1e; }
 }
 .rest-card-body { text-align: left; }
 .rest-card-rec {
-  background: rgba(232,255,58,.06);
+  background: rgba(255,107,53,.06);
   border-left: 3px solid var(--accent);
   border-radius: 8px;
   padding: 16px 18px;
@@ -1140,4 +1239,202 @@ table.pt tr:hover td { background: #1e1e1e; }
   .tier-row { flex-direction: column; gap: 10px; }
   .tier-badge { width: 36px; height: 36px; font-size: 20px; }
   .rest-card-q-options { flex-direction: column; }
+}
+
+/* ===== iPhone / mobile touch improvements ===== */
+@media (max-width: 430px) {
+  /* Layout */
+  #root { padding: 32px 14px; }
+
+  /* Hero — заголовок не обрезается */
+  .hero { margin-bottom: 28px; padding-left: 16px; }
+  .hero h1 {
+    font-size: clamp(28px, 7.8vw, 42px);
+    letter-spacing: 0;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  .hero-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    margin-bottom: 8px;
+  }
+  .hero p { font-size: 12px; line-height: 1.5; max-width: 100%; }
+
+  /* Auth */
+  .auth-card {
+    padding: 24px 18px;
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  .auth-tabs { margin-bottom: 22px; }
+  .auth-tab {
+    font-size: 16px;
+    padding: 8px 16px 10px;
+  }
+
+  /* Inputs — 16px prevents iOS zoom */
+  .input-field {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+  .input-label {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+  }
+  .input-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 14px 24px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+  .btn-complete {
+    padding: 16px 24px;
+    font-size: 20px;
+    border-radius: 8px;
+  }
+
+  /* Tab bar — 4 вкладки в ряд */
+  .tab-bar {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    padding: 10px 4px 12px;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+  }
+
+  /* User bar */
+  .user-bar {
+    padding: 12px 14px;
+    margin-bottom: 28px;
+    border-radius: 8px;
+  }
+  .user-bar-name { font-size: 13px; }
+
+  /* Sections */
+  .section { margin-bottom: 36px; }
+  .section-header {
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+  }
+  .section-num { font-size: 11px; }
+  .section-title { font-size: 22px; }
+
+  /* Progression table */
+  table.pt { font-size: 11px; }
+  table.pt th { font-size: 8px; padding: 5px 6px; }
+  table.pt td { padding: 5px 6px; }
+  .pb-head { padding: 8px 12px; }
+  .pb-head-name { font-size: 16px; }
+
+  /* Result card */
+  .result-card { padding: 16px 18px; }
+  .result-value { font-size: 40px; }
+  .result-meta { font-size: 11px; }
+
+  /* Saved exercises */
+  .saved-item {
+    padding: 12px 14px;
+    border-radius: 6px;
+  }
+  .saved-item-name { font-size: 13px; }
+  .saved-item-info { font-size: 11px; }
+  .saved-item-1rm { font-size: 13px; }
+
+  /* Training card */
+  .training-card { border-radius: 8px; }
+  .training-card-head { padding: 10px 14px; gap: 8px; }
+  .training-card-day { font-size: 18px; }
+  .training-card-name { font-size: 12px; }
+  .training-card-week { font-size: 10px; }
+
+  /* Progress bar */
+  .training-progress { margin-bottom: 24px; }
+  .training-progress-label { font-size: 10px; }
+
+  /* Note / Insight boxes */
+  .note-box {
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 12px 14px;
+  }
+  .insight {
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 14px 16px;
+  }
+
+  /* Locked view */
+  .locked-view { padding: 40px 16px; }
+  .locked-icon { font-size: 36px; }
+  .locked-title { font-size: 24px; }
+  .locked-desc { font-size: 12px; }
+  .locked-missing-item { font-size: 11px; }
+
+  /* Program complete */
+  .program-complete { padding: 36px 16px; }
+  .program-complete-title { font-size: 30px; }
+  .program-complete-desc { font-size: 12px; }
+
+  /* Rest card */
+  .rest-card {
+    padding: 22px 18px;
+    border-radius: 12px;
+  }
+  .rest-card-title { font-size: 20px; }
+  .rest-card-subtitle { font-size: 12px; }
+  .rest-card-rec { padding: 14px 14px; border-radius: 6px; }
+  .rest-card-rec-title { font-size: 12px; }
+  .rest-card-list { font-size: 12px; }
+  .rest-card-question { padding: 14px; border-radius: 8px; }
+  .rest-card-q-title { font-size: 13px; }
+  .rest-card-q-opt { font-size: 11px; padding: 6px 12px; }
+  .rest-card-q-hint { font-size: 11px; }
+
+  /* Theory cards */
+  .theory-card { padding: 16px 14px; }
+  .theory-card-title { font-size: 12px; }
+  .theory-card-body { font-size: 12px; }
+  .tier-badge { width: 34px; height: 34px; font-size: 18px; }
+  .tier-row { padding: 12px 14px; }
+  .tier-label { font-size: 9px; }
+  .tier-item { font-size: 11px; padding: 2px 7px; }
+  .tier-note { font-size: 11px; }
+  .theory-top3-num { font-size: 28px; }
+  .theory-top3-name { font-size: 14px; }
+  .theory-top3-dose { font-size: 10px; }
+  .theory-top3-desc { font-size: 12px; }
+
+  /* Theory tables */
+  .theory-table-title { font-size: 11px; padding: 8px 12px; }
+
+  /* Volume donut */
+  .donut-cat-name { font-size: 12px; }
+  .donut-name { font-size: 11px; }
+
+  /* Exercise wheel modal */
+  .ew-modal { padding: 16px 12px; max-width: 340px; }
+  .ew-modal-title { font-size: 18px; }
+  .ew-svg { width: 280px; }
+  .ew-legend { gap: 6px 12px; }
+  .ew-legend-item { font-size: 10px; }
+
+  /* File cards */
+  .files-grid { grid-template-columns: 1fr; }
+  .file-card { padding: 14px; }
+  .file-card-name { font-size: 14px; }
+  .file-card-preview { max-height: 200px; font-size: 10px; }
 }

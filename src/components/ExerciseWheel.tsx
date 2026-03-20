@@ -65,7 +65,7 @@ export default function ExerciseWheel({ value, onChange, savedExercises = [] }: 
                       d={donutArc(cx, cy, ro, RI, s, e)}
                       fill={color}
                       opacity={hov && !isHov ? 0.2 : isSel ? 0.95 : 0.7}
-                      stroke={isSel ? '#ffd34a' : 'none'}
+                      stroke={isSel ? '#ff6b35' : 'none'}
                       strokeWidth={isSel ? 2 : 0}
                       style={{ cursor: 'pointer', transition: 'opacity 0.15s' }}
                       onMouseEnter={() => setHov(key)}

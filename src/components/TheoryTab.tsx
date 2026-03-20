@@ -1,10 +1,28 @@
-import { THEORY_CONCEPTS, SUPPLEMENT_TIERS } from '../data/theory'
+import {
+  MTOR_CONCEPTS,
+  MTOR_REQUEST_OPTIONS,
+  MTOR_SITE_UPGRADE,
+  MTOR_VIDEO_CONTEXT,
+  THEORY_CONCEPTS,
+  SUPPLEMENT_TIERS,
+} from '../data/theory'
 
 // ============================================================
 // КОМПОНЕНТ ТЕОРИЯ — весь контент вкладки в одном месте
-// Разбит на 6 секций: понятия, tier-лист, топ-3, таблицы, сухожилия, источники
+// Разбит на 8 секций: понятия, mTOR, tier-лист, топ-3, таблицы, сухожилия, статьи по проекту, источники
 // ============================================================
 export default function TheoryTab() {
+  const projectArticles = [
+    {
+      title: 'Сначала укрепить границы: backend + frontend',
+      body: 'На бэкенде первым делом стоит закрыть три уязвимые точки: ввести явную схему UserData для PUT-запросов, сделать JWT_SECRET обязательным вне dev-режима и читать JSON только через безопасный парсер с валидацией формы данных. Это убирает тихую порчу состояния, случайные крэши и ситуацию, когда прод-секрет внезапно живёт на дефолтном значении. На фронтенде следующий шаг логично сделать симметричным: вынести из App.tsx три слоя ответственности — useAuthSession, useTrainingProgram и useCalculatorState. Тогда авторизация, расчёт проги и состояние калькулятора перестанут быть спаяны в одном компоненте, а код станет проще сопровождать, расширять и тестировать.',
+    },
+    {
+      title: 'Тестами закрывать ядро, а не косметику',
+      body: 'Самый ценный код проекта здесь не в разметке, а в правилах, которые считают веса, собирают тренировочный день и сохраняют пользователя. Поэтому первым пакетом тестов имеет смысл покрыть src/utils/calc.ts, getTrainingExercises и серверные auth/user endpoints. Именно там живут формулы, ветвления и контракты данных, где регрессия реально ломает программу: неверный 1ПМ, ошибочная схема недели, потерянная авторизация или битый профиль. Такой набор даёт максимальную отдачу: быстро фиксирует поведение системы и позволяет дальше рефакторить интерфейс без страха сломать критическую логику.',
+    },
+  ]
+
   return (
     <>
       {/* ── Секция 1: базовые понятия ─────────────────────── */}
@@ -26,10 +44,65 @@ export default function TheoryTab() {
         </div>
       </div>
 
-      {/* ── Секция 2: tier-лист добавок ───────────────────── */}
+      {/* ── Секция 2: mTOR и анаболический отклик ─────────── */}
       <div className="section">
         <div className="section-header">
           <span className="section-num">02</span>
+          <span className="section-title">mTOR и анаболический отклик</span>
+        </div>
+        <div className="note-box" style={{ marginBottom: 24 }}>
+          {MTOR_VIDEO_CONTEXT}
+        </div>
+        <div className="note-box" style={{ marginBottom: 24 }}>
+          Чтобы собрать точный поэтапный конспект именно по ролику, нужен один из трёх входов: транскрипт, аудио/видео файл или ссылка на уже скачанное видео.
+        </div>
+        <div className="theory-grid" style={{ marginBottom: 24 }}>
+          {MTOR_REQUEST_OPTIONS.map((option, i) => (
+            <div key={i} className="theory-card" style={{ borderLeft: '3px solid #ff9f40' }}>
+              <div className="theory-card-title">{option.title}</div>
+              <div className="theory-card-body">{option.body}</div>
+            </div>
+          ))}
+        </div>
+        <div className="theory-grid">
+          {MTOR_CONCEPTS.map((concept, i) => (
+            <div key={i} className="theory-card">
+              <div className="theory-card-title">{concept.title}</div>
+              <div className="theory-card-body">
+                <strong>Определение:</strong> {concept.definition}
+                {concept.pattern && (
+                  <>
+                    <br /><br />
+                    <strong>Закономерность:</strong> {concept.pattern}
+                  </>
+                )}
+                {concept.bullets && (
+                  <ul style={{ margin: '12px 0 0', paddingLeft: 18 }}>
+                    {concept.bullets.map(item => (
+                      <li key={item} style={{ marginBottom: 6 }}>{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="note-box" style={{ marginTop: 24 }}>
+          Если появится транскрипт или сам ролик, этот раздел можно расширить до формата мини-главы для сайта:
+          <br />
+          {MTOR_SITE_UPGRADE.map((item, i) => (
+            <span key={item}>
+              {i === 0 ? '· ' : ' · '}
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Секция 3: tier-лист добавок ───────────────────── */}
+      <div className="section">
+        <div className="section-header">
+          <span className="section-num">03</span>
           <span className="section-title">Tier List добавок</span>
         </div>
         <div className="note-box" style={{ marginBottom: 24 }}>
@@ -57,10 +130,10 @@ export default function TheoryTab() {
         </div>
       </div>
 
-      {/* ── Секция 3: топ-3 рекомендации ─────────────────── */}
+      {/* ── Секция 4: топ-3 рекомендации ─────────────────── */}
       <div className="section">
         <div className="section-header">
-          <span className="section-num">03</span>
+          <span className="section-num">04</span>
           <span className="section-title">Топ-3 если выбирать</span>
         </div>
         <div className="note-box" style={{ marginBottom: 24 }}>
@@ -68,7 +141,7 @@ export default function TheoryTab() {
         </div>
         <div className="theory-top3">
           <div className="theory-top3-card">
-            <div className="theory-top3-num" style={{ color: '#ffd34a' }}>01</div>
+            <div className="theory-top3-num" style={{ color: '#ff6b35' }}>01</div>
             <div className="theory-top3-name">Креатин моногидрат</div>
             <div className="theory-top3-dose">3–5 г/сут (60–70 кг) · до 10 г (100+ кг)</div>
             <div className="theory-top3-desc">
@@ -79,7 +152,7 @@ export default function TheoryTab() {
             </div>
           </div>
           <div className="theory-top3-card">
-            <div className="theory-top3-num" style={{ color: '#ff9f2e' }}>02</div>
+            <div className="theory-top3-num" style={{ color: '#ff9f40' }}>02</div>
             <div className="theory-top3-name">Кофеин</div>
             <div className="theory-top3-dose">~200 мг до тренировки</div>
             <div className="theory-top3-desc">
@@ -89,7 +162,7 @@ export default function TheoryTab() {
             </div>
           </div>
           <div className="theory-top3-card">
-            <div className="theory-top3-num" style={{ color: '#ff5a36' }}>03</div>
+            <div className="theory-top3-num" style={{ color: '#9e9e9e' }}>03</div>
             <div className="theory-top3-name">Магний бисглицинат</div>
             <div className="theory-top3-dose">4 капс / ~400 мг элемент. магния</div>
             <div className="theory-top3-desc">
@@ -101,10 +174,10 @@ export default function TheoryTab() {
         </div>
       </div>
 
-      {/* ── Секция 4: таблица %ПМ → повторения + RPE ──────── */}
+      {/* ── Секция 5: таблица %ПМ → повторения + RPE ──────── */}
       <div className="section">
         <div className="section-header">
-          <span className="section-num">04</span>
+          <span className="section-num">05</span>
           <span className="section-title">Таблица %ПМ и RPE</span>
         </div>
         <div className="note-box" style={{ marginBottom: 24 }}>
@@ -133,7 +206,7 @@ export default function TheoryTab() {
                   <tr key={i}>
                     <td className="w-kg" style={{ textAlign: 'left' }}>{pct}</td>
                     <td className="w-sr">{reps}</td>
-                    <td style={{ color: zone === 'Сила' ? '#ffd34a' : zone === 'Гипертрофия' ? '#ff9f2e' : zone.includes('Сила') ? '#ffb347' : '#ff6d3a', fontSize: 11 }}>
+                    <td style={{ color: zone === 'Сила' ? '#ff6b35' : zone === 'Гипертрофия' ? '#ff9f40' : zone.includes('Сила') ? '#e85a2a' : '#5ba4ff', fontSize: 11 }}>
                       {zone}
                     </td>
                   </tr>
@@ -160,7 +233,7 @@ export default function TheoryTab() {
                   ['4', '6+', 'Очень лёгкая работа'],
                 ] as const).map(([rpe, rir, desc], i) => (
                   <tr key={i}>
-                    <td className="w-kg" style={{ textAlign: 'left', color: Number(rpe) >= 9 ? '#ff5a36' : Number(rpe) >= 7 ? '#ff9f2e' : '#ffd34a' }}>{rpe}</td>
+                    <td className="w-kg" style={{ textAlign: 'left', color: Number(rpe) >= 9 ? '#ff4d4d' : Number(rpe) >= 7 ? '#ff9f40' : '#3affb8' }}>{rpe}</td>
                     <td className="w-sr">{rir}</td>
                     <td style={{ color: 'var(--muted)', fontSize: 11, textAlign: 'left' }}>{desc}</td>
                   </tr>
@@ -171,10 +244,10 @@ export default function TheoryTab() {
         </div>
       </div>
 
-      {/* ── Секция 5: протокол укрепления сухожилий ─────── */}
+      {/* ── Секция 6: протокол укрепления сухожилий ─────── */}
       <div className="section">
         <div className="section-header">
-          <span className="section-num">05</span>
+          <span className="section-num">06</span>
           <span className="section-title">Протокол укрепления сухожилий</span>
         </div>
         <div className="note-box" style={{ marginBottom: 24 }}>
@@ -183,7 +256,7 @@ export default function TheoryTab() {
           Многоповторка закачивает мышцы, но <strong>не сухожилия</strong> — создаёт дисбаланс и повышает травматизм.
         </div>
         <div className="theory-grid">
-          <div className="theory-card" style={{ borderLeft: '3px solid #ffd34a' }}>
+          <div className="theory-card" style={{ borderLeft: '3px solid #ff6b35' }}>
             <div className="theory-card-title">Рабочий протокол</div>
             <div className="theory-card-body">
               Частота: ~3 раза/нед. Интенсивность: 85–90% ПМ. Схема: 5 подходов × 4 повторения.
@@ -191,7 +264,7 @@ export default function TheoryTab() {
               Ориентир — TUT на нужной деформации, а не отказ. Используй изолированные упражнения для точного попадания в целевое сухожилие.
             </div>
           </div>
-          <div className="theory-card" style={{ borderLeft: '3px solid #ff9f2e' }}>
+          <div className="theory-card" style={{ borderLeft: '3px solid #ff9f40' }}>
             <div className="theory-card-title">Если сухожилие «податливое»</div>
             <div className="theory-card-body">
               Если на тесте деформация &gt;10% — начинай с ~60% ПМ и постепенно наращивай к 70–90%.
@@ -199,7 +272,7 @@ export default function TheoryTab() {
               При стихании боли — переходи к базовым движениям, сохраняя принцип дозировки.
             </div>
           </div>
-          <div className="theory-card" style={{ borderLeft: '3px solid #ff5a36' }}>
+          <div className="theory-card" style={{ borderLeft: '3px solid #ff4d4d' }}>
             <div className="theory-card-title">Что НЕ работает</div>
             <div className="theory-card-body">
               Растяжка снижает жёсткость сухожилий — в силовом тренинге это минус.
@@ -207,7 +280,7 @@ export default function TheoryTab() {
               Пептиды коллагена теоретически могут помочь (более устойчивы к разрушению в ЖКТ), но доказательства неоднозначные.
             </div>
           </div>
-          <div className="theory-card" style={{ borderLeft: '3px solid #ff7a33' }}>
+          <div className="theory-card" style={{ borderLeft: '3px solid #5ba4ff' }}>
             <div className="theory-card-title">Почему фармакология ≠ крепкие сухожилия</div>
             <div className="theory-card-body">
               Анаболические стероиды резко повышают силу мышц, но сухожилия не успевают адаптироваться.
@@ -218,10 +291,29 @@ export default function TheoryTab() {
         </div>
       </div>
 
-      {/* ── Секция 6: источники ────────────────────────────── */}
+      {/* ── Секция 7: статьи по проекту ───────────────────── */}
       <div className="section">
         <div className="section-header">
-          <span className="section-num">06</span>
+          <span className="section-num">07</span>
+          <span className="section-title">Статьи по проекту</span>
+        </div>
+        <div className="note-box" style={{ marginBottom: 24 }}>
+          Короткие инженерные заметки о том, что в этом проекте даёт наибольший выигрыш по надёжности и поддержке кода.
+        </div>
+        <div className="theory-grid">
+          {projectArticles.map((article, i) => (
+            <div key={i} className="theory-card">
+              <div className="theory-card-title">{article.title}</div>
+              <div className="theory-card-body">{article.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Секция 8: источники ────────────────────────────── */}
+      <div className="section">
+        <div className="section-header">
+          <span className="section-num">08</span>
           <span className="section-title">Источники</span>
         </div>
         <div className="note-box">

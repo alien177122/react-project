@@ -135,7 +135,7 @@ export const EX_COUNT = Object.keys(EXERCISES).length
 
 // Цвета сегментов колеса и доната по типу упражнения
 export const TYPE_COLORS: Record<string, string> = {
-  A: '#ffd34a', B: '#ffb347', C: '#ff8a3d', D: '#ff5a36',
+  A: '#ff6b35', B: '#ff9f40', C: '#5ba4ff', D: '#3affb8',
 }
 
 // Короткие имена для колеса-выбора упражнений (ограничено шириной сегмента)

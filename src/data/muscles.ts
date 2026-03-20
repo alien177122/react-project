@@ -21,20 +21,20 @@ export const MUSCLE_CONTRIB: Record<string, Record<string, number>> = {
 }
 
 export const MUSCLE_META: Record<string, MuscleMeta> = {
-  // Push — yellow family
-  chest:      { label: 'Грудь',          color: '#ffd34a', catKey: 'push' },
-  front_delt: { label: 'Перед. дельта',  color: '#ffc44f', catKey: 'push' },
-  mid_delt:   { label: 'Сред. дельта',   color: '#ffb347', catKey: 'push' },
-  triceps:    { label: 'Трицепс',        color: '#ff9f2e', catKey: 'push' },
-  // Pull — orange family
-  lats:       { label: 'Широчайшие',     color: '#ff9f2e', catKey: 'pull' },
-  biceps:     { label: 'Бицепс',         color: '#ff8a3d', catKey: 'pull' },
-  traps:      { label: 'Трапеции',       color: '#ff7933', catKey: 'pull' },
-  rear_delt:  { label: 'Задн. дельта',   color: '#ff6a2d', catKey: 'pull' },
-  // Legs — red family
-  quads:      { label: 'Квадрицепсы',    color: '#ff6d3a', catKey: 'legs' },
-  glutes:     { label: 'Ягодичные',      color: '#ff5a36', catKey: 'legs' },
-  hamstrings: { label: 'Бицепс бедра',   color: '#e1492f', catKey: 'legs' },
+  // Push — orange-red family
+  chest:      { label: 'Грудь',          color: '#ff6b35', catKey: 'push' },
+  front_delt: { label: 'Перед. дельта',  color: '#e85a2a', catKey: 'push' },
+  mid_delt:   { label: 'Сред. дельта',   color: '#d04a20', catKey: 'push' },
+  triceps:    { label: 'Трицепс',        color: '#b83a18', catKey: 'push' },
+  // Pull — blue family
+  lats:       { label: 'Широчайшие',     color: '#5ba4ff', catKey: 'pull' },
+  biceps:     { label: 'Бицепс',         color: '#4090ee', catKey: 'pull' },
+  traps:      { label: 'Трапеции',       color: '#2b77d4', catKey: 'pull' },
+  rear_delt:  { label: 'Задн. дельта',   color: '#1a5eb8', catKey: 'pull' },
+  // Legs — green family
+  quads:      { label: 'Квадрицепсы',    color: '#3affb8', catKey: 'legs' },
+  glutes:     { label: 'Ягодичные',      color: '#00e099', catKey: 'legs' },
+  hamstrings: { label: 'Бицепс бедра',   color: '#00b878', catKey: 'legs' },
 }
 
 export const MUSCLE_ORDER = [
@@ -46,7 +46,7 @@ export const MUSCLE_ORDER = [
 export const CAT_ORDER = ['push','pull','legs'] as const
 
 export const CAT_META: Record<string, { label: string; color: string }> = {
-  push: { label: 'Жим',  color: '#ffd34a' },
-  pull: { label: 'Тяга', color: '#ff9f2e' },
-  legs: { label: 'Ноги', color: '#ff5a36' },
+  push: { label: 'Жим',  color: '#ff6b35' },
+  pull: { label: 'Тяга', color: '#5ba4ff' },
+  legs: { label: 'Ноги', color: '#3affb8' },
 }

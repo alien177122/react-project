@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { access, mkdtemp, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import Database from 'better-sqlite3'
@@ -44,6 +44,41 @@ async function createTestContext() {
   }
 }
 
+async function createCustomTestContext(env: Record<string, string>) {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'gym-api-custom-'))
+  const dbPath = path.join(tempDir, 'gym.db')
+  const db = createDb({ dbPath })
+  const app = createApp({
+    env,
+    db,
+    enableStatic: false,
+  })
+
+  const server = app.listen(0, '127.0.0.1')
+  await once(server, 'listening')
+
+  const address = server.address()
+  if (!address || typeof address === 'string') throw new Error('Server did not start on a TCP port')
+
+  const baseUrl = `http://127.0.0.1:${address.port}`
+
+  return {
+    db,
+    dbPath,
+    baseUrl,
+    async close() {
+      await new Promise((resolve, reject) => {
+        server.close(error => {
+          if (error) reject(error)
+          else resolve(undefined)
+        })
+      })
+      db.close()
+      await rm(tempDir, { recursive: true, force: true })
+    },
+  }
+}
+
 async function requestJson(baseUrl: string, pathname: string, init?: RequestInit) {
   const response = await fetch(`${baseUrl}${pathname}`, init)
   const body = await response.json()
@@ -55,6 +90,20 @@ test('getServerConfig requires JWT_SECRET when NODE_ENV is not development', () 
     () => getServerConfig({ NODE_ENV: 'test' }),
     /JWT_SECRET is required/,
   )
+})
+
+test('createDb respects DB_PATH from env when dbPath is omitted', async t => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'gym-db-env-'))
+  const dbPath = path.join(tempDir, 'nested', 'gym.db')
+  const db = createDb({ env: { DB_PATH: dbPath } })
+
+  t.after(async () => {
+    db.close()
+    await rm(tempDir, { recursive: true, force: true })
+  })
+
+  db.createUser('Steve', 'hash')
+  await access(dbPath)
 })
 
 test('auth endpoints and protected user lifecycle work with validated payloads', async t => {
@@ -215,4 +264,67 @@ test('legacy stored user payload is normalized before it reaches the client', as
     ],
     trainingProgress: { completedSessions: 2 },
   })
+})
+
+test('development localhost requests bypass auth rate limiting', async t => {
+  const ctx = await createCustomTestContext({
+    NODE_ENV: 'development',
+    LOGIN_MAX_ATTEMPTS: '1',
+    AUTH_RATE_LIMIT_WINDOW_MS: '600000',
+  })
+  t.after(async () => ctx.close())
+
+  await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'squat123' }),
+  })
+
+  const wrong1 = await requestJson(ctx.baseUrl, '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'wrong-pass' }),
+  })
+
+  const wrong2 = await requestJson(ctx.baseUrl, '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'wrong-pass-again' }),
+  })
+
+  assert.equal(wrong1.response.status, 401)
+  assert.equal(wrong2.response.status, 401)
+  assert.equal(wrong2.body.error, 'Неверный пароль')
+})
+
+test('non-development auth rate limiting still blocks repeated failures', async t => {
+  const ctx = await createCustomTestContext({
+    NODE_ENV: 'test',
+    JWT_SECRET: 'test-secret',
+    LOGIN_MAX_ATTEMPTS: '1',
+    AUTH_RATE_LIMIT_WINDOW_MS: '600000',
+  })
+  t.after(async () => ctx.close())
+
+  await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'squat123' }),
+  })
+
+  const wrong1 = await requestJson(ctx.baseUrl, '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'wrong-pass' }),
+  })
+
+  const wrong2 = await requestJson(ctx.baseUrl, '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'wrong-pass-again' }),
+  })
+
+  assert.equal(wrong1.response.status, 401)
+  assert.equal(wrong2.response.status, 429)
+  assert.equal(wrong2.body.error, 'Слишком много попыток. Попробуй позже.')
 })

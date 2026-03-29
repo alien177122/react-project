@@ -1,0 +1,14 @@
+{
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@training/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@training/shared/*": [
+        "../../packages/shared/src/*"
+      ]
+    }
+  }
+}

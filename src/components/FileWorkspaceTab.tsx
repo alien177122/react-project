@@ -8,6 +8,8 @@ export default function FileWorkspaceTab({ token }: { token: string }) {
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState('')
   const [activeFile, setActiveFile] = useState('')
+  const inboxPath = data?.paths.inboxDir ?? 'workspace-files/inbox'
+  const analysisPath = data?.paths.analysisDir ?? 'workspace-files/analysis'
 
   async function refreshWorkspace() {
     setLoading(true)
@@ -111,7 +113,7 @@ export default function FileWorkspaceTab({ token }: { token: string }) {
           </>
         ) : (
           <div className="note-box" style={{ marginTop: 14 }}>
-            Для файла ещё нет анализа. Добавь файл в папку `inbox` и нажми «Анализировать всё» или «Анализ».
+            Для файла ещё нет анализа. Добавь файл в <code>{inboxPath}</code> и нажми «Анализировать всё» или «Анализ».
           </div>
         )}
       </div>
@@ -126,8 +128,9 @@ export default function FileWorkspaceTab({ token }: { token: string }) {
           <span className="section-title">Файловое Workspace</span>
         </div>
         <div className="note-box">
-          Клади файлы в папку проекта `workspace-files/inbox`. Система прочитает их, сохранит результат в
-          `workspace-files/analysis` и отдаст это в сайт через API. Для изображений подключен OCR через локальный Ollama + glm-ocr.
+          Клади файлы в <code>{inboxPath}</code>. Система прочитает их, сохранит результат в <code>{analysisPath}</code> и
+          отдаст это в сайт через API. В desktop/macOS это будет пользовательская папка приложения, в обычном web/dev режиме
+          путь останется project-relative. Для изображений подключен OCR через локальный Ollama + glm-ocr.
         </div>
         <div className="files-toolbar">
           <button className="btn" onClick={() => void handleAnalyzeAll()} disabled={analyzing}>
@@ -163,7 +166,8 @@ export default function FileWorkspaceTab({ token }: { token: string }) {
 
             {!data.files.length ? (
               <div className="note-box">
-                В `workspace-files/inbox` пока пусто. Добавь туда `.txt`, `.md`, `.json`, `.csv`, изображения или PDF.
+                В <code>{inboxPath}</code> пока пусто. Добавь туда <code>.txt</code>, <code>.md</code>, <code>.json</code>,
+                <code>.csv</code>, изображения или PDF.
               </div>
             ) : (
               <div className="files-grid">

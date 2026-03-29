@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { getServerConfig } from './config.js'
 import { createDb } from './db.js'
-import { analyzeWorkspaceFile, analyzeWorkspaceFiles, ensureFileWorkspace, listWorkspaceFiles } from './file-workspace.js'
+import { createFileWorkspace } from './file-workspace.js'
 import { normalizeStoredUserData, normalizeUserData } from './schema.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -24,6 +24,16 @@ function requestIp(req) {
   return req.ip || req.socket.remoteAddress || '127.0.0.1'
 }
 
+function isLoopbackIp(ip) {
+  const normalized = ip.trim().toLowerCase()
+  return (
+    normalized === '127.0.0.1' ||
+    normalized === '::1' ||
+    normalized === '::ffff:127.0.0.1' ||
+    normalized === 'localhost'
+  )
+}
+
 function limitExceeded(_req, res) {
   return res.status(429).json({ error: 'Слишком много попыток. Попробуй позже.' })
 }
@@ -35,6 +45,7 @@ function makeIpLimiter(scope, limit, config) {
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     skipSuccessfulRequests: true,
+    skip: req => config.isDevelopment && isLoopbackIp(requestIp(req)),
     keyGenerator: req => `${scope}:ip:${ipKeyGenerator(requestIp(req))}`,
     handler: limitExceeded,
   })
@@ -47,6 +58,7 @@ function makeNameLimiter(scope, limit, config) {
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     skipSuccessfulRequests: true,
+    skip: req => config.isDevelopment && isLoopbackIp(requestIp(req)),
     keyGenerator: req => `${scope}:name:${normalizedName(req) || ipKeyGenerator(requestIp(req))}`,
     handler: limitExceeded,
   })
@@ -57,9 +69,14 @@ function resetLimiters(req, scope, ipLimiter, nameLimiter) {
   nameLimiter.resetKey(`${scope}:name:${normalizedName(req) || ipKeyGenerator(requestIp(req))}`)
 }
 
-export function createApp({ env = process.env, db = createDb(), enableStatic = existsSync(distDir) } = {}) {
+export function createApp({ env = process.env, db = createDb({ env }), enableStatic = existsSync(distDir) } = {}) {
   const config = getServerConfig(env)
   const app = express()
+  const fileWorkspace = createFileWorkspace({ env })
+
+  if (env.SEED_TEST_NAME && env.SEED_TEST_HASH) {
+    db.seedUser(env.SEED_TEST_NAME, env.SEED_TEST_HASH)
+  }
 
   const loginIpLimiter = makeIpLimiter('login', config.loginMaxAttempts, config)
   const loginNameLimiter = makeNameLimiter('login', config.loginMaxAttempts, config)
@@ -68,7 +85,7 @@ export function createApp({ env = process.env, db = createDb(), enableStatic = e
 
   app.use(cors())
   app.use(express.json())
-  void ensureFileWorkspace()
+  void fileWorkspace.ensureWorkspace()
 
   function authAny(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1]
@@ -144,16 +161,16 @@ export function createApp({ env = process.env, db = createDb(), enableStatic = e
   })
 
   app.get('/api/files/workspace', authAny, async (_req, res) => {
-    res.json(await listWorkspaceFiles())
+    res.json(await fileWorkspace.listFiles())
   })
 
   app.post('/api/files/workspace/analyze', authAny, async (_req, res) => {
-    res.json(await analyzeWorkspaceFiles())
+    res.json(await fileWorkspace.analyzeAllFiles())
   })
 
   app.post('/api/files/workspace/analyze/:name', authAny, async (req, res) => {
-    await analyzeWorkspaceFile(req.params.name)
-    res.json(await listWorkspaceFiles())
+    await fileWorkspace.analyzeFile(req.params.name)
+    res.json(await fileWorkspace.listFiles())
   })
 
   if (enableStatic) {

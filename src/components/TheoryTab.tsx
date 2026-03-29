@@ -1,10 +1,8 @@
 import {
   MTOR_CONCEPTS,
-  MTOR_REQUEST_OPTIONS,
-  MTOR_SITE_UPGRADE,
-  MTOR_VIDEO_CONTEXT,
   THEORY_CONCEPTS,
   SUPPLEMENT_TIERS,
+  MECHANICAL_CONCEPTS,
 } from '../data/theory'
 
 // ============================================================
@@ -39,20 +37,6 @@ export default function TheoryTab() {
           <span className="section-num">02</span>
           <span className="section-title">mTOR и анаболический отклик</span>
         </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          {MTOR_VIDEO_CONTEXT}
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          Чтобы собрать точный поэтапный конспект именно по ролику, нужен один из трёх входов: транскрипт, аудио/видео файл или ссылка на уже скачанное видео.
-        </div>
-        <div className="theory-grid" style={{ marginBottom: 24 }}>
-          {MTOR_REQUEST_OPTIONS.map((option, i) => (
-            <div key={i} className="theory-card" style={{ borderLeft: '3px solid #ff9f40' }}>
-              <div className="theory-card-title">{option.title}</div>
-              <div className="theory-card-body">{option.body}</div>
-            </div>
-          ))}
-        </div>
         <div className="theory-grid">
           {MTOR_CONCEPTS.map((concept, i) => (
             <div key={i} className="theory-card">
@@ -74,16 +58,6 @@ export default function TheoryTab() {
                 )}
               </div>
             </div>
-          ))}
-        </div>
-        <div className="note-box" style={{ marginTop: 24 }}>
-          Если появится транскрипт или сам ролик, этот раздел можно расширить до формата мини-главы для сайта:
-          <br />
-          {MTOR_SITE_UPGRADE.map((item, i) => (
-            <span key={item}>
-              {i === 0 ? '· ' : ' · '}
-              {item}
-            </span>
           ))}
         </div>
       </div>
@@ -280,10 +254,31 @@ export default function TheoryTab() {
         </div>
       </div>
 
-      {/* ── Секция 7: источники ────────────────────────────── */}
+      {/* ── Секция 7: механическое преимущество ─────────── */}
       <div className="section">
         <div className="section-header">
           <span className="section-num">07</span>
+          <span className="section-title">Механическое преимущество</span>
+        </div>
+        <div className="note-box" style={{ marginBottom: 24 }}>
+          Сила — это не только мышцы, но и рычаги. Плохой результат в движении не всегда означает
+          плохую подготовку: часто это вопрос антропометрии и механики. Понимание этого даёт быстрый
+          рост результата даже без роста мышечной массы.
+        </div>
+        <div className="theory-grid">
+          {MECHANICAL_CONCEPTS.map((c, i) => (
+            <div key={i} className="theory-card">
+              <div className="theory-card-title">{c.title}</div>
+              <div className="theory-card-body">{c.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Секция 8: источники ────────────────────────────── */}
+      <div className="section">
+        <div className="section-header">
+          <span className="section-num">08</span>
           <span className="section-title">Источники</span>
         </div>
         <div className="note-box">

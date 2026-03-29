@@ -3,10 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "packages/*",
+    "training-app-mobile"
+  ],
+  "main": "desktop/main.cjs",
   "scripts": {
     "dev": "vite",
     "server": "node server/index.js",
     "build": "tsc -b && vite build",
+    "desktop": "node scripts/desktop-dev.mjs",
+    "desktop:dir": "node scripts/desktop-build.mjs --dir",
+    "desktop:pack": "node scripts/desktop-build.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server/index.js",
@@ -28,6 +36,7 @@
     "test": "node --test --experimental-strip-types tests/**/*.test.ts"
   },
   "dependencies": {
+    "@training/shared": "0.1.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.6.2",
     "cors": "^2.8.6",
@@ -46,6 +55,8 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "electron": "^41.1.0",
+    "electron-builder": "^26.8.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -54,5 +65,29 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"
+  },
+  "build": {
+    "appId": "com.stevegordiyenko.trainingcalculator",
+    "productName": "Training Calculator",
+    "directories": {
+      "output": "desktop-dist"
+    },
+    "files": [
+      "dist/**/*",
+      "server/**/*",
+      "desktop/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.healthcare-fitness",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
   }
 }

@@ -5,9 +5,12 @@
     "scheme": "training-app-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "newArchEnabled": true,
     "userInterfaceStyle": "dark",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-asset",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,0 +1,21 @@
+{
+  "name": "@training/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types/index.ts",
+    "./data/exercises": "./src/data/exercises.ts",
+    "./data/muscles": "./src/data/muscles.ts",
+    "./data/rpe-rir-cards": "./src/data/rpe-rir-cards.ts",
+    "./data/theory": "./src/data/theory.ts",
+    "./utils/calc": "./src/utils/calc.ts",
+    "./utils/geometry": "./src/utils/geometry.ts",
+    "./utils/muscles": "./src/utils/muscles.ts",
+    "./utils/training": "./src/utils/training.ts",
+    "./hooks/useCalculatorState": "./src/hooks/useCalculatorState.ts",
+    "./hooks/useTrainingProgram": "./src/hooks/useTrainingProgram.ts"
+  }
+}

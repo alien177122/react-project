@@ -1,10 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useState } from 'react'
 import type { UserData } from '../types'
+import { clearStoredSession, loadStoredSession, saveStoredSession } from '../utils/sessionStorage'
 import { apiAuth, loadUser } from '../utils/api'
-
-const TOKEN_KEY = 'gym_token'
-const USERNAME_KEY = 'gym_user_name'
 
 export function useAuthSession() {
   const [token, setToken] = useState('')
@@ -24,14 +21,11 @@ export function useAuthSession() {
 
     async function restoreSession() {
       try {
-        const entries = await AsyncStorage.multiGet([TOKEN_KEY, USERNAME_KEY])
+        const storedSession = await loadStoredSession()
         if (cancelled) return
 
-        const storedToken = entries.find(([key]) => key === TOKEN_KEY)?.[1] ?? ''
-        const storedUserName = entries.find(([key]) => key === USERNAME_KEY)?.[1] ?? ''
-
-        setToken(storedToken)
-        setUserName(storedUserName)
+        setToken(storedSession.token)
+        setUserName(storedSession.userName)
       } finally {
         if (!cancelled) setSessionLoading(false)
       }
@@ -57,7 +51,7 @@ export function useAuthSession() {
         return
       }
 
-      await AsyncStorage.multiRemove([TOKEN_KEY, USERNAME_KEY])
+      await clearStoredSession()
       if (cancelled) return
 
       setToken('')
@@ -96,10 +90,7 @@ export function useAuthSession() {
     const nextToken = result.token ?? ''
     const nextUserName = result.name ?? name
 
-    await AsyncStorage.multiSet([
-      [TOKEN_KEY, nextToken],
-      [USERNAME_KEY, nextUserName],
-    ])
+    await saveStoredSession(nextToken, nextUserName)
 
     setToken(nextToken)
     setUserName(nextUserName)
@@ -109,7 +100,7 @@ export function useAuthSession() {
   }
 
   async function handleLogout() {
-    await AsyncStorage.multiRemove([TOKEN_KEY, USERNAME_KEY])
+    await clearStoredSession()
     setToken('')
     setUserName('')
     setUserData(null)

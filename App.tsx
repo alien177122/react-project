@@ -13,7 +13,6 @@ import VolumeDonut from './src/components/VolumeDonut'
 import ProgressionBlock from './src/components/ProgressionBlock'
 import TrainingDayCard from './src/components/TrainingDayCard'
 import ExerciseWheel from './src/components/ExerciseWheel'
-import FileWorkspaceTab from './src/components/FileWorkspaceTab'
 import { useAuthSession } from './src/hooks/useAuthSession'
 import { useCalculatorState } from './src/hooks/useCalculatorState'
 import { useTrainingProgram } from './src/hooks/useTrainingProgram'
@@ -44,7 +43,7 @@ function App() {
     handleLogout: logout,
   } = useAuthSession()
 
-  const [activeTab, setActiveTab] = useState<'calculator' | 'training' | 'theory' | 'files'>('calculator')
+  const [activeTab, setActiveTab] = useState<'calculator' | 'training' | 'theory'>('calculator')
 
   const {
     selectedExercise,
@@ -195,10 +194,6 @@ function App() {
         <button className={`tab-btn${activeTab === 'theory' ? ' tab-active' : ''}`}
           onClick={() => setActiveTab('theory')}>
           Теория
-        </button>
-        <button className={`tab-btn${activeTab === 'files' ? ' tab-active' : ''}`}
-          onClick={() => setActiveTab('files')}>
-          Файлы
         </button>
       </div>
 
@@ -361,7 +356,6 @@ function App() {
       {activeTab === 'theory' && <TheoryTab />}
 
       {/* ====== FILES TAB ====== */}
-      {activeTab === 'files' && <FileWorkspaceTab token={token} />}
 
       {/* ====== TRAINING TAB ====== */}
       {activeTab === 'training' && (

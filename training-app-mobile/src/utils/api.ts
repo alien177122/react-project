@@ -1,4 +1,5 @@
 import Constants from 'expo-constants'
+import { EXERCISES } from '../data/exercises'
 import type { FileWorkspaceResponse, UserData } from '../types'
 
 const extra = Constants.expoConfig?.extra as { apiUrl?: string } | undefined
@@ -36,7 +37,7 @@ function normalizeLoadedUser(input: unknown, fallbackName: string): UserData {
 
       const exerciseKey = typeof exercise.exerciseKey === 'string' ? exercise.exerciseKey.trim() : ''
       const date = typeof exercise.date === 'string' ? exercise.date.trim() : ''
-      if (!exerciseKey || !date) return []
+      if (!exerciseKey || !date || !EXERCISES[exerciseKey]) return []
 
       const testWeight = positiveNumber(exercise.testWeight)
       const testReps = positiveInteger(exercise.testReps)

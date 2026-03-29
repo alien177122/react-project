@@ -1,87 +1,275 @@
-import { Pressable, Text, View } from 'react-native'
-import { InfoCard } from '../../src/components/InfoCard'
+import { StyleSheet, Text, View } from 'react-native'
 import { ScreenLayout } from '../../src/components/ScreenLayout'
+import TrainingDayCard from '../../src/components/TrainingDayCard'
+import { ActionButton } from '../../src/components/ui/ActionButton'
+import { SectionBlock } from '../../src/components/ui/SectionBlock'
+import { EX_COUNT, TRAINING_DAYS } from '../../src/data/exercises'
 import { useTrainingProgram } from '../../src/hooks/useTrainingProgram'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 import { theme } from '../../src/theme'
 
 export default function TrainingScreen() {
-  const { token, userData, setUserData, handleLogout } = useAuthSessionContext()
+  const { token, userData, setUserData } = useAuthSessionContext()
   const {
+    allSaved,
+    missingExercises,
     completedSessions,
     currentDayIdx,
     currentWeekIdx,
+    programDone,
+    nextSessions,
+    nextDayIdx,
+    nextWeekIdx,
     completedMicrocycle,
     isMicrocycleBreak,
+    currentTrainingExercises,
+    nextTrainingExercises,
     handleComplete,
     handleReset,
+    setRestDismissed,
   } = useTrainingProgram({ token, userData, setUserData })
 
   return (
     <ScreenLayout
       label="Training"
-      title="Логика прогрессии уже живая"
-      subtitle="Этот экран пока без финального UI, но сам счётчик тренировок и микрoциклов уже работает на мобильном слое."
+      title="Тренировочный цикл"
+      subtitle="Текущая тренировка, прогресс программы и окно отдыха между микроциклами теперь повторяют веб-логику."
     >
-      <InfoCard accentColor={theme.colors.green} title="Прогресс цикла">
-        <View style={{ rowGap: 10 }}>
-          <Text style={{ color: theme.colors.text, fontSize: 15 }}>Завершено тренировок: {completedSessions}</Text>
-          <Text style={{ color: theme.colors.text, fontSize: 15 }}>Текущий день: {currentDayIdx + 1}</Text>
-          <Text style={{ color: theme.colors.text, fontSize: 15 }}>Текущая неделя: {currentWeekIdx + 1}</Text>
-          <Text style={{ color: theme.colors.text, fontSize: 15 }}>Завершённый микроцикл: {completedMicrocycle || 0}</Text>
-          <Text style={{ color: theme.colors.orange, fontSize: 15 }}>
-            {isMicrocycleBreak ? 'Сейчас окно отдыха между микроциклами' : 'Рабочий режим'}
+      {!allSaved ? (
+        <View style={styles.lockedView}>
+          <Text style={styles.lockedIcon}>🔒</Text>
+          <Text style={styles.lockedTitle}>Введи 1ПМ для всех упражнений</Text>
+          <Text style={styles.lockedDesc}>
+            Вкладка тренировки станет доступна, когда рассчитаны 1ПМ для всех {EX_COUNT} упражнений.
           </Text>
+          <View style={styles.lockedMissing}>
+            {missingExercises.map((name) => (
+              <Text key={name} style={styles.lockedItem}>— {name}</Text>
+            ))}
+          </View>
         </View>
-      </InfoCard>
+      ) : programDone ? (
+        <SectionBlock num="01" title="Программа завершена">
+          <View style={styles.completeCard}>
+            <Text style={styles.completeIcon}>🏆</Text>
+            <Text style={styles.completeTitle}>8 недель пройдено</Text>
+            <Text style={styles.completeStat}>{completedSessions} тренировок · 8 недель · 3 дня</Text>
+            <Text style={styles.completeDesc}>
+              Пересчитай 1ПМ по контрольным подходам и начни новый цикл.
+            </Text>
+            <ActionButton label="Начать новый цикл" onPress={handleReset} />
+          </View>
+        </SectionBlock>
+      ) : (
+        <>
+          <View style={styles.progressWrap}>
+            <View style={styles.progressLabel}>
+              <Text style={styles.progressText}>Прогресс программы</Text>
+              <Text style={styles.progressText}>{completedSessions} / 24 тренировок</Text>
+            </View>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${(completedSessions / 24) * 100}%` }]} />
+            </View>
+          </View>
 
-      <InfoCard title="Smoke actions" subtitle="Временные кнопки для проверки, что state и сохранение на API связаны корректно.">
-        <View style={{ columnGap: 12, flexDirection: 'row' }}>
-          <Pressable onPress={handleComplete} style={({ pressed }) => [buttonStyles.primary, pressed ? buttonStyles.pressed : null]}>
-            <Text style={buttonStyles.primaryText}>+1 тренировка</Text>
-          </Pressable>
-          <Pressable onPress={handleReset} style={({ pressed }) => [buttonStyles.ghost, pressed ? buttonStyles.pressed : null]}>
-            <Text style={buttonStyles.ghostText}>Сбросить</Text>
-          </Pressable>
-        </View>
-      </InfoCard>
+          {isMicrocycleBreak ? (
+            <SectionBlock num="01" title={`Завершён ${completedMicrocycle}-й микроцикл`}>
+              <View style={styles.restCard}>
+                <Text style={styles.restIcon}>🎉</Text>
+                <Text style={styles.restTitle}>Праздник! Время отдохнуть</Text>
+                <Text style={styles.restSubtitle}>
+                  {completedMicrocycle}-й микроцикл из 8 пройден — {completedSessions} тренировок позади
+                </Text>
+                <View style={styles.restRec}>
+                  <Text style={styles.restRecTitle}>Рекомендации на 4–8 дней</Text>
+                  <Text style={styles.restList}>• Полный отдых от силовых тренировок</Text>
+                  <Text style={styles.restList}>• Поддерживай лёгкое кардио: ходьба, бег, велосипед</Text>
+                  <Text style={styles.restList}>• Следи за сном и питанием</Text>
+                  <Text style={styles.restList}>• Мобилизация и растяжка — без фанатизма</Text>
+                </View>
+                <Text style={styles.restNext}>
+                  Следующий микроцикл: <Text style={styles.restNextStrong}>{completedMicrocycle + 1}-й</Text> · День 1 · {TRAINING_DAYS[0].name}
+                </Text>
+              </View>
+              <ActionButton label="Начать следующий микроцикл" onPress={() => setRestDismissed(true)} />
+            </SectionBlock>
+          ) : (
+            <>
+              <SectionBlock num="01" title="Текущая тренировка">
+                <TrainingDayCard
+                  dayDef={TRAINING_DAYS[currentDayIdx]}
+                  weekIndex={currentWeekIdx}
+                  exercises={currentTrainingExercises}
+                />
+                <ActionButton label="Завершить тренировку" onPress={handleComplete} />
+              </SectionBlock>
 
-      <InfoCard title="Сессия">
-        <Pressable onPress={() => void handleLogout()} style={({ pressed }) => [buttonStyles.ghost, pressed ? buttonStyles.pressed : null]}>
-          <Text style={buttonStyles.ghostText}>Выйти из мобильной сессии</Text>
-        </Pressable>
-      </InfoCard>
+              {nextSessions < 24 ? (
+                <SectionBlock num="02" title="Следующая тренировка">
+                  <Text style={styles.previewLabel}>Предпросмотр</Text>
+                  <TrainingDayCard
+                    dayDef={TRAINING_DAYS[nextDayIdx]}
+                    weekIndex={nextWeekIdx}
+                    exercises={nextTrainingExercises}
+                    isPreview
+                  />
+                </SectionBlock>
+              ) : null}
+            </>
+          )}
+        </>
+      )}
     </ScreenLayout>
   )
 }
 
-const buttonStyles = {
-  primary: {
-    alignItems: 'center' as const,
-    backgroundColor: theme.colors.accent,
-    borderRadius: theme.radius.md,
-    flex: 1,
-    paddingVertical: 14,
-  },
-  primaryText: {
-    color: '#111111',
-    fontSize: 15,
-    fontWeight: '800' as const,
-  },
-  ghost: {
-    alignItems: 'center' as const,
+const styles = StyleSheet.create({
+  lockedView: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
     borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.lg,
     borderWidth: 1,
-    flex: 1,
-    paddingVertical: 14,
+    padding: theme.spacing.xl,
+    rowGap: 14,
   },
-  ghostText: {
+  lockedIcon: {
+    fontSize: 40,
+  },
+  lockedTitle: {
+    color: theme.colors.text,
+    fontSize: 24,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  lockedDesc: {
+    color: theme.colors.muted,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  lockedMissing: {
+    rowGap: 8,
+    width: '100%',
+  },
+  lockedItem: {
     color: theme.colors.text,
     fontSize: 15,
-    fontWeight: '700' as const,
   },
-  pressed: {
-    opacity: 0.85,
+  completeCard: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    padding: theme.spacing.xl,
+    rowGap: 12,
   },
-}
+  completeIcon: {
+    fontSize: 44,
+  },
+  completeTitle: {
+    color: theme.colors.text,
+    fontSize: 28,
+    fontWeight: '800',
+  },
+  completeStat: {
+    color: theme.colors.orange,
+    fontFamily: 'Courier',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  completeDesc: {
+    color: theme.colors.muted,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  progressWrap: {
+    rowGap: 10,
+  },
+  progressLabel: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  progressText: {
+    color: theme.colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  progressBar: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: 999,
+    borderWidth: 1,
+    height: 10,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    backgroundColor: theme.colors.accent,
+    height: '100%',
+  },
+  restCard: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    padding: theme.spacing.lg,
+    rowGap: theme.spacing.md,
+  },
+  restIcon: {
+    fontSize: 36,
+  },
+  restTitle: {
+    color: theme.colors.text,
+    fontSize: 26,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  restSubtitle: {
+    color: theme.colors.muted,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  restRec: {
+    backgroundColor: 'rgba(58,255,184,0.08)',
+    borderColor: 'rgba(58,255,184,0.18)',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    padding: theme.spacing.md,
+    rowGap: 8,
+    width: '100%',
+  },
+  restRecTitle: {
+    color: theme.colors.green,
+    fontSize: 16,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  restList: {
+    color: theme.colors.text,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  restNext: {
+    color: theme.colors.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+  restNextStrong: {
+    color: theme.colors.text,
+    fontWeight: '800',
+  },
+  previewLabel: {
+    color: theme.colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+})

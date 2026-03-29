@@ -22,6 +22,6 @@ test('volume classes and colors stay aligned', () => {
   assert.equal(volumeClass(28), 'v-hi')
   assert.equal(volumeClass(20), 'v-md')
   assert.equal(volumeClass(16), 'v-lo')
-  assert.equal(barColor(28), 'var(--accent,#ff6b35)')
+  assert.equal(barColor(28), '#ff6b35')
   assert.equal(barColor(16), '#ff4d4d')
 })

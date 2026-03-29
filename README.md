@@ -13,6 +13,42 @@ API server only:
 JWT_SECRET='your-secret' npm run server
 ```
 
+## macOS desktop
+
+`training-app-mobile` остаётся Expo/iOS/Android контуром. Для macOS теперь используется desktop shell над текущим адаптивным веб-клиентом, потому что этот путь переиспользует готовый UI и backend без переписывания проекта под `react-native-macos`.
+
+Локальный desktop dev:
+
+```sh
+npm install
+npm run desktop
+```
+
+Что делает `npm run desktop`:
+
+- поднимает backend на `http://127.0.0.1:3001`
+- поднимает Vite renderer на `http://127.0.0.1:5173`
+- открывает Electron window для macOS
+
+Сборка desktop-приложения:
+
+```sh
+npm run desktop:pack
+```
+
+Быстрая проверка без финального DMG:
+
+```sh
+npm run desktop:dir
+```
+
+Артефакты появятся в `desktop-dist/`.
+
+Пути данных в packaged desktop:
+
+- SQLite база: `~/Library/Application Support/Training Calculator/data/gym.db`
+- файловое workspace: `~/Library/Application Support/Training Calculator/workspace-files`
+
 ## Docker
 
 Prepare Docker env:

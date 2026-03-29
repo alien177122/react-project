@@ -4,7 +4,12 @@ import { fileURLToPath } from 'url'
 import { dirname, join, resolve } from 'path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const defaultDbPath = join(__dirname, '..', 'gym.db')
+const fallbackDbPath = join(__dirname, '..', 'gym.db')
+
+function getDefaultDbPath(env = process.env) {
+  const configuredDbPath = env.DB_PATH?.trim()
+  return configuredDbPath || fallbackDbPath
+}
 
 function safeParseUserData(raw) {
   try {
@@ -15,8 +20,8 @@ function safeParseUserData(raw) {
   }
 }
 
-export function createDb({ dbPath = defaultDbPath } = {}) {
-  const resolvedDbPath = resolve(dbPath || defaultDbPath)
+export function createDb({ dbPath, env = process.env } = {}) {
+  const resolvedDbPath = resolve(dbPath || getDefaultDbPath(env))
   mkdirSync(dirname(resolvedDbPath), { recursive: true })
 
   const db = new Database(resolvedDbPath)
@@ -32,6 +37,12 @@ export function createDb({ dbPath = defaultDbPath } = {}) {
     getUserAuth: name => db.prepare('SELECT name, password_hash FROM users WHERE name = ?').get(name),
     createUser: (name, hash) =>
       db.prepare('INSERT INTO users (name, password_hash, data) VALUES (?, ?, ?)').run(name, hash, '{}'),
+    seedUser: (name, hash) => {
+      const exists = db.prepare('SELECT 1 FROM users WHERE name = ?').get(name)
+      if (!exists) {
+        db.prepare('INSERT INTO users (name, password_hash, data) VALUES (?, ?, ?)').run(name, hash, '{}')
+      }
+    },
     getUser: name => {
       const row = db.prepare('SELECT data FROM users WHERE name = ?').get(name)
       return row ? safeParseUserData(row.data) : null

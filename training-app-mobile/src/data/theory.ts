@@ -1,1 +1,1 @@
-export * from '@training/shared/data/theory'
+export * from '../../../packages/shared/src/data/theory'

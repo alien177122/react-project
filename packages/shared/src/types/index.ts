@@ -4,6 +4,14 @@
 
 export interface WeekScheme { sets: number; reps: number }
 
+export interface WarmupSet {
+  label: string
+  weight: number
+  reps: number
+  rest: string
+  purpose: string
+}
+
 export interface ExerciseConfig {
   name: string
   type: 'A' | 'B' | 'C' | 'D'

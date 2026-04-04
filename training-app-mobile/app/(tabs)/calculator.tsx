@@ -6,10 +6,55 @@ import VolumeDonut from '../../src/components/VolumeDonut'
 import { ActionButton } from '../../src/components/ui/ActionButton'
 import { SectionBlock } from '../../src/components/ui/SectionBlock'
 import { EXERCISES, EX_COUNT, TYPE_LABELS } from '../../src/data/exercises'
+import { getExerciseNote, getFormulaLabel } from '../../src/data/exerciseNotes'
 import { useCalculatorState } from '../../src/hooks/useCalculatorState'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 import { theme } from '../../src/theme'
 import { calcWorkingWeight } from '../../src/utils/calc'
+
+interface ExerciseNoteBoxProps {
+  exerciseKey: string
+  testWeight: number
+  testReps: number
+  oneRM: number
+  exerciseType: string
+}
+
+function ExerciseNoteBox({ exerciseKey, testWeight, testReps, oneRM, exerciseType }: ExerciseNoteBoxProps) {
+  const note = getExerciseNote(exerciseKey, exerciseType)
+  const formulaLabel = getFormulaLabel(testReps)
+
+  return (
+    <View style={noteBoxStyles.container}>
+      <View style={noteBoxStyles.row}>
+        <Text style={noteBoxStyles.label}>Откуда взят 1ПМ</Text>
+        <Text style={noteBoxStyles.body}>
+          Из теста{' '}
+          <Text style={noteBoxStyles.code}>{testWeight} кг × {testReps} повт</Text>
+          {' '}по формуле ({formulaLabel}) получается{' '}
+          <Text style={noteBoxStyles.strong}>{oneRM} кг</Text>.
+        </Text>
+      </View>
+
+      <View style={noteBoxStyles.divider} />
+
+      <View style={noteBoxStyles.row}>
+        <Text style={noteBoxStyles.label}>Почему такая схема</Text>
+        <Text style={noteBoxStyles.body}>{note.schemeRationale}</Text>
+      </View>
+
+      {note.practicalTip ? (
+        <>
+          <View style={noteBoxStyles.divider} />
+          <View style={noteBoxStyles.row}>
+            <Text style={noteBoxStyles.label}>Практический момент</Text>
+            <Text style={noteBoxStyles.body}>{note.practicalTip}</Text>
+          </View>
+        </>
+      ) : null}
+    </View>
+  )
+}
 
 export default function CalculatorScreen() {
   const { token, userName, userData, setUserData, handleLogout } = useAuthSessionContext()
@@ -174,6 +219,14 @@ export default function CalculatorScreen() {
               Неделя 5 — волновой откат: вес слегка снижается, объём восстанавливается. Нажимай на строки прогрессии, чтобы подсветить соответствующую неделю в графике.
             </Text>
           </View>
+
+          <ExerciseNoteBox
+            exerciseKey={activeResult.exerciseKey}
+            testWeight={activeResult.testWeight}
+            testReps={activeResult.testReps}
+            oneRM={activeResult.oneRM}
+            exerciseType={config.type}
+          />
         </SectionBlock>
       ) : null}
 
@@ -403,5 +456,47 @@ const styles = StyleSheet.create({
     fontFamily: 'Courier',
     fontSize: 15,
     fontWeight: '800',
+  },
+})
+
+const noteBoxStyles = StyleSheet.create({
+  container: {
+    backgroundColor: '#110d18',
+    borderColor: '#2a1a38',
+    borderLeftColor: theme.colors.accent,
+    borderLeftWidth: 3,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.md,
+    rowGap: theme.spacing.md,
+  },
+  row: {
+    rowGap: 6,
+  },
+  label: {
+    color: theme.colors.accent,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  body: {
+    color: '#b090c0',
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  strong: {
+    color: theme.colors.text,
+    fontWeight: '700',
+  },
+  code: {
+    color: '#e080c8',
+    fontFamily: 'Courier',
+    fontSize: 12,
+  },
+  divider: {
+    backgroundColor: '#2a1a38',
+    height: 1,
   },
 })

@@ -1,17 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { useState } from 'react'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { theme } from '../theme'
-import type { TrainingDayDef, WeekScheme } from '../types'
-import { volumeClass } from '../utils/calc'
-
-interface TrainingExerciseRow {
-  key: string
-  name: string
-  weight: number
-  scheme: WeekScheme
-  totalReps: number
-  isPullup?: boolean
-  extraWeight?: number
-}
+import type { TrainingDayDef } from '../types'
+import type { TrainingExerciseRow } from '../utils/training'
+import { calcWarmupSets, volumeClass } from '../utils/calc'
 
 interface TrainingDayCardProps {
   dayDef: TrainingDayDef
@@ -33,6 +25,18 @@ export default function TrainingDayCard({
   exercises,
   isPreview = false,
 }: TrainingDayCardProps) {
+  const [showWarmup, setShowWarmup] = useState(false)
+
+  const warmupExercises = isPreview
+    ? []
+    : exercises.filter((ex) => {
+        if (ex.isPullup) return false
+        return calcWarmupSets(ex.weight, {
+          type: ex.exerciseType,
+          warmupStep: ex.warmupStep,
+        } as Parameters<typeof calcWarmupSets>[1]).length > 0
+      })
+
   return (
     <View style={[styles.card, isPreview ? styles.cardPreview : null]}>
       <View style={styles.head}>
@@ -66,6 +70,64 @@ export default function TrainingDayCard({
           </View>
         ))}
       </View>
+
+      {warmupExercises.length > 0 ? (
+        <>
+          <Pressable
+            onPress={() => setShowWarmup((v) => !v)}
+            style={({ pressed }) => [styles.warmupToggle, pressed ? styles.warmupTogglePressed : null]}
+          >
+            <Text style={styles.warmupToggleLabel}>РАЗМИНКА</Text>
+            <Text style={styles.warmupToggleChevron}>{showWarmup ? '▲' : '▼'}</Text>
+          </Pressable>
+
+          {showWarmup ? (
+            <View style={styles.warmupSection}>
+              {warmupExercises.map((exercise) => {
+                const warmupSets = calcWarmupSets(exercise.weight, {
+                  type: exercise.exerciseType,
+                  warmupStep: exercise.warmupStep,
+                } as Parameters<typeof calcWarmupSets>[1])
+
+                return (
+                  <View key={exercise.key} style={styles.warmupGroup}>
+                    <Text style={styles.warmupGroupName}>{exercise.name}</Text>
+
+                    <View style={styles.warmupTableHead}>
+                      <Text style={[styles.warmupHeadCell, styles.warmupColLabel]}>Подход</Text>
+                      <Text style={[styles.warmupHeadCell, styles.warmupColWeight]}>Вес</Text>
+                      <Text style={styles.warmupHeadCell}>Повт</Text>
+                      <Text style={styles.warmupHeadCell}>Отдых</Text>
+                    </View>
+
+                    {warmupSets.map((set) => (
+                      <View key={set.label} style={styles.warmupRow}>
+                        <Text style={[styles.warmupCell, styles.warmupColLabel]}>{set.label}</Text>
+                        <Text style={[styles.warmupCell, styles.warmupColWeight, styles.warmupWeightText]}>
+                          {set.weight.toFixed(1)}
+                        </Text>
+                        <Text style={styles.warmupCell}>{set.reps}</Text>
+                        <Text style={[styles.warmupCell, styles.warmupRestText]}>{set.rest}</Text>
+                      </View>
+                    ))}
+
+                    <View style={[styles.warmupRow, styles.warmupWorkingRow]}>
+                      <Text style={[styles.warmupCell, styles.warmupColLabel, styles.warmupAccentText]}>
+                        Рабоч. ×{exercise.scheme.sets}
+                      </Text>
+                      <Text style={[styles.warmupCell, styles.warmupColWeight, styles.warmupWeightText, styles.warmupAccentText]}>
+                        {exercise.weight.toFixed(1)}
+                      </Text>
+                      <Text style={[styles.warmupCell, styles.warmupAccentText]}>{exercise.scheme.reps}</Text>
+                      <Text style={[styles.warmupCell, styles.warmupRestText, styles.warmupAccentText]}>3–4 мин</Text>
+                    </View>
+                  </View>
+                )
+              })}
+            </View>
+          ) : null}
+        </>
+      ) : null}
     </View>
   )
 }
@@ -147,5 +209,104 @@ const styles = StyleSheet.create({
   numericCell: {
     fontFamily: 'Courier',
     textAlign: 'center',
+  },
+
+  // Warmup toggle
+  warmupToggle: {
+    alignItems: 'center',
+    borderTopColor: theme.colors.border,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 10,
+  },
+  warmupTogglePressed: {
+    backgroundColor: theme.colors.card,
+  },
+  warmupToggleLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+  },
+  warmupToggleChevron: {
+    color: theme.colors.muted,
+    fontSize: 10,
+  },
+
+  // Warmup expanded
+  warmupSection: {
+    borderTopColor: theme.colors.border,
+    borderTopWidth: 1,
+  },
+  warmupGroup: {
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    paddingBottom: 4,
+    paddingTop: theme.spacing.sm,
+  },
+  warmupGroupName: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1,
+    paddingBottom: 6,
+    paddingHorizontal: theme.spacing.md,
+    textTransform: 'uppercase',
+  },
+  warmupTableHead: {
+    columnGap: 6,
+    flexDirection: 'row',
+    paddingBottom: 4,
+    paddingHorizontal: theme.spacing.md,
+  },
+  warmupHeadCell: {
+    color: '#444',
+    flex: 1,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.8,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  warmupColLabel: {
+    flex: 1.4,
+    textAlign: 'left',
+  },
+  warmupColWeight: {
+    flex: 1.2,
+  },
+  warmupRow: {
+    alignItems: 'center',
+    columnGap: 6,
+    flexDirection: 'row',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 7,
+  },
+  warmupWorkingRow: {
+    backgroundColor: 'rgba(255,107,53,0.07)',
+    borderTopColor: 'rgba(255,107,53,0.18)',
+    borderTopWidth: 1,
+  },
+  warmupCell: {
+    color: '#666',
+    flex: 1,
+    fontFamily: 'Courier',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  warmupWeightText: {
+    color: theme.colors.text,
+    fontWeight: '600',
+  },
+  warmupRestText: {
+    fontFamily: 'System',
+    fontSize: 11,
+  },
+  warmupAccentText: {
+    color: theme.colors.accent,
+    fontWeight: '700',
   },
 })

@@ -1,4 +1,4 @@
-import type { ExerciseConfig } from '../types/index.ts'
+import type { ExerciseConfig, WarmupSet } from '../types/index.ts'
 
 export function calc1RM(weight: number, reps: number): number {
   if (reps < 5) return weight / (1.0278 - 0.0278 * reps * 1.3)
@@ -25,4 +25,40 @@ export function barColor(t: number): string {
   if (t >= 28) return '#ff6b35'
   if (t <= 16) return '#ff4d4d'
   return '#ff9f40'
+}
+
+type WarmupTemplate = { pct: number; reps: number; rest: string; purpose: string }
+
+const WARMUP_TEMPLATES: Record<'A' | 'B' | 'C' | 'D', WarmupTemplate[]> = {
+  A: [
+    { pct: 0.27, reps: 10, rest: '1–2 мин', purpose: 'паттерн движения, активация' },
+    { pct: 0.44, reps: 8, rest: '2–3 мин', purpose: 'разгрев' },
+    { pct: 0.67, reps: 5, rest: '2–3 мин', purpose: 'подготовка к рабочим весам' },
+    { pct: 0.83, reps: 3, rest: '3–4 мин', purpose: 'активация ЦНС (~83%)' },
+  ],
+  B: [
+    { pct: 0.37, reps: 10, rest: '1–2 мин', purpose: 'паттерн движения, активация' },
+    { pct: 0.62, reps: 6, rest: '2–3 мин', purpose: 'разгрев' },
+    { pct: 0.83, reps: 3, rest: '2–3 мин', purpose: 'активация ЦНС (~83%)' },
+  ],
+  C: [
+    { pct: 0.55, reps: 10, rest: '1–2 мин', purpose: 'разгрев, активация' },
+    { pct: 0.80, reps: 6, rest: '2 мин', purpose: 'подготовка к рабочим весам' },
+  ],
+  D: [
+    { pct: 0.50, reps: 12, rest: '1–2 мин', purpose: 'разгрев, техника' },
+    { pct: 0.75, reps: 6, rest: '2 мин', purpose: 'подготовка к рабочим весам' },
+  ],
+}
+
+export function calcWarmupSets(workingWeight: number, cfg: ExerciseConfig): WarmupSet[] {
+  if (cfg.isPullup) return []
+  const templates = WARMUP_TEMPLATES[cfg.type]
+  return templates.map((t, i) => ({
+    label: `Разм ${i + 1}`,
+    weight: Math.floor((workingWeight * t.pct) / cfg.warmupStep) * cfg.warmupStep,
+    reps: t.reps,
+    rest: t.rest,
+    purpose: t.purpose,
+  }))
 }

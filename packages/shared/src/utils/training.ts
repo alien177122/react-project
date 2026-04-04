@@ -8,6 +8,8 @@ export interface TrainingExerciseRow {
   weight: number
   scheme: WeekScheme
   totalReps: number
+  exerciseType: 'A' | 'B' | 'C' | 'D'
+  warmupStep: number
   isPullup?: boolean
   extraWeight?: number
 }
@@ -43,6 +45,8 @@ export function getTrainingExercises(
       weight: totalWeight,
       scheme,
       totalReps: scheme.sets * scheme.reps,
+      exerciseType: config.type,
+      warmupStep: config.warmupStep,
       isPullup,
       extraWeight,
     }]

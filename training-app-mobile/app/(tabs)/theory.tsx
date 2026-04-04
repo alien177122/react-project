@@ -1,293 +1,576 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { ScreenLayout } from '../../src/components/ScreenLayout'
-import { SectionBlock } from '../../src/components/ui/SectionBlock'
-import { MTOR_CONCEPTS, SUPPLEMENT_TIERS, THEORY_CONCEPTS, MECHANICAL_CONCEPTS } from '../../src/data/theory'
+import { useRef, useState } from 'react'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { MECHANICAL_CONCEPTS, MTOR_CONCEPTS, SUPPLEMENT_TIERS, THEORY_CONCEPTS } from '../../src/data/theory'
+import { AccordionCard } from '../../src/components/theory/AccordionCard'
+import { CategoryPills } from '../../src/components/theory/CategoryPills'
+import { RPEScale } from '../../src/components/theory/RPEScale'
+import { ZonesChart } from '../../src/components/theory/ZonesChart'
 import { theme } from '../../src/theme'
+
+// ─── Data slices ──────────────────────────────────────────────────────────────
+
+const BASIC_CONCEPTS = THEORY_CONCEPTS.slice(0, 12)
+const CLUSTER_CONCEPTS = THEORY_CONCEPTS.slice(12, 20)
+const TENDON_CONCEPTS = THEORY_CONCEPTS.slice(20, 22)
+const PROGRESSION_CONCEPT = THEORY_CONCEPTS[22]
+
+const CATEGORIES = ['Базис', 'Кластеры', 'mTOR', 'Добавки', 'Механика'] as const
+type Category = (typeof CATEGORIES)[number]
 
 const TOP_THREE = [
   {
     num: '01',
-    color: '#ff6b35',
+    color: theme.colors.accent,
     name: 'Креатин моногидрат',
     dose: '3–5 г/сут',
-    desc: 'Самая надёжная база для силы и прогрессии у натурального атлета. Если нужен минимальный набор, отсюда логично начинать.',
+    desc: 'Самая надёжная база для силы и прогрессии у натурального атлета. Если нужен минимальный набор — отсюда.',
   },
   {
     num: '02',
-    color: '#ff9f40',
+    color: theme.colors.orange,
     name: 'Кофеин',
     dose: '~200 мг до тренировки',
-    desc: 'Поднимает концентрацию, выносливость и готовность работать тяжело. Но если кофеин бьёт по сну, сон важнее.',
+    desc: 'Поднимает концентрацию, выносливость и готовность работать тяжело. Если бьёт по сну — сон важнее.',
   },
   {
     num: '03',
-    color: '#9e9e9e',
+    color: theme.colors.muted,
     name: 'Магний бисглицинат',
     dose: '~400 мг элементарного магния',
-    desc: 'Имеет смысл при дефиците и высокой нагрузке. Это инструмент восстановления, а не волшебный бустер мышечного роста.',
+    desc: 'Имеет смысл при дефиците и высокой нагрузке. Инструмент восстановления, не бустер роста.',
   },
 ]
 
+const TENDON_PROTOCOL = [
+  {
+    title: 'Высокая интенсивность',
+    body: '85–90% ПМ: тяжёлые веса с полным контролем каждого повторения.',
+    tagColor: theme.colors.accent,
+  },
+  {
+    title: 'Низкий объём',
+    body: '5×4 повторения: много подходов, мало повторений в каждом. Сохраняет качество движения.',
+    tagColor: theme.colors.orange,
+  },
+  {
+    title: 'Время под нагрузкой',
+    body: 'Удержание 3–4 сек в пике момента: сухожилие испытывает максимальную деформацию. TUT, не отказ.',
+    tagColor: '#ff4d4d',
+  },
+  {
+    title: 'Частота',
+    body: '3 раза в неделю: достаточно для адаптации сухожилий при нормальном восстановлении.',
+    tagColor: theme.colors.blue,
+  },
+]
+
+const MTOR_SIGNALS = [
+  { label: 'Механическая\nнагрузка', sub: '80–90% ПМ', color: theme.colors.accent },
+  { label: 'Аминокислоты\n(Лейцин)', sub: '2–3 г / приём', color: theme.colors.orange },
+  { label: 'Калорийный\nпрофицит', sub: 'ATP ↑', color: theme.colors.green },
+]
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
+
 export default function TheoryScreen() {
+  const [category, setCategory] = useState<Category>('Базис')
+  const scrollRef = useRef<ScrollView>(null)
+
+  const handleCategoryChange = (cat: Category) => {
+    setCategory(cat)
+    scrollRef.current?.scrollTo({ y: 0, animated: false })
+  }
+
   return (
-    <ScreenLayout
-      label="Theory"
-      title="Теория тренинга"
-      subtitle="Основы прогрессии, mTOR, tier-лист добавок и ключевые ориентиры уже вынесены в mobile-формат."
-    >
-      <SectionBlock num="01" title="Основы тренировки">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Ключевые понятия, которые лежат в основе программы. Разберись с ними, и вся схема прогрессии станет прозрачной.
-          </Text>
-        </View>
-        <View style={styles.cardGrid}>
-          {THEORY_CONCEPTS.map((item) => (
-            <View key={item.title} style={styles.card}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardBody}>{item.body}</Text>
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.eyebrow}>Theory</Text>
+        <Text style={styles.title}>Теория тренинга</Text>
+      </View>
 
-      <SectionBlock num="02" title="mTOR и анаболический отклик">
-        <View style={styles.cardGrid}>
-          {MTOR_CONCEPTS.map((item) => (
-            <View key={item.title} style={styles.card}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardBody}>
-                <Text style={styles.cardStrong}>Определение:</Text> {item.definition}
-                {item.pattern ? `\n\nЗакономерность: ${item.pattern}` : ''}
-              </Text>
-              {item.bullets ? (
-                <View style={styles.bulletList}>
-                  {item.bullets.map((bullet) => (
-                    <Text key={bullet} style={styles.bulletItem}>• {bullet}</Text>
-                  ))}
-                </View>
-              ) : null}
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
+      <CategoryPills categories={CATEGORIES} active={category} onChange={handleCategoryChange} />
 
-      <SectionBlock num="03" title="Tier List добавок">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Смотри на список как на приоритизацию. Верхние уровни дают реальную отдачу чаще, нижние либо ситуативны, либо сильно зависят от дефицитов.
-          </Text>
-        </View>
-        <View style={styles.tierList}>
-          {SUPPLEMENT_TIERS.map((tier) => (
-            <View key={tier.tier} style={styles.tierRow}>
-              <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
-                <Text style={[styles.tierBadgeText, { color: tier.textColor }]}>{tier.tier}</Text>
-              </View>
-              <View style={styles.tierContent}>
-                <Text style={[styles.tierLabel, { color: tier.color }]}>{tier.label}</Text>
-                <View style={styles.tierItems}>
-                  {tier.items.map((item) => (
-                    <View key={item} style={styles.tierChip}>
-                      <Text style={styles.tierChipText}>{item}</Text>
-                    </View>
-                  ))}
-                </View>
-                <Text style={styles.cardBody}>{tier.note}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
-
-      <SectionBlock num="04" title="Топ-3 если выбирать">
-        <View style={styles.cardGrid}>
-          {TOP_THREE.map((item) => (
-            <View key={item.num} style={styles.card}>
-              <Text style={[styles.topNum, { color: item.color }]}>{item.num}</Text>
-              <Text style={styles.topName}>{item.name}</Text>
-              <Text style={styles.topDose}>{item.dose}</Text>
-              <Text style={styles.cardBody}>{item.desc}</Text>
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
-
-      <SectionBlock num="05" title="Таблица %ПМ и RPE">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Таблица 1: Интенсивность (% от 1ПМ), количество повторений и зоны тренировочного воздействия
-          </Text>
-        </View>
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableCell, styles.tableCellHeader]}>% ПМ</Text>
-            <Text style={[styles.tableCell, styles.tableCellHeader]}>Повт</Text>
-            <Text style={[styles.tableCell, styles.tableCellHeader]}>Зона</Text>
-          </View>
-          {[
-            { pct: '100%', reps: '1–3', zone: 'Максимум', color: '#ff6b35' },
-            { pct: '90–95%', reps: '2–5', zone: 'Сила', color: '#ff6b35' },
-            { pct: '80–89%', reps: '6–8', zone: 'Сила', color: '#ff6b35' },
-            { pct: '70–79%', reps: '8–12', zone: 'Гипертрофия', color: '#ff9f40' },
-            { pct: '65–69%', reps: '12–15', zone: 'Гипертрофия', color: '#ff9f40' },
-            { pct: '60–64%', reps: '15–20', zone: 'Выносливость', color: '#5ba4ff' },
-            { pct: '<60%', reps: '>20', zone: 'Выносливость', color: '#5ba4ff' },
-          ].map((row) => (
-            <View key={row.pct} style={styles.tableRow}>
-              <Text style={[styles.tableCell, { color: row.color, fontWeight: '700' }]}>{row.pct}</Text>
-              <Text style={styles.tableCell}>{row.reps}</Text>
-              <Text style={[styles.tableCell, { color: row.color }]}>{row.zone}</Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Таблица 2: RPE (Rate of Perceived Exertion) — шкала субъективной нагрузки от 1 до 10
-          </Text>
-        </View>
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableCell, styles.tableCellHeader]}>RPE</Text>
-            <Text style={[styles.tableCell, styles.tableCellHeader]}>В запасе</Text>
-            <Text style={[styles.tableCell, styles.tableCellHeader]}>Описание</Text>
-          </View>
-          {[
-            { rpe: '10', rirs: '0', desc: 'Максимальный отказ', color: '#ff4d4d' },
-            { rpe: '9', rirs: '~1', desc: 'Мог сделать ещё 1', color: '#ff4d4d' },
-            { rpe: '8', rirs: '~2', desc: 'Ещё 2 в запасе', color: '#ff9f40' },
-            { rpe: '7', rirs: '~3', desc: 'Ещё 3 в запасе', color: '#ff9f40' },
-            { rpe: '6', rirs: '~4', desc: 'Ещё 4 в запасе', color: '#3affb8' },
-            { rpe: '<6', rirs: '>4', desc: 'Лёгкая нагрузка', color: '#3affb8' },
-          ].map((row) => (
-            <View key={row.rpe} style={styles.tableRow}>
-              <Text style={[styles.tableCell, { color: row.color, fontWeight: '700' }]}>{row.rpe}</Text>
-              <Text style={styles.tableCell}>{row.rirs}</Text>
-              <Text style={[styles.tableCell, { color: row.color, fontSize: 13 }]}>{row.desc}</Text>
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
-
-      <SectionBlock num="06" title="Протокол укрепления сухожилий">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Сухожилия адаптируются только при деформации 4,5–6,5%, что соответствует нагрузкам &gt;70% ПМ. Протокол: 5×4 на 85–90% ПМ, 3 раза/нед, удержание ~3 сек в пике момента силы.
-          </Text>
-        </View>
-        <View style={styles.cardGrid}>
-          {[
-            {
-              num: '1',
-              color: '#ff6b35',
-              title: 'Высокая интенсивность',
-              body: '85–90% ПМ: работай на тяжёлых весах, где можешь контролировать каждое повторение.',
-            },
-            {
-              num: '2',
-              color: '#ff9f40',
-              title: 'Низкий объём',
-              body: '5×4 повторения: много подходов, но мало повторений в каждом. Это сохраняет качество.',
-            },
-            {
-              num: '3',
-              color: '#ff4d4d',
-              title: 'Время под нагрузкой',
-              body: 'Удержание 3–4 сек в пике момента: сухожилие испытывает максимальную деформацию.',
-            },
-            {
-              num: '4',
-              color: '#5ba4ff',
-              title: 'Частота',
-              body: '3 раза в неделю: достаточно для адаптации, но достаточно отдыха между сессиями.',
-            },
-          ].map((item) => (
-            <View key={item.num} style={[styles.card, { borderLeftColor: item.color, borderLeftWidth: 3 }]}>
-              <Text style={[styles.topNum, { color: item.color }]}>{item.num}</Text>
-              <Text style={styles.topName}>{item.title}</Text>
-              <Text style={styles.cardBody}>{item.body}</Text>
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
-
-      <SectionBlock num="07" title="Механическое преимущество">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Механика важнее мотивации. Один и тот же вес может быть лёгким или тяжёлым в зависимости от механики движения и твоей антропометрии.
-          </Text>
-        </View>
-        <View style={styles.cardGrid}>
-          {MECHANICAL_CONCEPTS.map((item) => (
-            <View key={item.title} style={styles.card}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardBody}>{item.body}</Text>
-            </View>
-          ))}
-        </View>
-      </SectionBlock>
-
-      <SectionBlock num="08" title="Источники">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Основной источник конспекта — материалы Evolution Yeti по RPE, сухожилиям, силовым циклам и спортивным добавкам. Этот экран задуман как справочник, а не как замена первоисточникам.
-          </Text>
-        </View>
-      </SectionBlock>
-    </ScreenLayout>
+      <ScrollView
+        ref={scrollRef}
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {category === 'Базис' && <BasicsSection />}
+        {category === 'Кластеры' && <ClustersSection />}
+        {category === 'mTOR' && <MTORSection />}
+        {category === 'Добавки' && <SupplementsSection />}
+        {category === 'Механика' && <MechanicsSection />}
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
+// ─── Category sections ────────────────────────────────────────────────────────
+
+function BasicsSection() {
+  return (
+    <View style={styles.section}>
+      <NoteBox text="Ключевые понятия, которые лежат в основе программы. Разберись с ними — и вся схема прогрессии станет прозрачной." />
+
+      {BASIC_CONCEPTS.map(item => (
+        <AccordionCard key={item.title} title={item.title} body={item.body} />
+      ))}
+
+      <SectionDivider label="Интерактивные справочники" />
+
+      <ZonesChart />
+      <RPEScale />
+
+      <SectionDivider label="Сухожилия" />
+
+      {TENDON_CONCEPTS.map(item => (
+        <AccordionCard
+          key={item.title}
+          title={item.title}
+          body={item.body}
+          tag="Сухожилия"
+          tagColor={theme.colors.blue}
+        />
+      ))}
+
+      {PROGRESSION_CONCEPT ? (
+        <AccordionCard
+          title={PROGRESSION_CONCEPT.title}
+          body={PROGRESSION_CONCEPT.body}
+          tag="Ключевой принцип"
+          tagColor={theme.colors.green}
+        />
+      ) : null}
+
+      <SourceNote />
+    </View>
+  )
+}
+
+function ClustersSection() {
+  return (
+    <View style={styles.section}>
+      <NoteBox text="Кластерный подход — сет с короткими паузами внутри (10–30 сек). Не для того чтобы облегчить, а чтобы сохранить качество повторов на высоком % от 1ПМ." />
+
+      <View style={styles.clusterFormulas}>
+        {[
+          { pct: '80–85%', scheme: '3+3 или 2+2+2' },
+          { pct: '87–92%', scheme: '2+2+1 или 1+1+1+1' },
+          { pct: '90–95%', scheme: 'Одиночки с паузой' },
+        ].map(row => (
+          <View key={row.pct} style={styles.clusterRow}>
+            <Text style={styles.clusterPct}>{row.pct}</Text>
+            <View style={styles.clusterSchemeBadge}>
+              <Text style={styles.clusterScheme}>{row.scheme}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      {CLUSTER_CONCEPTS.map(item => (
+        <AccordionCard key={item.title} title={item.title} body={item.body} />
+      ))}
+    </View>
+  )
+}
+
+function MTORSection() {
+  return (
+    <View style={styles.section}>
+      <NoteBox text="mTOR — интегратор сигналов роста. Нужно одновременно совпадение трёх условий. Если одного нет — анаболизм слабее." />
+
+      <View style={styles.flowWrap}>
+        <Text style={styles.flowHeading}>СИГНАЛЬНЫЙ КАСКАД</Text>
+
+        <View style={styles.flowInputRow}>
+          {MTOR_SIGNALS.map((signal, i) => (
+            <View key={i} style={[styles.flowInput, { borderColor: signal.color }]}>
+              <Text style={[styles.flowInputLabel, { color: signal.color }]}>{signal.label}</Text>
+              <Text style={styles.flowInputSub}>{signal.sub}</Text>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.flowMiddle}>
+          <View style={styles.flowDottedLine} />
+          <Text style={styles.flowMiddleLabel}>все три сигнала</Text>
+          <View style={styles.flowDottedLine} />
+        </View>
+
+        <View style={[styles.flowMainBox, { borderColor: theme.colors.accent }]}>
+          <Text style={[styles.flowMainTitle, { color: theme.colors.accent }]}>mTORC1</Text>
+          <Text style={styles.flowMainSub}>интегратор сигналов роста</Text>
+        </View>
+
+        <Text style={styles.flowArrow}>↓</Text>
+
+        <View style={[styles.flowOutputBox, { borderColor: theme.colors.green }]}>
+          <Text style={[styles.flowOutputTitle, { color: theme.colors.green }]}>Синтез белка ↑</Text>
+          <Text style={styles.flowOutputSub}>Гипертрофия мышц</Text>
+        </View>
+
+        <View style={[styles.ampkBox, { borderColor: '#ff4d4d' }]}>
+          <Text style={[styles.ampkTitle, { color: '#ff4d4d' }]}>Блокировка: AMPK</Text>
+          <Text style={styles.ampkDesc}>
+            Дефицит калорий → AMPK активен → mTOR подавлен → рост замедлен
+          </Text>
+        </View>
+      </View>
+
+      {MTOR_CONCEPTS.map(item => (
+        <AccordionCard
+          key={item.title}
+          title={item.title}
+          body={item.definition}
+          pattern={item.pattern}
+          bullets={item.bullets}
+        />
+      ))}
+    </View>
+  )
+}
+
+function SupplementsSection() {
+  return (
+    <View style={styles.section}>
+      <NoteBox text="Смотри как на приоритизацию. Верхние уровни — реальная отдача. Нижние либо ситуативны, либо зависят от дефицитов." />
+
+      <View style={styles.tierList}>
+        {SUPPLEMENT_TIERS.map(tier => (
+          <View key={tier.tier} style={styles.tierRow}>
+            <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
+              <Text style={[styles.tierBadgeText, { color: tier.textColor }]}>{tier.tier}</Text>
+            </View>
+            <View style={styles.tierContent}>
+              <Text style={[styles.tierLabel, { color: tier.color }]}>{tier.label}</Text>
+              <View style={styles.tierChips}>
+                {tier.items.map(item => (
+                  <View key={item} style={styles.tierChip}>
+                    <Text style={styles.tierChipText}>{item}</Text>
+                  </View>
+                ))}
+              </View>
+              <Text style={styles.tierNote}>{tier.note}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      <SectionDivider label="Топ-3 если выбирать" />
+
+      <View style={styles.topThreeList}>
+        {TOP_THREE.map(item => (
+          <View key={item.num} style={[styles.topCard, { borderLeftColor: item.color }]}>
+            <Text style={[styles.topNum, { color: item.color }]}>{item.num}</Text>
+            <View style={styles.topCardBody}>
+              <View style={styles.topNameRow}>
+                <Text style={styles.topName}>{item.name}</Text>
+                <View style={[styles.doseBadge, { borderColor: item.color }]}>
+                  <Text style={[styles.doseText, { color: item.color }]}>{item.dose}</Text>
+                </View>
+              </View>
+              <Text style={styles.topDesc}>{item.desc}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  )
+}
+
+function MechanicsSection() {
+  return (
+    <View style={styles.section}>
+      <NoteBox text="Механика важнее мотивации. Один и тот же вес может быть лёгким или тяжёлым в зависимости от твоей антропометрии и техники." />
+
+      {MECHANICAL_CONCEPTS.map(item => (
+        <AccordionCard key={item.title} title={item.title} body={item.body} />
+      ))}
+
+      <SectionDivider label="Протокол укрепления сухожилий" />
+
+      {TENDON_PROTOCOL.map(item => (
+        <AccordionCard
+          key={item.title}
+          title={item.title}
+          body={item.body}
+          tag="Протокол"
+          tagColor={item.tagColor}
+        />
+      ))}
+    </View>
+  )
+}
+
+// ─── Shared primitives ────────────────────────────────────────────────────────
+
+function NoteBox({ text }: { text: string }) {
+  return (
+    <View style={styles.noteBox}>
+      <Text style={styles.noteText}>{text}</Text>
+    </View>
+  )
+}
+
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <View style={styles.dividerRow}>
+      <View style={styles.dividerLine} />
+      <Text style={styles.dividerLabel}>{label}</Text>
+      <View style={styles.dividerLine} />
+    </View>
+  )
+}
+
+function SourceNote() {
+  return (
+    <View style={styles.sourceNote}>
+      <Text style={styles.sourceText}>
+        Материалы Evolution Yeti по RPE, сухожилиям, силовым циклам и добавкам. Экран задуман как справочник, а не замена первоисточникам.
+      </Text>
+    </View>
+  )
+}
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
+  safe: {
+    backgroundColor: theme.colors.bg,
+    flex: 1,
+  },
+  header: {
+    borderLeftColor: theme.colors.accent,
+    borderLeftWidth: 3,
+    marginHorizontal: theme.spacing.lg,
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
+    paddingLeft: theme.spacing.md,
+  },
+  eyebrow: {
+    color: theme.colors.orange,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  title: {
+    color: theme.colors.text,
+    fontSize: 28,
+    fontWeight: '800',
+    lineHeight: 34,
+  },
+  scroll: {
+    flex: 1,
+  },
+  content: {
+    padding: theme.spacing.lg,
+    paddingBottom: 48,
+  },
+  section: {
+    rowGap: theme.spacing.sm,
+  },
+
+  // Note box
   noteBox: {
     backgroundColor: 'rgba(255,255,255,0.03)',
     borderColor: theme.colors.border,
     borderRadius: theme.radius.md,
     borderWidth: 1,
     padding: theme.spacing.md,
+    marginBottom: theme.spacing.xs,
   },
   noteText: {
     color: theme.colors.muted,
     fontSize: 14,
     lineHeight: 22,
   },
-  cardGrid: {
-    rowGap: theme.spacing.md,
+
+  // Divider
+  dividerRow: {
+    alignItems: 'center',
+    columnGap: 10,
+    flexDirection: 'row',
+    marginVertical: theme.spacing.xs,
   },
-  card: {
+  dividerLine: {
+    backgroundColor: theme.colors.border,
+    flex: 1,
+    height: 1,
+  },
+  dividerLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+
+  // Source note
+  sourceNote: {
+    marginTop: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.xs,
+  },
+  sourceText: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 18,
+    opacity: 0.6,
+    textAlign: 'center',
+  },
+
+  // Cluster section
+  clusterFormulas: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  clusterRow: {
+    alignItems: 'center',
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    columnGap: theme.spacing.md,
+    flexDirection: 'row',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 12,
+  },
+  clusterPct: {
+    color: theme.colors.accent,
+    fontFamily: 'Courier',
+    fontSize: 14,
+    fontWeight: '700',
+    width: 72,
+  },
+  clusterSchemeBadge: {
+    backgroundColor: theme.colors.accentDim,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  clusterScheme: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  // mTOR flow
+  flowWrap: {
     backgroundColor: theme.colors.surface,
     borderColor: theme.colors.border,
     borderRadius: theme.radius.md,
     borderWidth: 1,
     padding: theme.spacing.md,
-    rowGap: 10,
+    rowGap: 12,
   },
-  cardTitle: {
-    color: theme.colors.text,
-    fontSize: 18,
-    fontWeight: '800',
-    lineHeight: 24,
-  },
-  cardBody: {
+  flowHeading: {
     color: theme.colors.muted,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
   },
-  cardStrong: {
-    color: theme.colors.text,
+  flowInputRow: {
+    columnGap: 8,
+    flexDirection: 'row',
+  },
+  flowInput: {
+    alignItems: 'center',
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flex: 1,
+    padding: 10,
+    rowGap: 4,
+  },
+  flowInputLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 15,
+  },
+  flowInputSub: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  flowMiddle: {
+    alignItems: 'center',
+    columnGap: 8,
+    flexDirection: 'row',
+  },
+  flowDottedLine: {
+    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 1,
+    borderStyle: 'dashed',
+    flex: 1,
+  },
+  flowMiddleLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  flowMainBox: {
+    alignItems: 'center',
+    borderRadius: theme.radius.sm,
+    borderWidth: 1.5,
+    padding: 12,
+    rowGap: 4,
+  },
+  flowMainTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  flowMainSub: {
+    color: theme.colors.muted,
+    fontSize: 11,
+  },
+  flowArrow: {
+    color: theme.colors.muted,
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  flowOutputBox: {
+    alignItems: 'center',
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    padding: 12,
+    rowGap: 4,
+  },
+  flowOutputTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  flowOutputSub: {
+    color: theme.colors.muted,
+    fontSize: 12,
+  },
+  ampkBox: {
+    backgroundColor: 'rgba(255,77,77,0.06)',
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    marginTop: 4,
+    padding: 10,
+    rowGap: 4,
+  },
+  ampkTitle: {
+    fontSize: 12,
     fontWeight: '700',
   },
-  bulletList: {
-    rowGap: 6,
+  ampkDesc: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 17,
   },
-  bulletItem: {
-    color: theme.colors.text,
-    fontSize: 14,
-    lineHeight: 20,
-  },
+
+  // Supplements
   tierList: {
-    rowGap: theme.spacing.md,
+    rowGap: theme.spacing.sm,
   },
   tierRow: {
     backgroundColor: theme.colors.surface,
@@ -300,86 +583,98 @@ const styles = StyleSheet.create({
   },
   tierBadge: {
     alignItems: 'center',
-    borderRadius: 16,
-    height: 40,
+    borderRadius: 12,
+    height: 36,
     justifyContent: 'center',
-    width: 40,
+    width: 36,
   },
   tierBadgeText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '900',
   },
   tierContent: {
     flex: 1,
-    rowGap: 10,
+    rowGap: 8,
   },
   tierLabel: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '800',
   },
-  tierItems: {
-    columnGap: 8,
+  tierChips: {
+    columnGap: 6,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    rowGap: 8,
+    rowGap: 6,
   },
   tierChip: {
     backgroundColor: theme.colors.card,
     borderColor: theme.colors.border,
     borderRadius: 999,
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
   },
   tierChipText: {
     color: theme.colors.text,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
   },
+  tierNote: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+
+  // Top 3
+  topThreeList: {
+    rowGap: theme.spacing.sm,
+  },
+  topCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderLeftWidth: 3,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    columnGap: theme.spacing.md,
+    flexDirection: 'row',
+    padding: theme.spacing.md,
+  },
   topNum: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '900',
-    letterSpacing: 2,
+    letterSpacing: 1.5,
+    marginTop: 2,
+    width: 22,
+  },
+  topCardBody: {
+    flex: 1,
+    rowGap: 8,
+  },
+  topNameRow: {
+    alignItems: 'center',
+    columnGap: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   topName: {
     color: theme.colors.text,
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '800',
   },
-  topDose: {
-    color: theme.colors.orange,
-    fontFamily: 'Courier',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  tableContainer: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+  doseBadge: {
+    borderRadius: 6,
     borderWidth: 1,
-    overflow: 'hidden',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
   },
-  tableHeader: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    flexDirection: 'row',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: 10,
-  },
-  tableRow: {
-    borderColor: theme.colors.border,
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: 10,
-  },
-  tableCell: {
-    color: theme.colors.text,
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  tableCellHeader: {
-    color: theme.colors.muted,
+  doseText: {
+    fontFamily: 'Courier',
+    fontSize: 11,
     fontWeight: '700',
+  },
+  topDesc: {
+    color: theme.colors.muted,
+    fontSize: 13,
+    lineHeight: 19,
   },
 })

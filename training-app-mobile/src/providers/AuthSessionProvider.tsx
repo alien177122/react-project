@@ -15,6 +15,7 @@ export function AuthSessionProvider({ children }: PropsWithChildren) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuthSessionContext() {
   const context = useContext(AuthSessionContext)
   if (!context) throw new Error('useAuthSessionContext must be used inside AuthSessionProvider')

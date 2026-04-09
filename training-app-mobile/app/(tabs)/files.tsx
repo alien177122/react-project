@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenLayout } from '../../src/components/ScreenLayout'
 import { ActionButton } from '../../src/components/ui/ActionButton'
+import { GlossyCard } from '../../src/components/ui/GlossyCard'
 import { SectionBlock } from '../../src/components/ui/SectionBlock'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 import { theme } from '../../src/theme'
@@ -20,7 +21,8 @@ export default function FilesScreen() {
   const [activeFile, setActiveFile] = useState('')
   const [error, setError] = useState('')
 
-  async function refresh(mode: 'load' | 'analyze' = 'load') {
+  const refresh = useCallback(async (mode: 'load' | 'analyze' = 'load') => {
+    if (!token) return
     if (mode === 'analyze') setAnalyzing(true)
     else setLoading(true)
 
@@ -36,9 +38,10 @@ export default function FilesScreen() {
       if (mode === 'analyze') setAnalyzing(false)
       else setLoading(false)
     }
-  }
+  }, [token])
 
-  async function analyzeOne(fileName: string) {
+  const analyzeOne = useCallback(async (fileName: string) => {
+    if (!token) return
     setActiveFile(fileName)
     setError('')
     try {
@@ -49,16 +52,19 @@ export default function FilesScreen() {
     } finally {
       setActiveFile('')
     }
-  }
+  }, [token])
 
   useEffect(() => {
-    if (!token) return
+    if (!token) {
+      setWorkspace(null)
+      return
+    }
     void refresh('load')
-  }, [token])
+  }, [refresh, token])
 
   function renderFileCard(file: WorkspaceFileEntry) {
     return (
-      <View key={file.name} style={styles.fileCard}>
+      <GlossyCard key={file.name} contentStyle={styles.fileCard} variant={file.analysis ? 'default' : 'warning'}>
         <View style={styles.fileHead}>
           <View style={styles.fileHeadText}>
             <Text style={styles.fileName}>{file.name}</Text>
@@ -108,7 +114,7 @@ export default function FilesScreen() {
             </Text>
           </View>
         )}
-      </View>
+      </GlossyCard>
     )
   }
 
@@ -119,11 +125,11 @@ export default function FilesScreen() {
       subtitle="Клади файлы в inbox, запускай анализ и смотри summary, preview и OCR-результаты прямо в mobile-версии."
     >
       <SectionBlock num="01" title="Файловое Workspace">
-        <View style={styles.noteBox}>
+        <GlossyCard contentStyle={styles.noteBox}>
           <Text style={styles.noteText}>
             Клади файлы в `workspace-files/inbox`. Система сохранит анализ в `workspace-files/analysis` и отдаст его через тот же backend, что использует веб.
           </Text>
-        </View>
+        </GlossyCard>
         <View style={styles.toolbar}>
           <ActionButton
             label={analyzing ? 'Анализ...' : 'Анализировать всё'}
@@ -137,33 +143,37 @@ export default function FilesScreen() {
             disabled={loading}
           />
         </View>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? (
+          <GlossyCard contentStyle={styles.errorCard} variant="warning">
+            <Text style={styles.error}>{error}</Text>
+          </GlossyCard>
+        ) : null}
       </SectionBlock>
 
       <SectionBlock num="02" title="Папки и результаты">
         {loading ? (
-          <View style={styles.noteBox}>
+          <GlossyCard contentStyle={styles.noteBox}>
             <Text style={styles.noteText}>Загрузка файлового workspace...</Text>
-          </View>
+          </GlossyCard>
         ) : !workspace ? (
-          <View style={styles.noteBox}>
+          <GlossyCard contentStyle={styles.noteBox} variant="warning">
             <Text style={styles.noteText}>Данные пока недоступны.</Text>
-          </View>
+          </GlossyCard>
         ) : (
           <>
-            <View style={styles.infoCard}>
+            <GlossyCard contentStyle={styles.infoCard} variant="accent">
               <Text style={styles.infoLine}>Inbox: {workspace.paths.inboxDir}</Text>
               <Text style={styles.infoLine}>Analysis: {workspace.paths.analysisDir}</Text>
               <Text style={styles.infoLine}>OCR: {workspace.ocr.model} · {workspace.ocr.baseUrl}</Text>
               <Text style={styles.infoLine}>Файлов найдено: {workspace.files.length}</Text>
-            </View>
+            </GlossyCard>
 
             {!workspace.files.length ? (
-              <View style={styles.noteBox}>
+              <GlossyCard contentStyle={styles.noteBox}>
                 <Text style={styles.noteText}>
                   В `workspace-files/inbox` пока пусто. Добавь туда `.txt`, `.md`, `.json`, `.csv`, изображения или PDF.
                 </Text>
-              </View>
+              </GlossyCard>
             ) : (
               <View style={styles.filesGrid}>
                 {workspace.files.map(renderFileCard)}
@@ -178,10 +188,6 @@ export default function FilesScreen() {
 
 const styles = StyleSheet.create({
   noteBox: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     padding: theme.spacing.md,
   },
   noteText: {
@@ -192,6 +198,12 @@ const styles = StyleSheet.create({
   toolbar: {
     columnGap: theme.spacing.md,
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: theme.spacing.sm,
+  },
+  errorCard: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   error: {
     color: theme.colors.red,
@@ -199,10 +211,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   infoCard: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     padding: theme.spacing.md,
     rowGap: 8,
   },
@@ -215,10 +223,6 @@ const styles = StyleSheet.create({
     rowGap: theme.spacing.md,
   },
   fileCard: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     padding: theme.spacing.md,
     rowGap: theme.spacing.md,
   },

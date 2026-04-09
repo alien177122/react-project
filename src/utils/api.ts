@@ -1,76 +1,35 @@
-import type { FileWorkspaceResponse, UserData } from '../types'
+import {
+  createApiClient,
+  createTrainingApi,
+} from '@training/shared/api'
+import { buildApiConfig } from '@training/shared/config'
+import type { FileWorkspaceResponse } from '../types'
 
 // ============================================================
-// API — работа с сервером (server/index.mjs, порт 3001)
-// URL сервера берётся из .env.local (VITE_API_URL) или localhost
+// API — работа с сервером через единый shared config.
+// Для web/desktop fallback остаётся relative /api, чтобы работал Vite proxy,
+// Docker same-origin и embedded Electron server.
 // ============================================================
-export const API = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api'
-const AUTH_EXPIRED = 'AUTH_EXPIRED'
+const API_CONFIG = buildApiConfig({
+  platform: 'web',
+  env: {
+    VITE_API_ENV: import.meta.env.VITE_API_ENV as string | undefined,
+    VITE_API_URL: import.meta.env.VITE_API_URL as string | undefined,
+    VITE_API_TIMEOUT_MS: import.meta.env.VITE_API_TIMEOUT_MS as string | undefined,
+    VITE_API_RETRY_COUNT: import.meta.env.VITE_API_RETRY_COUNT as string | undefined,
+    VITE_ENABLE_LOGGING: import.meta.env.VITE_ENABLE_LOGGING as string | undefined,
+    VITE_ALLOW_OFFLINE_MODE: import.meta.env.VITE_ALLOW_OFFLINE_MODE as string | undefined,
+  },
+  fallbackBaseUrl: '/api',
+  dev: import.meta.env.DEV,
+})
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-}
-
-function positiveNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
-}
-
-function positiveInteger(value: unknown): number | null {
-  return Number.isInteger(value) && Number(value) > 0 ? Number(value) : null
-}
-
-function nonNegativeInteger(value: unknown): number | null {
-  return Number.isInteger(value) && Number(value) >= 0 ? Number(value) : null
-}
-
-function normalizeLoadedUser(input: unknown, fallbackName: string): UserData {
-  if (!isRecord(input)) return { name: fallbackName, exercises: [] }
-
-  const name = typeof input.name === 'string' && input.name.trim()
-    ? input.name.trim()
-    : fallbackName
-
-  const exercises = Array.isArray(input.exercises)
-    ? input.exercises.flatMap(exercise => {
-      if (!isRecord(exercise)) return []
-
-      const exerciseKey = typeof exercise.exerciseKey === 'string' ? exercise.exerciseKey.trim() : ''
-      const date = typeof exercise.date === 'string' ? exercise.date.trim() : ''
-      if (!exerciseKey || !date) return []
-
-      const testWeight = positiveNumber(exercise.testWeight)
-      const testReps = positiveInteger(exercise.testReps)
-      const oneRM = positiveNumber(exercise.oneRM)
-
-      if (testWeight === null || testReps === null || oneRM === null) return []
-
-      return [{
-        exerciseKey,
-        testWeight,
-        testReps,
-        oneRM,
-        date,
-        ...(positiveNumber(exercise.bodyWeight) !== null
-          ? { bodyWeight: positiveNumber(exercise.bodyWeight)! }
-          : {}),
-      }]
-    })
-    : []
-
-  const completedSessions = isRecord(input.trainingProgress)
-    ? nonNegativeInteger(input.trainingProgress.completedSessions)
-    : null
-
-  if (completedSessions !== null) {
-    return {
-      name,
-      exercises,
-      trainingProgress: { completedSessions },
-    }
-  }
-
-  return { name, exercises }
-}
+export const API = API_CONFIG.baseUrl
+const apiClient = createApiClient({
+  config: API_CONFIG,
+  logger: API_CONFIG.enableLogging ? console : undefined,
+})
+const trainingApi = createTrainingApi(apiClient)
 
 // Декодирует JWT-токен и извлекает имя пользователя из payload
 // Используется при восстановлении сессии из localStorage
@@ -78,81 +37,17 @@ export function jwtName(token: string): string | null {
   try { return JSON.parse(atob(token.split('.')[1])).name ?? null } catch { return null }
 }
 
-// Загружает данные пользователя.
-// При 401/403 возвращает null, чтобы приложение сбросило невалидную сессию.
-// При сетевой ошибке отдаёт пустые данные, чтобы UI не падал.
-export async function loadUser(name: string, token: string): Promise<UserData | null> {
-  try {
-    const r = await fetch(`${API}/users/${encodeURIComponent(name)}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    if (r.status === 401 || r.status === 403) throw new Error(AUTH_EXPIRED)
-    if (!r.ok) return { name, exercises: [] }
-    return normalizeLoadedUser(await r.json(), name)
-  } catch (error) {
-    if (error instanceof Error && error.message === AUTH_EXPIRED) return null
-    return { name, exercises: [] }
-  }
-}
-
-// Сохраняет все данные пользователя на сервер одним PUT-запросом
-// Вызывается после каждого изменения (расчёт, удаление, завершение тренировки)
-export async function saveUser(data: UserData, token: string): Promise<void> {
-  await fetch(`${API}/users/${encodeURIComponent(data.name)}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify(data),
-  })
-}
-
-// Вход / регистрация: отправляет имя + пароль, получает JWT-токен
-export async function apiAuth(path: string, body: object): Promise<{ token?: string; name?: string; error?: string }> {
-  try {
-    const r = await fetch(`${API}/auth/${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    return await r.json()
-  } catch {
-    return { error: 'Нет соединения с сервером' }
-  }
-}
-
-async function apiJson<T>(path: string, token: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(init?.headers || {}),
-    },
-  })
-
-  if (response.status === 401 || response.status === 403) {
-    throw new Error('Сессия истекла')
-  }
-  if (!response.ok) {
-    let message = 'Ошибка запроса'
-    try {
-      const errorBody = await response.json()
-      if (typeof errorBody?.error === 'string') message = errorBody.error
-    } catch {
-      message = message || 'Ошибка запроса'
-    }
-    throw new Error(message)
-  }
-
-  return response.json()
-}
-
+export const loadUser = trainingApi.loadUser
+export const saveUser = trainingApi.saveUser
+export const apiAuth = trainingApi.apiAuth
 export function loadFileWorkspace(token: string): Promise<FileWorkspaceResponse> {
-  return apiJson('/files/workspace', token)
+  return trainingApi.loadFileWorkspace(token)
 }
 
 export function analyzeFileWorkspace(token: string): Promise<FileWorkspaceResponse> {
-  return apiJson('/files/workspace/analyze', token, { method: 'POST' })
+  return trainingApi.analyzeFileWorkspace(token)
 }
 
 export function analyzeSingleWorkspaceFile(token: string, fileName: string): Promise<FileWorkspaceResponse> {
-  return apiJson(`/files/workspace/analyze/${encodeURIComponent(fileName)}`, token, { method: 'POST' })
+  return trainingApi.analyzeSingleWorkspaceFile(token, fileName)
 }

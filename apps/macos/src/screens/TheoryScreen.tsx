@@ -7,6 +7,7 @@ import {
   MECHANICAL_CONCEPTS,
 } from '@training/shared/data/theory';
 import {ScreenLayout} from '../components/ScreenLayout';
+import {StrengthFormulaSection} from '../components/theory/StrengthFormulaSection';
 import {SectionBlock} from '../components/ui/SectionBlock';
 import {colors, radius, spacing} from '../theme';
 
@@ -294,15 +295,10 @@ export function TheoryScreen(): React.JSX.Element {
         </View>
       </SectionBlock>
 
-      <SectionBlock num="08" title="Источники">
-        <View style={styles.noteBox}>
-          <Text style={styles.noteText}>
-            Основной источник конспекта — материалы Evolution Yeti по RPE,
-            сухожилиям, силовым циклам и спортивным добавкам. Этот экран
-            задуман как справочник, а не как замена первоисточникам.
-          </Text>
-        </View>
+      <SectionBlock num="08" title="Формула силы">
+        <StrengthFormulaSection />
       </SectionBlock>
+
     </ScreenLayout>
   );
 }

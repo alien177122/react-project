@@ -5,6 +5,7 @@ import { MECHANICAL_CONCEPTS, MTOR_CONCEPTS, SUPPLEMENT_TIERS, THEORY_CONCEPTS }
 import { AccordionCard } from '../../src/components/theory/AccordionCard'
 import { CategoryPills } from '../../src/components/theory/CategoryPills'
 import { RPEScale } from '../../src/components/theory/RPEScale'
+import { StrengthFormulaSection } from '../../src/components/theory/StrengthFormulaSection'
 import { ZonesChart } from '../../src/components/theory/ZonesChart'
 import { theme } from '../../src/theme'
 
@@ -15,7 +16,7 @@ const CLUSTER_CONCEPTS = THEORY_CONCEPTS.slice(12, 20)
 const TENDON_CONCEPTS = THEORY_CONCEPTS.slice(20, 22)
 const PROGRESSION_CONCEPT = THEORY_CONCEPTS[22]
 
-const CATEGORIES = ['Базис', 'Кластеры', 'mTOR', 'Добавки', 'Механика'] as const
+const CATEGORIES = ['Базис', 'Формула силы', 'Кластеры', 'mTOR', 'Добавки', 'Механика'] as const
 type Category = (typeof CATEGORIES)[number]
 
 const TOP_THREE = [
@@ -98,6 +99,7 @@ export default function TheoryScreen() {
         showsVerticalScrollIndicator={false}
       >
         {category === 'Базис' && <BasicsSection />}
+        {category === 'Формула силы' && <StrengthFormulaSection />}
         {category === 'Кластеры' && <ClustersSection />}
         {category === 'mTOR' && <MTORSection />}
         {category === 'Добавки' && <SupplementsSection />}
@@ -144,7 +146,6 @@ function BasicsSection() {
         />
       ) : null}
 
-      <SourceNote />
     </View>
   )
 }
@@ -324,16 +325,6 @@ function SectionDivider({ label }: { label: string }) {
   )
 }
 
-function SourceNote() {
-  return (
-    <View style={styles.sourceNote}>
-      <Text style={styles.sourceText}>
-        Материалы Evolution Yeti по RPE, сухожилиям, силовым циклам и добавкам. Экран задуман как справочник, а не замена первоисточникам.
-      </Text>
-    </View>
-  )
-}
-
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
@@ -407,19 +398,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.5,
     textTransform: 'uppercase',
-  },
-
-  // Source note
-  sourceNote: {
-    marginTop: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.xs,
-  },
-  sourceText: {
-    color: theme.colors.muted,
-    fontSize: 12,
-    lineHeight: 18,
-    opacity: 0.6,
-    textAlign: 'center',
   },
 
   // Cluster section

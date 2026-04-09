@@ -3,9 +3,12 @@ FROM node:24-bookworm-slim AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+COPY packages/shared/package.json ./packages/shared/package.json
+RUN npm install
 
-COPY App.tsx index.html index.tsx vite.config.ts eslint.config.js tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY App.tsx App.css index.css index.html index.tsx vite.config.ts eslint.config.js postcss.config.js tailwind.config.ts tsconfig.base.json tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY packages/shared ./packages/shared
+COPY public ./public
 COPY src ./src
 COPY server ./server
 

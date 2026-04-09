@@ -5,6 +5,7 @@ import { CAT_META, CAT_ORDER, MUSCLE_META, MUSCLE_ORDER } from '../data/muscles'
 import { theme } from '../theme'
 import { donutArc } from '../utils/geometry'
 import { computeMuscleVol } from '../utils/muscles'
+import { GlossyCard } from './ui/GlossyCard'
 
 interface DonutSeg {
   muscle: string
@@ -144,7 +145,11 @@ export default function VolumeDonut() {
           const catVol = catVols[index]
 
           return (
-            <View key={catKey} style={styles.catBlock}>
+            <GlossyCard
+              key={catKey}
+              contentStyle={styles.catBlock}
+              variant={activeMuscle && MUSCLE_META[activeMuscle]?.catKey === catKey ? 'accent' : 'default'}
+            >
               <View style={styles.catHead}>
                 <Text style={[styles.catLabel, { color: CAT_META[catKey].color }]}>
                   {CAT_META[catKey].label}
@@ -171,7 +176,7 @@ export default function VolumeDonut() {
                   </Text>
                 </Pressable>
               ))}
-            </View>
+            </GlossyCard>
           )
         })}
       </View>
@@ -189,10 +194,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   catBlock: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     padding: theme.spacing.md,
     rowGap: 8,
   },

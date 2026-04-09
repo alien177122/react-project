@@ -4,6 +4,7 @@ import ProgressionBlock from '../../src/components/ProgressionBlock'
 import { ScreenLayout } from '../../src/components/ScreenLayout'
 import VolumeDonut from '../../src/components/VolumeDonut'
 import { ActionButton } from '../../src/components/ui/ActionButton'
+import { GlossyCard } from '../../src/components/ui/GlossyCard'
 import { SectionBlock } from '../../src/components/ui/SectionBlock'
 import { EXERCISES, EX_COUNT, TYPE_LABELS } from '../../src/data/exercises'
 import { getExerciseNote, getFormulaLabel } from '../../src/data/exerciseNotes'
@@ -25,7 +26,7 @@ function ExerciseNoteBox({ exerciseKey, testWeight, testReps, oneRM, exerciseTyp
   const formulaLabel = getFormulaLabel(testReps)
 
   return (
-    <View style={noteBoxStyles.container}>
+    <GlossyCard contentStyle={noteBoxStyles.container} variant="accent">
       <View style={noteBoxStyles.row}>
         <Text style={noteBoxStyles.label}>Откуда взят 1ПМ</Text>
         <Text style={noteBoxStyles.body}>
@@ -52,7 +53,7 @@ function ExerciseNoteBox({ exerciseKey, testWeight, testReps, oneRM, exerciseTyp
           </View>
         </>
       ) : null}
-    </View>
+    </GlossyCard>
   )
 }
 
@@ -82,9 +83,9 @@ export default function CalculatorScreen() {
         title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
         subtitle="Загружаем данные пользователя и восстанавливаем расчёты."
       >
-        <View style={styles.loadingCard}>
+        <GlossyCard contentStyle={styles.loadingCard}>
           <Text style={styles.loadingText}>Загрузка данных...</Text>
-        </View>
+        </GlossyCard>
       </ScreenLayout>
     )
   }
@@ -107,16 +108,16 @@ export default function CalculatorScreen() {
       title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
       subtitle="Введи тестовый вес и повторения — получи расклад рабочих весов с реальными схемами на 8 недель."
     >
-      <View style={styles.userBar}>
+      <GlossyCard contentStyle={styles.userBar}>
         <View>
           <Text style={styles.userLabel}>Атлет</Text>
           <Text style={styles.userName}>{userName}</Text>
         </View>
         <ActionButton label="Выйти" onPress={() => void handleLogout()} variant="ghost" />
-      </View>
+      </GlossyCard>
 
       <SectionBlock num="01" title="Тестовый подход">
-        <View style={styles.formCard}>
+        <GlossyCard contentStyle={styles.formCard} variant="accent">
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Упражнение</Text>
             <ExerciseWheel
@@ -178,20 +179,20 @@ export default function CalculatorScreen() {
           </View>
 
           <ActionButton label="Рассчитать" onPress={handleCalculate} />
-        </View>
+        </GlossyCard>
 
-        <View style={styles.noteBox}>
+        <GlossyCard contentStyle={styles.noteBox}>
           <Text style={styles.noteText}>
             {EXERCISES[selectedExercise].isPullup
               ? 'Подтягивания: введи вес тела и дополнительный вес. В прогрессии показана только прибавка к весу тела.'
               : 'Инструкция: отказной подход в диапазоне 4–8 повторений. Калькулятор пересчитает 1ПМ и покажет рабочие веса на 8 недель.'}
           </Text>
-        </View>
+        </GlossyCard>
       </SectionBlock>
 
       {activeResult ? (
         <SectionBlock num="02" title={`Прогрессия — ${config.name}`}>
-          <View style={styles.insightCard}>
+          <GlossyCard contentStyle={styles.insightCard} variant="accent">
             <Text style={styles.insightStrong}>Объём снижается по мере роста весов.</Text>
             {firstWeek && lastWeek ? (
               <Text style={styles.insightText}>
@@ -199,11 +200,11 @@ export default function CalculatorScreen() {
                 {'\n'}Нед 8: {lastWeek.weight} кг · {lastWeek.scheme.sets}×{lastWeek.scheme.reps} = {lastWeek.totalReps} повт
               </Text>
             ) : null}
-          </View>
+          </GlossyCard>
 
           <ProgressionBlock config={config} result={activeResult} />
 
-          <View style={styles.resultCard}>
+          <GlossyCard contentStyle={styles.resultCard} variant="success">
             <Text style={styles.resultLabel}>Расчётный 1ПМ</Text>
             <Text style={styles.resultValue}>
               {activeResult.oneRM}
@@ -212,13 +213,13 @@ export default function CalculatorScreen() {
             <Text style={styles.resultMeta}>
               Тест: {activeResult.testWeight} кг × {activeResult.testReps} повт · {TYPE_LABELS[config.type]} · Шаг: {config.step} кг · {activeResult.date}
             </Text>
-          </View>
+          </GlossyCard>
 
-          <View style={styles.noteBox}>
+          <GlossyCard contentStyle={styles.noteBox}>
             <Text style={styles.noteText}>
               Неделя 5 — волновой откат: вес слегка снижается, объём восстанавливается. Нажимай на строки прогрессии, чтобы подсветить соответствующую неделю в графике.
             </Text>
-          </View>
+          </GlossyCard>
 
           <ExerciseNoteBox
             exerciseKey={activeResult.exerciseKey}
@@ -266,11 +267,11 @@ export default function CalculatorScreen() {
       ) : null}
 
       <SectionBlock num="04" title="Распределение объёма">
-        <View style={styles.noteBox}>
+        <GlossyCard contentStyle={styles.noteBox}>
           <Text style={styles.noteText}>
             Средние рабочие подходы за цикл, распределённые по мышечным группам. Нажимай на сектор или строку легенды, чтобы увидеть детали.
           </Text>
-        </View>
+        </GlossyCard>
         <VolumeDonut />
       </SectionBlock>
     </ScreenLayout>
@@ -280,10 +281,6 @@ export default function CalculatorScreen() {
 const styles = StyleSheet.create({
   loadingCard: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
     padding: theme.spacing.xl,
   },
   loadingText: {
@@ -292,10 +289,6 @@ const styles = StyleSheet.create({
   },
   userBar: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     columnGap: theme.spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -315,10 +308,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   formCard: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
     padding: theme.spacing.md,
     rowGap: theme.spacing.md,
   },
@@ -351,10 +340,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   noteBox: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     padding: theme.spacing.md,
   },
   noteText: {
@@ -363,10 +348,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   insightCard: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     padding: theme.spacing.md,
   },
   insightStrong: {
@@ -383,10 +364,6 @@ const styles = StyleSheet.create({
   },
   resultCard: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
     padding: theme.spacing.lg,
     rowGap: 10,
   },
@@ -461,12 +438,8 @@ const styles = StyleSheet.create({
 
 const noteBoxStyles = StyleSheet.create({
   container: {
-    backgroundColor: '#110d18',
-    borderColor: '#2a1a38',
     borderLeftColor: theme.colors.accent,
     borderLeftWidth: 3,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.md,
     rowGap: theme.spacing.md,

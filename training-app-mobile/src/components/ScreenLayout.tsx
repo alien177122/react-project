@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { ScreenBackground } from './ui/ScreenBackground'
 import { theme } from '../theme'
 
 interface ScreenLayoutProps extends PropsWithChildren {
@@ -11,31 +12,41 @@ interface ScreenLayoutProps extends PropsWithChildren {
 
 export function ScreenLayout({ label, title, subtitle, children }: ScreenLayoutProps) {
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        <View style={styles.hero}>
-          <Text style={styles.label}>{label}</Text>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        </View>
-        <View style={styles.body}>{children}</View>
-      </ScrollView>
-    </SafeAreaView>
+    <ScreenBackground>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+          <View style={styles.inner}>
+            <View style={styles.hero}>
+              <Text style={styles.label}>{label}</Text>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.subtitle}>{subtitle}</Text>
+            </View>
+            <View style={styles.body}>{children}</View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenBackground>
   )
 }
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: theme.colors.bg,
+    backgroundColor: 'transparent',
   },
   scroll: {
     flex: 1,
-    backgroundColor: theme.colors.bg,
+    backgroundColor: 'transparent',
   },
   content: {
-    padding: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.xl,
+    paddingTop: theme.spacing.lg,
+  },
+  inner: {
+    alignSelf: 'center',
+    maxWidth: theme.layout.contentMaxWidth,
+    width: '100%',
   },
   hero: {
     borderLeftColor: theme.colors.accent,
@@ -60,6 +71,7 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
     fontSize: theme.typography.body,
     lineHeight: 22,
+    maxWidth: 760,
     marginTop: theme.spacing.md,
   },
   body: {

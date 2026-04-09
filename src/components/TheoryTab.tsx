@@ -1,9 +1,34 @@
+import type { CSSProperties, ReactNode } from 'react'
+
 import {
   MTOR_CONCEPTS,
   THEORY_CONCEPTS,
   SUPPLEMENT_TIERS,
   MECHANICAL_CONCEPTS,
 } from '../data/theory'
+
+type TheoryCardStyle = CSSProperties & Record<'--card-index', number>
+
+interface TheoryCardProps {
+  title: string
+  idx: number
+  children: ReactNode
+  accentColor?: string
+}
+
+function TheoryCard({ title, idx, children, accentColor }: TheoryCardProps) {
+  const style: TheoryCardStyle = {
+    '--card-index': idx,
+    ...(accentColor ? { borderLeft: `3px solid ${accentColor}` } : {}),
+  }
+
+  return (
+    <article className="theory-card" style={style}>
+      <div className="theory-card-title">{title}</div>
+      <div className="theory-card-body">{children}</div>
+    </article>
+  )
+}
 
 // ============================================================
 // КОМПОНЕНТ ТЕОРИЯ — весь контент вкладки в одном месте
@@ -22,11 +47,10 @@ export default function TheoryTab() {
           Ключевые понятия, которые лежат в основе программы. Разберись с ними — и любая схема прогрессии станет понятна.
         </div>
         <div className="theory-grid">
-          {THEORY_CONCEPTS.map((c, i) => (
-            <div key={i} className="theory-card">
-              <div className="theory-card-title">{c.title}</div>
-              <div className="theory-card-body">{c.body}</div>
-            </div>
+          {THEORY_CONCEPTS.map((concept, idx) => (
+            <TheoryCard key={concept.title} title={concept.title} idx={idx}>
+              {concept.body}
+            </TheoryCard>
           ))}
         </div>
       </div>
@@ -38,10 +62,8 @@ export default function TheoryTab() {
           <span className="section-title">mTOR и анаболический отклик</span>
         </div>
         <div className="theory-grid">
-          {MTOR_CONCEPTS.map((concept, i) => (
-            <div key={i} className="theory-card">
-              <div className="theory-card-title">{concept.title}</div>
-              <div className="theory-card-body">
+          {MTOR_CONCEPTS.map((concept, idx) => (
+            <TheoryCard key={concept.title} title={concept.title} idx={idx}>
                 <strong>Определение:</strong> {concept.definition}
                 {concept.pattern && (
                   <>
@@ -56,8 +78,7 @@ export default function TheoryTab() {
                     ))}
                   </ul>
                 )}
-              </div>
-            </div>
+            </TheoryCard>
           ))}
         </div>
       </div>
@@ -219,38 +240,26 @@ export default function TheoryTab() {
           Многоповторка закачивает мышцы, но <strong>не сухожилия</strong> — создаёт дисбаланс и повышает травматизм.
         </div>
         <div className="theory-grid">
-          <div className="theory-card" style={{ borderLeft: '3px solid #ff6b35' }}>
-            <div className="theory-card-title">Рабочий протокол</div>
-            <div className="theory-card-body">
+          <TheoryCard title="Рабочий протокол" idx={0} accentColor="#ff6b35">
               Частота: ~3 раза/нед. Интенсивность: 85–90% ПМ. Схема: 5 подходов × 4 повторения.
               Время под нагрузкой (TUT): ~3 сек в целевой части амплитуды или ~6 сек в полной амплитуде.
               Ориентир — TUT на нужной деформации, а не отказ. Используй изолированные упражнения для точного попадания в целевое сухожилие.
-            </div>
-          </div>
-          <div className="theory-card" style={{ borderLeft: '3px solid #ff9f40' }}>
-            <div className="theory-card-title">Если сухожилие «податливое»</div>
-            <div className="theory-card-body">
+          </TheoryCard>
+          <TheoryCard title="Если сухожилие «податливое»" idx={1} accentColor="#ff9f40">
               Если на тесте деформация &gt;10% — начинай с ~60% ПМ и постепенно наращивай к 70–90%.
               Здоровым для прогресса нередко нужны до 90% ПМ. Прогрессируй вес постепенно, следи за болевыми ощущениями.
               При стихании боли — переходи к базовым движениям, сохраняя принцип дозировки.
-            </div>
-          </div>
-          <div className="theory-card" style={{ borderLeft: '3px solid #ff4d4d' }}>
-            <div className="theory-card-title">Что НЕ работает</div>
-            <div className="theory-card-body">
+          </TheoryCard>
+          <TheoryCard title="Что НЕ работает" idx={2} accentColor="#ff4d4d">
               Растяжка снижает жёсткость сухожилий — в силовом тренинге это минус.
               НПВС (ибупрофен, мелоксикам, МСМ, куркумин) убирают боль, но не улучшают ремоделирование.
               Пептиды коллагена теоретически могут помочь (более устойчивы к разрушению в ЖКТ), но доказательства неоднозначные.
-            </div>
-          </div>
-          <div className="theory-card" style={{ borderLeft: '3px solid #5ba4ff' }}>
-            <div className="theory-card-title">Почему фармакология ≠ крепкие сухожилия</div>
-            <div className="theory-card-body">
+          </TheoryCard>
+          <TheoryCard title="Почему фармакология ≠ крепкие сухожилия" idx={3} accentColor="#5ba4ff">
               Анаболические стероиды резко повышают силу мышц, но сухожилия не успевают адаптироваться.
               Натуральный атлет набирает силу за 1–2 года — сухожилия укрепляются параллельно.
               Химик достигает тех же показателей за пару месяцев — деформация уходит за 9%, копятся микротравмы и отрывы.
-            </div>
-          </div>
+          </TheoryCard>
         </div>
       </div>
 
@@ -266,31 +275,14 @@ export default function TheoryTab() {
           рост результата даже без роста мышечной массы.
         </div>
         <div className="theory-grid">
-          {MECHANICAL_CONCEPTS.map((c, i) => (
-            <div key={i} className="theory-card">
-              <div className="theory-card-title">{c.title}</div>
-              <div className="theory-card-body">{c.body}</div>
-            </div>
+          {MECHANICAL_CONCEPTS.map((concept, idx) => (
+            <TheoryCard key={concept.title} title={concept.title} idx={idx}>
+              {concept.body}
+            </TheoryCard>
           ))}
         </div>
       </div>
 
-      {/* ── Секция 8: источники ────────────────────────────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">08</span>
-          <span className="section-title">Источники</span>
-        </div>
-        <div className="note-box">
-          <strong>Evolution Yeti</strong> — видеоролики и посты на Boosty:<br />
-          · «СИЛОВОЙ ТРЕНИНГ НАТУРАЛЬНО: Мануал по RPE» (аудио-мануал, 2 части)<br />
-          · «Черновик-конспект: Сухожилия» (сводка систематического обзора)<br />
-          · «TIER LIST СПОРТИВНЫХ ДОБАВОК» (Boosty, 08.01.2026)<br />
-          · «БИОХАКИНГ / НЕЗАМЕНИМЫЕ ДОБАВКИ ДЛЯ ТРЕНИРОВОК» (YouTube, 14.02.2025)<br />
-          · «Силовой Цикл 6-недельный» (черновик программы)<br />
-          · «Приседания (Squat)» (техника и принципы)
-        </div>
-      </div>
     </>
   )
 }

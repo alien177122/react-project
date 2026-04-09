@@ -1,9 +1,17 @@
 export const theme = {
   colors: {
     bg: '#0d0d0d',
+    bgGradientTop: '#15111f',
+    bgGradientBottom: '#05070c',
     surface: '#141414',
     card: '#1a1a1a',
     border: '#252525',
+    glass: 'rgba(255,255,255,0.06)',
+    glassPressed: 'rgba(255,255,255,0.10)',
+    glassBorder: 'rgba(255,255,255,0.08)',
+    glassBorderActive: 'rgba(255,255,255,0.18)',
+    glowWarm: 'rgba(255,107,53,0.18)',
+    glowCool: 'rgba(91,164,255,0.16)',
     text: '#e0e0d8',
     muted: '#666666',
     accent: '#ff6b35',
@@ -24,6 +32,9 @@ export const theme = {
     sm: 10,
     md: 16,
     lg: 24,
+  },
+  layout: {
+    contentMaxWidth: 1040,
   },
   typography: {
     eyebrow: 12,

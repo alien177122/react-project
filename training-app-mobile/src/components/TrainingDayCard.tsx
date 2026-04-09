@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { GlossyCard } from './ui/GlossyCard'
 import { theme } from '../theme'
 import type { TrainingDayDef } from '../types'
 import type { TrainingExerciseRow } from '../utils/training'
@@ -38,7 +39,11 @@ export default function TrainingDayCard({
       })
 
   return (
-    <View style={[styles.card, isPreview ? styles.cardPreview : null]}>
+    <GlossyCard
+      contentStyle={styles.cardContent}
+      style={isPreview ? styles.cardPreview : null}
+      variant={isPreview ? 'default' : 'accent'}
+    >
       <View style={styles.head}>
         <Text style={styles.day}>День {dayDef.dayNumber}</Text>
         <Text style={styles.name}>{dayDef.name}</Text>
@@ -128,24 +133,23 @@ export default function TrainingDayCard({
           ) : null}
         </>
       ) : null}
-    </View>
+    </GlossyCard>
   )
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
+  cardContent: {
     overflow: 'hidden',
+    padding: 0,
   },
   cardPreview: {
-    opacity: 0.72,
+    opacity: 0.82,
   },
   head: {
     alignItems: 'center',
-    backgroundColor: theme.colors.card,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderBottomColor: theme.colors.glassBorder,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.md,
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   warmupTogglePressed: {
-    backgroundColor: theme.colors.card,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   warmupToggleLabel: {
     color: theme.colors.muted,

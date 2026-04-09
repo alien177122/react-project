@@ -4,12 +4,21 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
   "exports": {
     ".": "./src/index.ts",
+    "./api": "./src/api/index.ts",
+    "./config": "./src/config/index.ts",
     "./types": "./src/types/index.ts",
     "./data/exercises": "./src/data/exercises.ts",
     "./data/muscles": "./src/data/muscles.ts",
     "./data/rpe-rir-cards": "./src/data/rpe-rir-cards.ts",
+    "./data/strength-formula": "./src/data/strength-formula.ts",
     "./data/theory": "./src/data/theory.ts",
     "./utils/calc": "./src/utils/calc.ts",
     "./utils/geometry": "./src/utils/geometry.ts",

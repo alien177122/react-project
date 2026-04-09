@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { LayoutAnimation, Pressable, StyleSheet, Text, View } from 'react-native'
 import { theme } from '../../theme'
 
@@ -12,7 +12,7 @@ interface AccordionCardProps {
   defaultOpen?: boolean
 }
 
-export function AccordionCard({
+export const AccordionCard = memo(function AccordionCard({
   title,
   body,
   pattern,
@@ -32,6 +32,10 @@ export function AccordionCard({
 
   return (
     <Pressable
+      accessibilityHint={open ? 'Свернуть карточку' : 'Развернуть карточку'}
+      accessibilityLabel={title}
+      accessibilityRole="button"
+      accessibilityState={{ expanded: open }}
       style={({ pressed }) => [styles.card, open && styles.cardOpen, pressed && styles.cardPressed]}
       onPress={toggle}
     >
@@ -39,33 +43,33 @@ export function AccordionCard({
         <View style={styles.titleWrap}>
           {tag ? (
             <View style={[styles.tag, { backgroundColor: accentColor + '1A', borderColor: accentColor }]}>
-              <Text style={[styles.tagText, { color: accentColor }]}>{tag}</Text>
+              <Text allowFontScaling maxFontSizeMultiplier={1.3} style={[styles.tagText, { color: accentColor }]}>{tag}</Text>
             </View>
           ) : null}
-          <Text style={styles.title}>{title}</Text>
+          <Text allowFontScaling maxFontSizeMultiplier={1.4} style={styles.title}>{title}</Text>
         </View>
-        <Text style={[styles.chevron, open && styles.chevronOpen]}>›</Text>
+        <Text allowFontScaling={false} style={[styles.chevron, open && styles.chevronOpen]}>›</Text>
       </View>
 
       {open ? (
         <View style={styles.body}>
-          {body ? <Text style={styles.bodyText}>{body}</Text> : null}
+          {body ? <Text allowFontScaling maxFontSizeMultiplier={1.5} style={styles.bodyText}>{body}</Text> : null}
           {pattern ? (
             <View style={styles.patternBox}>
-              <Text style={styles.patternText}>{pattern}</Text>
+              <Text allowFontScaling maxFontSizeMultiplier={1.3} style={styles.patternText}>{pattern}</Text>
             </View>
           ) : null}
           {bullets?.map((bullet, i) => (
             <View key={i} style={styles.bulletRow}>
-              <Text style={styles.bulletDot}>•</Text>
-              <Text style={styles.bulletText}>{bullet}</Text>
+              <Text allowFontScaling={false} style={styles.bulletDot}>•</Text>
+              <Text allowFontScaling maxFontSizeMultiplier={1.5} style={styles.bulletText}>{bullet}</Text>
             </View>
           ))}
         </View>
       ) : null}
     </Pressable>
   )
-}
+})
 
 const styles = StyleSheet.create({
   card: {

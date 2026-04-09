@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import type { ExerciseConfig, SavedExercise } from '../types'
 import { calcWorkingWeight, volumeClass } from '../utils/calc'
 import { theme } from '../theme'
+import { GlossyCard } from './ui/GlossyCard'
 import WaveChart from './WaveChart'
 
 interface ProgressionBlockProps {
@@ -41,7 +42,7 @@ export default function ProgressionBlock({ config, result }: ProgressionBlockPro
   })
 
   return (
-    <View style={styles.card}>
+    <GlossyCard contentStyle={styles.card}>
       <View style={styles.head}>
         <Text style={styles.headName}>{config.name}</Text>
         <Text style={styles.headValue}>
@@ -88,16 +89,12 @@ export default function ProgressionBlock({ config, result }: ProgressionBlockPro
       </View>
 
       <WaveChart schemes={config.weekSchemes} activeIndex={activeIndex} />
-    </View>
+    </GlossyCard>
   )
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
     padding: theme.spacing.md,
     rowGap: theme.spacing.md,
   },

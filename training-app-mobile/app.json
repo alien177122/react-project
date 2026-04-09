@@ -2,24 +2,6 @@
   "expo": {
     "name": "Training Calculator",
     "slug": "training-app-mobile",
-    "scheme": "training-app-mobile",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "newArchEnabled": true,
-    "userInterfaceStyle": "dark",
-    "plugins": [
-      "expo-router",
-      "expo-asset",
-      "expo-secure-store"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "extra": {
-      "apiUrl": "http://127.0.0.1:3001/api"
-    }
+    "version": "1.0.0"
   }
 }

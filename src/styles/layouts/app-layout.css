@@ -1,0 +1,323 @@
+/* SECTION */
+.section {
+  margin-bottom: 56px;
+}
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+
+/* USER BAR */
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 48px;
+  padding: 16px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.user-bar-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.user-bar-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* INPUTS LAYOUT */
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+@media (max-width: 600px) {
+  .input-grid { grid-template-columns: 1fr 1fr; }
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* TABLE SCROLL */
+.table-scroll {
+  overflow-x: auto;
+}
+
+/* ===== TAB BAR ===== */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 20px 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  position: relative;
+  bottom: -1px;
+  touch-action: manipulation;
+}
+.tab-btn:hover { color: #ccc; }
+.tab-active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}
+.tab-locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.tab-locked:hover { color: var(--muted); }
+
+/* ===== TRAINING PROGRESS BAR ===== */
+.training-progress {
+  margin-bottom: 32px;
+}
+.training-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.training-progress-bar {
+  height: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.training-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  min-width: 0;
+}
+
+/* Next day label */
+.next-day-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* ===== LOCKED VIEW ===== */
+.locked-view {
+  text-align: center;
+  padding: 64px 20px;
+}
+.locked-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.locked-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.locked-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 420px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+.locked-missing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.locked-missing-item {
+  font-size: 12px;
+  color: #ff4d4d;
+  font-weight: 400;
+}
+
+/* ===== PROGRAM COMPLETE ===== */
+.program-complete {
+  text-align: center;
+  padding: 48px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.program-complete-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+.program-complete-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.program-complete-stat {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.program-complete-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .user-bar {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .tab-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 0;
+    align-items: stretch;
+  }
+  .tab-btn {
+    min-width: 0;
+    padding: 12px 6px 14px;
+    font-size: 15px;
+    text-align: center;
+  }
+}
+
+/* ===== iPhone / mobile touch improvements ===== */
+@media (max-width: 430px) {
+  /* Layout */
+  #root { padding: 32px 14px; }
+
+  /* Hero — заголовок не обрезается */
+  .hero { margin-bottom: 28px; padding-left: 16px; }
+  .hero h1 {
+    font-size: clamp(28px, 7.8vw, 42px);
+    letter-spacing: 0;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  .hero-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    margin-bottom: 8px;
+  }
+  .hero p { font-size: 12px; line-height: 1.5; max-width: 100%; }
+
+  /* Auth */
+  .auth-card {
+    padding: 24px 18px;
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  .auth-tabs { margin-bottom: 22px; }
+  .auth-tab {
+    font-size: 16px;
+    padding: 8px 16px 10px;
+  }
+
+  /* Inputs — 16px prevents iOS zoom */
+  .input-field {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+  .input-label {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+  }
+  .input-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 14px 24px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+  .btn-complete {
+    padding: 16px 24px;
+    font-size: 20px;
+    border-radius: 8px;
+  }
+
+  /* Tab bar — 4 вкладки в ряд */
+  .tab-bar {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    padding: 10px 4px 12px;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+  }
+
+  /* User bar */
+  .user-bar {
+    padding: 12px 14px;
+    margin-bottom: 28px;
+    border-radius: 8px;
+  }
+  .user-bar-name { font-size: 13px; }
+
+  /* Sections */
+  .section { margin-bottom: 36px; }
+  .section-header {
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+  }
+  .section-num { font-size: 11px; }
+  .section-title { font-size: 22px; }
+}
+

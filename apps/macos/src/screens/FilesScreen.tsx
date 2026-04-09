@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import type {
   FileWorkspaceResponse,
@@ -24,7 +24,8 @@ export function FilesScreen(): React.JSX.Element {
   const [activeFile, setActiveFile] = useState('');
   const [error, setError] = useState('');
 
-  async function refresh(mode: 'load' | 'analyze' = 'load') {
+  const refresh = useCallback(async (mode: 'load' | 'analyze' = 'load') => {
+    if (!token) return;
     if (mode === 'analyze') setAnalyzing(true);
     else setLoading(true);
 
@@ -45,9 +46,10 @@ export function FilesScreen(): React.JSX.Element {
       if (mode === 'analyze') setAnalyzing(false);
       else setLoading(false);
     }
-  }
+  }, [token]);
 
-  async function analyzeOne(fileName: string) {
+  const analyzeOne = useCallback(async (fileName: string) => {
+    if (!token) return;
     setActiveFile(fileName);
     setError('');
     try {
@@ -62,12 +64,15 @@ export function FilesScreen(): React.JSX.Element {
     } finally {
       setActiveFile('');
     }
-  }
+  }, [token]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setWorkspace(null);
+      return;
+    }
     void refresh('load');
-  }, [token]);
+  }, [refresh, token]);
 
   function renderFileCard(file: WorkspaceFileEntry) {
     return (

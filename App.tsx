@@ -1559,7 +1559,7 @@ function App() {
                       </div>
                       <div className="saved-item-actions">
                         <span className="saved-item-1rm">{saved.oneRM} кг</span>
-                        <button className="btn-sm btn-danger"
+                        <button className="btn-sm btn-danger" aria-label="Удалить сохраненное упражнение"
                           onClick={e => { e.stopPropagation(); handleDelete(saved.exerciseKey) }}>×</button>
                       </div>
                     </div>

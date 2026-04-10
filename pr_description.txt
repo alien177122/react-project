@@ -1,0 +1,5 @@
+🎯 **What:** This PR fixes a user enumeration vulnerability that allowed an attacker to determine if a username exists in the database.
+
+⚠️ **Risk:** If left unfixed, attackers could enumerate valid user accounts by observing response times (timing attack) or checking the distinct error messages ('Пользователь не найден' vs 'Неверный пароль'). This information can be used in targeted credential stuffing or brute force attacks.
+
+🛡️ **Solution:** The fix normalizes the login response times by executing a dummy \`bcrypt.compare\` against a pre-computed hash whenever the requested user is not found in the database. It also unifies the error message returned to the client to a generic 'Неверное имя пользователя или пароль', preventing enumeration via error disclosure.

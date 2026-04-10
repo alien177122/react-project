@@ -38,16 +38,21 @@ app.post('/api/auth/register', async (req, res) => {
   res.json({ token, name: name.trim() })
 })
 
+const DUMMY_HASH = bcrypt.hashSync('dummy_password', 10)
+
 // ── Вход ─────────────────────────────────────────────────────
 app.post('/api/auth/login', async (req, res) => {
   const { name, password } = req.body
   if (!name?.trim() || !password) return res.status(400).json({ error: 'Заполни все поля' })
 
   const row = getUserAuth(name.trim())
-  if (!row) return res.status(401).json({ error: 'Пользователь не найден' })
+  if (!row) {
+    await bcrypt.compare(password, DUMMY_HASH)
+    return res.status(401).json({ error: 'Неверное имя пользователя или пароль' })
+  }
 
   const ok = await bcrypt.compare(password, row.password_hash)
-  if (!ok) return res.status(401).json({ error: 'Неверный пароль' })
+  if (!ok) return res.status(401).json({ error: 'Неверное имя пользователя или пароль' })
 
   const token = jwt.sign({ name: row.name }, JWT_SECRET, { expiresIn: '30d' })
   res.json({ token, name: row.name })

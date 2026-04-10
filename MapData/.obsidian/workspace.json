@@ -1,24 +1,24 @@
 {
   "main": {
-    "id": "0e161cf46926f3d6",
+    "id": "fbdcd225892c0d39",
     "type": "split",
     "children": [
       {
-        "id": "a35bf8fce7e05fac",
+        "id": "879acb3477ebfb02",
         "type": "tabs",
         "children": [
           {
-            "id": "191c4fcddfc2d47b",
+            "id": "42f62ddd6c884bcd",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "2026-04-10.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "2026-04-10"
             }
           }
         ]
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "500ee30069d98327",
+    "id": "3977b62e5d2434a3",
     "type": "split",
     "children": [
       {
-        "id": "81d0b1fd296400d5",
+        "id": "9e375219106a633d",
         "type": "tabs",
         "children": [
           {
-            "id": "94657c802d6a61b6",
+            "id": "42486ea28dbd927c",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +48,7 @@
             }
           },
           {
-            "id": "7cd049ad6ec8311f",
+            "id": "9dd34d8c8e60f9bb",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +65,7 @@
             }
           },
           {
-            "id": "73e947701c73c2b9",
+            "id": "f25dee65b77fbe46",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,20 +81,20 @@
     "width": 300
   },
   "right": {
-    "id": "d6f8d879334b78f7",
+    "id": "d0b67bd36304c080",
     "type": "split",
     "children": [
       {
-        "id": "fcee4e9e48efaa1b",
+        "id": "0e069846c7cfb9ca",
         "type": "tabs",
         "children": [
           {
-            "id": "eb1070bac3274b6a",
+            "id": "303e34fd2ef573c7",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "2026-04-10.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,24 +104,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для README"
+              "title": "Обратные ссылки для 2026-04-10"
             }
           },
           {
-            "id": "2435f1cb150db378",
+            "id": "b0b97b5e62e4e89f",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "2026-04-10.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки"
+              "title": "Исходящие ссылки из 2026-04-10"
             }
           },
           {
-            "id": "01b688e185522e7e",
+            "id": "c366c3eb9bfa9403",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -136,7 +137,7 @@
             }
           },
           {
-            "id": "b380eec511fe8fb9",
+            "id": "df2c832cb7371371",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -150,24 +151,26 @@
             }
           },
           {
-            "id": "3abe29e63df9b0f8",
+            "id": "d4c5b3d7798fb020",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
+                "file": "2026-04-10.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура"
+              "title": "Структура 2026-04-10"
             }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -180,48 +183,10 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "191c4fcddfc2d47b",
+  "active": "42f62ddd6c884bcd",
   "lastOpenFiles": [
-    "CODEX_AUTH_SHARED.md",
     "2026-04-10.md",
-    "Без названия.canvas",
-    "apps/macos/node_modules/eslint-plugin-react/README.md",
-    "training-app-mobile/src/utils/mobileTokenStorage.ts",
-    "training-app-mobile/src/theme/tokens.ts",
-    "training-app-mobile/src/theme/mixins.ts",
-    "training-app-mobile/scripts/ensure-local-babel-preset.mjs",
-    "training-app-mobile/scripts",
-    "src/utils/webTokenStorage.ts",
-    "packages/shared/utils/training.ts",
-    "packages/shared/utils/muscles.ts",
-    "packages/shared/utils/geometry.ts",
-    "packages/shared/utils/calc.ts",
-    "training-app-mobile/node_modules/@jest/pattern/README.md",
-    "training-app-mobile/node_modules/stacktrace-gps/node_modules/source-map/README.md",
-    "training-app-mobile/node_modules/stacktrace-gps/node_modules/source-map/CHANGELOG.md",
-    "training-app-mobile/node_modules/stacktrace-gps/README.md",
-    "training-app-mobile/node_modules/eslint-scope/node_modules/estraverse/README.md",
-    "training-app-mobile/node_modules/eslint-scope/README.md",
-    "training-app-mobile/node_modules/eslint-scope/CHANGELOG.md",
-    "training-app-mobile/node_modules/domexception/node_modules/webidl-conversions/README.md",
-    "training-app-mobile/node_modules/domexception/node_modules/webidl-conversions/LICENSE.md",
-    "training-app-mobile/node_modules/domexception/README.md",
-    "training-app-mobile/node_modules/tough-cookie/node_modules/universalify/README.md",
-    "training-app-mobile/node_modules/tough-cookie/README.md",
-    "training-app-mobile/node_modules/react-shallow-renderer/node_modules/react-is/README.md",
-    "training-app-mobile/node_modules/react-shallow-renderer/README.md",
-    "training-app-mobile/node_modules/escodegen/node_modules/source-map/CHANGELOG.md",
-    "training-app-mobile/node_modules/escodegen/node_modules/source-map/README.md",
-    "training-app-mobile/node_modules/escodegen/README.md",
-    "training-app-mobile/node_modules/parse5/node_modules/entities/readme.md",
-    "training-app-mobile/node_modules/parse5/README.md",
-    "training-app-mobile/node_modules/cssstyle/README.md",
-    "training-app-mobile/node_modules/@jest/source-map/node_modules/callsites/readme.md",
-    "training-app-mobile/node_modules/string-length/node_modules/strip-ansi/readme.md",
-    "training-app-mobile/node_modules/@jest/reporters/assets/jest_logo.png",
-    "training-app-mobile/node_modules/psl/browserstack-logo.svg",
-    "training-app-mobile/node_modules/istanbul-reports/lib/html-spa/assets/sort-arrow-sprite.png",
-    "training-app-mobile/node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png",
-    "training-app-mobile/node_modules/istanbul-reports/lib/html/assets/favicon.png"
+    "LECTURE_native_app_architecture_ru.md",
+    "CospectYeti.md"
   ]
 }

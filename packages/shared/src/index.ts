@@ -1,3 +1,3 @@
 export * from './types/index.ts'
-export * from './api/index.ts'
-export * from './config/index.ts'
+export * from './hooks/index.ts'
+export * from './utils/api.ts'

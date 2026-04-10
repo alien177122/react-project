@@ -1,1 +1,1 @@
-export * from '@training/shared/utils/geometry'
+export * from '../../packages/shared/src/utils/geometry'

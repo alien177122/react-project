@@ -24,15 +24,31 @@ npm install
 npm run pods:macos
 ```
 
-3. Поднять Metro:
+3. Основной dev-режим:
+
+```bash
+npm run dev
+```
+
+Что делает `npm run dev`:
+
+- поднимает backend на `http://127.0.0.1:3001`
+- поднимает Metro на `http://127.0.0.1:8081`
+- запускает `react-native run-macos`
+
+4. Ручной режим, если нужно раздельно управлять процессами:
+
+В корне репозитория:
+
+```bash
+cd /Users/steve_gordiyenko/Desktop/React_Project
+npm run server
+```
+
+В `apps/macos`:
 
 ```bash
 npm run start:macos
-```
-
-4. В отдельном терминале запустить приложение:
-
-```bash
 npm run macos
 ```
 

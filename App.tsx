@@ -24,6 +24,7 @@ function App() {
     userName,
     userData,
     setUserData,
+    sessionLoading,
     authMode,
     setAuthMode,
     nameInput,
@@ -85,6 +86,16 @@ function App() {
     resetTrainingState()
     setActiveTab('calculator')
   }
+
+  if (sessionLoading) return (
+    <>
+      <div className="hero">
+        <div className="hero-label">Тренировочный калькулятор</div>
+        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
+      </div>
+      <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '48px 0' }}>Восстанавливаем сессию...</div>
+    </>
+  )
 
   // --- Auth screen ---
   if (!userName || !token) return (

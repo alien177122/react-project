@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "dev": "node ./scripts/dev.mjs",
     "ios": "react-native run-ios",
     "lint": "ESLINT_USE_FLAT_CONFIG=false ./node_modules/.bin/eslint --ext .js,.ts,.tsx .",
     "macos": "react-native run-macos",

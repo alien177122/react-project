@@ -1,1 +1,1 @@
-export * from '@training/shared/data/muscles'
+export * from '../../packages/shared/src/data/muscles'

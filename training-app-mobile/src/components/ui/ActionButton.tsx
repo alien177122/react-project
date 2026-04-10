@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import { Pressable, StyleSheet, Text } from 'react-native'
-import { theme } from '../../theme'
+import { mx, theme } from '../../theme'
 
 interface ActionButtonProps extends PropsWithChildren {
   label?: string
@@ -23,8 +23,8 @@ export function ActionButton({
       style={({ pressed }) => [
         styles.base,
         variantStyles[variant],
-        disabled ? styles.disabled : null,
-        pressed ? styles.pressed : null,
+        disabled ? mx.disabledOpacity : null,
+        pressed ? mx.pressedOpacity : null,
       ]}
     >
       {children ?? <Text style={[styles.text, textStyles[variant]]}>{label}</Text>}
@@ -34,22 +34,15 @@ export function ActionButton({
 
 const styles = StyleSheet.create({
   base: {
-    alignItems: 'center',
+    ...mx.center,
     borderRadius: theme.radius.md,
-    justifyContent: 'center',
     minHeight: 50,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: 12,
   },
   text: {
-    fontSize: 15,
+    fontSize: theme.typography.button,
     fontWeight: '800',
-  },
-  disabled: {
-    opacity: 0.55,
-  },
-  pressed: {
-    opacity: 0.84,
   },
 })
 

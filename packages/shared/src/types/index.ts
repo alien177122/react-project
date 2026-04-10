@@ -2,6 +2,8 @@
 // TYPES — описывают форму всех данных в приложении
 // ============================================================
 
+export * from './auth.ts'
+
 export interface WeekScheme { sets: number; reps: number }
 
 export interface WarmupSet {

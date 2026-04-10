@@ -1,56 +1,14 @@
-import {
-  buildApiConfig,
-  type ApiPlatform,
-} from '@training/shared/config';
-import {
-  createApiClient,
-  createTrainingApi,
-} from '@training/shared/api';
-import type {FileWorkspaceResponse} from '@training/shared/types';
-import {clearStoredSession} from './storage';
+import {createApiClient} from '@training/shared/utils/api';
+import {API_BASE_URL} from './config';
 
-type RuntimeGlobals = typeof globalThis & {
-  __TRAINING_APP_ENV__?: Record<string, string | undefined>;
-  process?: {
-    env?: Record<string, string | undefined>;
-  };
-};
+export const API = API_BASE_URL;
 
-const runtimeGlobals = globalThis as RuntimeGlobals;
-const platform: ApiPlatform = 'macos';
-const API_CONFIG = buildApiConfig({
-  platform,
-  env: {
-    ...runtimeGlobals.process?.env,
-    ...runtimeGlobals.__TRAINING_APP_ENV__,
-  },
-  fallbackBaseUrl: 'http://127.0.0.1:3001/api',
-  dev: __DEV__,
-});
+const apiClient = createApiClient(API);
 
-const apiClient = createApiClient({
-  config: API_CONFIG,
-  onUnauthorized: clearStoredSession,
-  logger: API_CONFIG.enableLogging ? console : undefined,
-});
-const trainingApi = createTrainingApi(apiClient);
-
-export const loadUser = trainingApi.loadUser;
-export const saveUser = trainingApi.saveUser;
-export const apiAuth = trainingApi.apiAuth;
-export function loadFileWorkspace(token: string): Promise<FileWorkspaceResponse> {
-  return trainingApi.loadFileWorkspace(token);
-}
-
-export function analyzeFileWorkspace(
-  token: string,
-): Promise<FileWorkspaceResponse> {
-  return trainingApi.analyzeFileWorkspace(token);
-}
-
-export function analyzeSingleWorkspaceFile(
-  token: string,
-  fileName: string,
-): Promise<FileWorkspaceResponse> {
-  return trainingApi.analyzeSingleWorkspaceFile(token, fileName);
-}
+export const jwtName = apiClient.jwtName;
+export const loadUser = apiClient.loadUser;
+export const saveUser = apiClient.saveUser;
+export const apiAuth = apiClient.apiAuth;
+export const loadFileWorkspace = apiClient.loadFileWorkspace;
+export const analyzeFileWorkspace = apiClient.analyzeFileWorkspace;
+export const analyzeSingleWorkspaceFile = apiClient.analyzeSingleWorkspaceFile;

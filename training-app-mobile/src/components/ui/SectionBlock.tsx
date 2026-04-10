@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { theme } from '../../theme'
+import { mx, theme } from '../../theme'
 
 interface SectionBlockProps extends PropsWithChildren {
   num: string
@@ -24,25 +24,20 @@ const styles = StyleSheet.create({
     rowGap: theme.spacing.md,
   },
   header: {
-    alignItems: 'center',
+    ...mx.row,
     borderBottomColor: theme.colors.border,
     borderBottomWidth: 1,
     columnGap: theme.spacing.md,
-    flexDirection: 'row',
     paddingBottom: theme.spacing.sm,
   },
   num: {
+    ...mx.textEyebrow,
     color: theme.colors.accent,
-    fontSize: 13,
-    fontWeight: '700',
     letterSpacing: 2,
   },
   title: {
-    color: theme.colors.text,
+    ...mx.textTitleLg,
     flex: 1,
-    fontSize: 28,
-    fontWeight: '800',
-    lineHeight: 32,
   },
   body: {
     rowGap: theme.spacing.md,

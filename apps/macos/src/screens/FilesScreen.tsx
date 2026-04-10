@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import type {
   FileWorkspaceResponse,
@@ -24,8 +24,7 @@ export function FilesScreen(): React.JSX.Element {
   const [activeFile, setActiveFile] = useState('');
   const [error, setError] = useState('');
 
-  const refresh = useCallback(async (mode: 'load' | 'analyze' = 'load') => {
-    if (!token) return;
+  async function refresh(mode: 'load' | 'analyze' = 'load') {
     if (mode === 'analyze') setAnalyzing(true);
     else setLoading(true);
 
@@ -46,10 +45,9 @@ export function FilesScreen(): React.JSX.Element {
       if (mode === 'analyze') setAnalyzing(false);
       else setLoading(false);
     }
-  }, [token]);
+  }
 
-  const analyzeOne = useCallback(async (fileName: string) => {
-    if (!token) return;
+  async function analyzeOne(fileName: string) {
     setActiveFile(fileName);
     setError('');
     try {
@@ -64,15 +62,37 @@ export function FilesScreen(): React.JSX.Element {
     } finally {
       setActiveFile('');
     }
-  }, [token]);
+  }
 
   useEffect(() => {
-    if (!token) {
-      setWorkspace(null);
-      return;
-    }
-    void refresh('load');
-  }, [refresh, token]);
+    if (!token) return;
+
+    let cancelled = false;
+
+    setLoading(true);
+    setError('');
+
+    loadFileWorkspace(token)
+      .then(nextWorkspace => {
+        if (cancelled) return;
+        setWorkspace(nextWorkspace);
+      })
+      .catch(nextError => {
+        if (cancelled) return;
+        setError(
+          nextError instanceof Error
+            ? nextError.message
+            : 'Не удалось загрузить файловый раздел',
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   function renderFileCard(file: WorkspaceFileEntry) {
     return (

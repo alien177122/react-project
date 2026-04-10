@@ -20,11 +20,13 @@
     "./data/rpe-rir-cards": "./src/data/rpe-rir-cards.ts",
     "./data/strength-formula": "./src/data/strength-formula.ts",
     "./data/theory": "./src/data/theory.ts",
+    "./utils/api": "./src/utils/api.ts",
     "./utils/calc": "./src/utils/calc.ts",
     "./utils/geometry": "./src/utils/geometry.ts",
     "./utils/muscles": "./src/utils/muscles.ts",
     "./utils/training": "./src/utils/training.ts",
     "./hooks/useCalculatorState": "./src/hooks/useCalculatorState.ts",
-    "./hooks/useTrainingProgram": "./src/hooks/useTrainingProgram.ts"
+    "./hooks/useTrainingProgram": "./src/hooks/useTrainingProgram.ts",
+    "./hooks/useAuthSession": "./src/hooks/useAuthSession.ts"
   }
 }

@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { theme } from '../theme'
+import { mx, theme } from '../theme'
 
 interface InfoCardProps extends PropsWithChildren {
   title: string
@@ -20,22 +20,17 @@ export function InfoCard({ title, subtitle, accentColor, children }: InfoCardPro
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.card,
-    borderColor: theme.colors.border,
+    ...mx.card,
     borderLeftColor: 'transparent',
     borderLeftWidth: 3,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
     padding: theme.spacing.md,
   },
   title: {
-    color: theme.colors.text,
-    fontSize: 18,
-    fontWeight: '700',
+    ...mx.textSubhead,
   },
   subtitle: {
+    ...mx.textSmall,
     color: theme.colors.muted,
-    fontSize: 13,
     lineHeight: 18,
     marginTop: theme.spacing.xs,
   },

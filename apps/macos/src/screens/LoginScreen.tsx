@@ -9,8 +9,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {DEV_CONNECTION_HINT} from '../platform/config';
 import {useAuthContext} from '../providers/AuthProvider';
 import {colors, radius, spacing} from '../theme';
+
+declare const __DEV__: boolean;
 
 export function LoginScreen(): React.JSX.Element {
   const {
@@ -134,6 +137,9 @@ export function LoginScreen(): React.JSX.Element {
               ) : null}
 
               {authError ? <Text style={styles.error}>{authError}</Text> : null}
+              {__DEV__ && authError === 'Нет соединения с сервером' ? (
+                <Text style={styles.hint}>{DEV_CONNECTION_HINT}</Text>
+              ) : null}
 
               <Pressable
                 disabled={authLoading}
@@ -244,6 +250,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   error: {color: colors.red, fontSize: 14, marginTop: spacing.sm},
+  hint: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 18,
+  },
   submit: {
     alignItems: 'center',
     backgroundColor: colors.accent,

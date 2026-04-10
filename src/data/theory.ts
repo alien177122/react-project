@@ -4,4 +4,4 @@
 // Раздел 2: tier-лист спортивных добавок (Evolution Yeti, 2025–2026)
 // ============================================================
 
-export * from '@training/shared/data/theory'
+export * from '../../packages/shared/src/data/theory'

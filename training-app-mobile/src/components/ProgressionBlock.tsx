@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import type { ExerciseConfig, SavedExercise } from '../types'
 import { calcWorkingWeight, volumeClass } from '../utils/calc'
-import { theme } from '../theme'
-import { GlossyCard } from './ui/GlossyCard'
+import { mx, theme } from '../theme'
 import WaveChart from './WaveChart'
 
 interface ProgressionBlockProps {
@@ -29,20 +28,16 @@ export default function ProgressionBlock({ config, result }: ProgressionBlockPro
     const totalWeight = calcWorkingWeight(result.oneRM, pct, config)
     const scheme = config.weekSchemes[index]
     const totalReps = scheme.sets * scheme.reps
-    const displayWeight = config.isPullup && result.bodyWeight != null
-      ? totalWeight - result.bodyWeight
-      : totalWeight
+    const displayWeight =
+      config.isPullup && result.bodyWeight != null
+        ? totalWeight - result.bodyWeight
+        : totalWeight
 
-    return {
-      week: index + 1,
-      weight: displayWeight,
-      scheme,
-      totalReps,
-    }
+    return { week: index + 1, weight: displayWeight, scheme, totalReps }
   })
 
   return (
-    <GlossyCard contentStyle={styles.card}>
+    <View style={styles.card}>
       <View style={styles.head}>
         <Text style={styles.headName}>{config.name}</Text>
         <Text style={styles.headValue}>
@@ -69,8 +64,8 @@ export default function ProgressionBlock({ config, result }: ProgressionBlockPro
               onPress={() => setActiveIndex(isActive ? null : index)}
               style={({ pressed }) => [
                 styles.row,
-                isActive ? styles.rowActive : null,
-                pressed ? styles.rowPressed : null,
+                isActive ? mx.accentDimBg : null,
+                pressed ? mx.pressedOpacity : null,
               ]}
             >
               <Text style={[styles.weekCell, styles.rowWeek]}>{row.week}</Text>
@@ -89,12 +84,13 @@ export default function ProgressionBlock({ config, result }: ProgressionBlockPro
       </View>
 
       <WaveChart schemes={config.weekSchemes} activeIndex={activeIndex} />
-    </GlossyCard>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   card: {
+    ...mx.surface,
     padding: theme.spacing.md,
     rowGap: theme.spacing.md,
   },
@@ -102,84 +98,48 @@ const styles = StyleSheet.create({
     rowGap: 6,
   },
   headName: {
-    color: theme.colors.text,
-    fontSize: 20,
-    fontWeight: '800',
+    ...mx.textSubheadLg,
   },
   headValue: {
-    color: theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
+    ...mx.textData,
   },
   headMuted: {
     color: theme.colors.muted,
     fontWeight: '400',
   },
   table: {
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
-    overflow: 'hidden',
+    ...mx.tableContainer,
   },
   tableHead: {
-    backgroundColor: theme.colors.card,
-    columnGap: 10,
-    flexDirection: 'row',
-    paddingHorizontal: 12,
+    ...mx.tableHeadRow,
     paddingVertical: 10,
   },
   headCell: {
-    color: theme.colors.muted,
-    flex: 1,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textAlign: 'center',
-    textTransform: 'uppercase',
+    ...mx.tableHeadCell,
   },
   weekCell: {
     flex: 0.7,
     textAlign: 'left',
   },
   row: {
-    alignItems: 'center',
-    borderTopColor: theme.colors.border,
-    borderTopWidth: 1,
-    columnGap: 10,
-    flexDirection: 'row',
+    ...mx.tableDataRow,
     paddingHorizontal: 12,
     paddingVertical: 12,
   },
-  rowActive: {
-    backgroundColor: theme.colors.accentDim,
-  },
-  rowPressed: {
-    opacity: 0.85,
-  },
   rowWeek: {
-    color: theme.colors.text,
-    fontSize: 14,
-    fontWeight: '700',
+    ...mx.textData,
+    flex: 0.7,
   },
   rowWeight: {
-    color: theme.colors.text,
-    flex: 1,
-    fontFamily: 'Courier',
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
+    ...mx.numericCellMd,
   },
   rowScheme: {
-    color: theme.colors.text,
+    ...mx.textData,
     flex: 1,
-    fontSize: 14,
+    fontWeight: '400',
     textAlign: 'center',
   },
   rowTotal: {
-    flex: 1,
-    fontFamily: 'Courier',
-    fontSize: 14,
-    fontWeight: '800',
-    textAlign: 'center',
+    ...mx.numericCellMd,
   },
 })

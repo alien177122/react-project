@@ -1,6 +1,9 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
+#if DEBUG && __has_include(<React/RCTDevLoadingViewSetEnabled.h>)
+#import <React/RCTDevLoadingViewSetEnabled.h>
+#endif
 
 @implementation AppDelegate
 
@@ -10,6 +13,10 @@
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
+
+#if DEBUG && __has_include(<React/RCTDevLoadingViewSetEnabled.h>)
+  RCTDevLoadingViewSetEnabled(NO);
+#endif
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

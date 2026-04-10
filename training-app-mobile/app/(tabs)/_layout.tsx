@@ -1,27 +1,26 @@
 import { Redirect, Tabs } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 import { theme } from '../../src/theme'
 
-function tabIcon(routeName: 'calculator' | 'training' | 'theory' | 'files', color: string) {
-  let icon = '•'
+type TabRoute = 'calculator' | 'training' | 'theory' | 'files'
+const TabIonicons = Ionicons as any
 
-  switch (routeName) {
-    case 'calculator':
-      icon = '🧮'
-      break
-    case 'training':
-      icon = '🏋️'
-      break
-    case 'theory':
-      icon = '📘'
-      break
-    case 'files':
-      icon = '📂'
-      break
+function tabIcon(routeName: TabRoute, color: string, focused: boolean) {
+  let iconName = 'ellipse-outline'
+
+  if (routeName === 'calculator') {
+    iconName = focused ? 'calculator' : 'calculator-outline'
+  } else if (routeName === 'training') {
+    iconName = focused ? 'fitness' : 'fitness-outline'
+  } else if (routeName === 'theory') {
+    iconName = focused ? 'book' : 'book-outline'
+  } else if (routeName === 'files') {
+    iconName = focused ? 'folder' : 'folder-outline'
   }
 
-  return <Text style={{ color, fontSize: 18 }}>{icon}</Text>
+  return <TabIonicons color={color} name={iconName} size={19} />
 }
 
 export default function TabsLayout() {
@@ -68,28 +67,28 @@ export default function TabsLayout() {
         name="calculator"
         options={{
           title: 'Калькулятор',
-          tabBarIcon: ({ color }) => tabIcon('calculator', color),
+          tabBarIcon: ({ color, focused }) => tabIcon('calculator', color, focused),
         }}
       />
       <Tabs.Screen
         name="training"
         options={{
           title: 'Тренировка',
-          tabBarIcon: ({ color }) => tabIcon('training', color),
+          tabBarIcon: ({ color, focused }) => tabIcon('training', color, focused),
         }}
       />
       <Tabs.Screen
         name="theory"
         options={{
           title: 'Теория',
-          tabBarIcon: ({ color }) => tabIcon('theory', color),
+          tabBarIcon: ({ color, focused }) => tabIcon('theory', color, focused),
         }}
       />
       <Tabs.Screen
         name="files"
         options={{
           title: 'Файлы',
-          tabBarIcon: ({ color }) => tabIcon('files', color),
+          tabBarIcon: ({ color, focused }) => tabIcon('files', color, focused),
         }}
       />
     </Tabs>

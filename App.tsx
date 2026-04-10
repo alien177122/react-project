@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 
 // ============================================================
@@ -1214,9 +1214,11 @@ function App() {
   }
 
   // Список упражнений без сохранённого 1ПМ — показывается в "заблокированном" виде вкладки тренировки
-  const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
-    .map(([, ex]) => ex.name)
+  const missingExercises = useMemo(() => {
+    return Object.entries(EXERCISES)
+      .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+      .map(([, ex]) => ex.name)
+  }, [userData?.exercises])
 
   // --- Вход / регистрация ---
   // Получает JWT-токен от сервера, сохраняет в localStorage

@@ -5,11 +5,26 @@ import {
   TrainingMicrocycleBreakState,
   TrainingProgramDoneState,
 } from '../../src/components/training'
+import { TrainingErrorBoundary } from '../../src/components/ui/TrainingErrorBoundary'
 import { EX_COUNT, TRAINING_DAYS } from '../../src/data/exercises'
 import { useTrainingProgram } from '../../src/hooks/useTrainingProgram'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 
 export default function TrainingScreen() {
+  return (
+    <ScreenLayout
+      label="Training"
+      title="Тренировочный цикл"
+      subtitle="Текущая тренировка, прогресс программы и окно отдыха между микроциклами теперь повторяют веб-логику."
+    >
+      <TrainingErrorBoundary>
+        <TrainingDispatcher />
+      </TrainingErrorBoundary>
+    </ScreenLayout>
+  )
+}
+
+function TrainingDispatcher() {
   const { token, userData, setUserData } = useAuthSessionContext()
   const {
     allSaved,
@@ -30,24 +45,26 @@ export default function TrainingScreen() {
     setRestDismissed,
   } = useTrainingProgram({ token, userData, setUserData })
 
-  let content: JSX.Element
-
   if (!allSaved) {
-    content = (
+    return (
       <TrainingLockedState
         missingExercises={missingExercises}
         totalExercises={EX_COUNT}
       />
     )
-  } else if (programDone) {
-    content = (
+  }
+
+  if (programDone) {
+    return (
       <TrainingProgramDoneState
         completedSessions={completedSessions}
         onReset={handleReset}
       />
     )
-  } else if (isMicrocycleBreak) {
-    content = (
+  }
+
+  if (isMicrocycleBreak) {
+    return (
       <TrainingMicrocycleBreakState
         completedMicrocycle={completedMicrocycle}
         completedSessions={completedSessions}
@@ -55,32 +72,22 @@ export default function TrainingScreen() {
         onStartNextMicrocycle={() => setRestDismissed(true)}
       />
     )
-  } else {
-    content = (
-      <TrainingActiveState
-        completedSessions={completedSessions}
-        current={{
-          dayDef: TRAINING_DAYS[currentDayIdx],
-          exercises: currentTrainingExercises,
-          weekIndex: currentWeekIdx,
-        }}
-        onComplete={handleComplete}
-        preview={nextSessions < 24 ? {
-          dayDef: TRAINING_DAYS[nextDayIdx],
-          exercises: nextTrainingExercises,
-          weekIndex: nextWeekIdx,
-        } : undefined}
-      />
-    )
   }
 
   return (
-    <ScreenLayout
-      label="Training"
-      title="Тренировочный цикл"
-      subtitle="Текущая тренировка, прогресс программы и окно отдыха между микроциклами теперь повторяют веб-логику."
-    >
-      {content}
-    </ScreenLayout>
+    <TrainingActiveState
+      completedSessions={completedSessions}
+      current={{
+        dayDef: TRAINING_DAYS[currentDayIdx],
+        exercises: currentTrainingExercises,
+        weekIndex: currentWeekIdx,
+      }}
+      onComplete={handleComplete}
+      preview={nextSessions < 24 ? {
+        dayDef: TRAINING_DAYS[nextDayIdx],
+        exercises: nextTrainingExercises,
+        weekIndex: nextWeekIdx,
+      } : undefined}
+    />
   )
 }

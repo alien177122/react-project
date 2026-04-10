@@ -8,35 +8,20 @@
         "type": "tabs",
         "children": [
           {
-            "id": "38be1f33cd8b279c",
+            "id": "191c4fcddfc2d47b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CospectYeti.md",
+                "file": "apps/macos/node_modules/eslint-plugin-react/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CospectYeti"
-            }
-          },
-          {
-            "id": "3c08a7f5bd206977",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "CospectYeti.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "CospectYeti"
+              "title": "README"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -195,14 +180,48 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "3c08a7f5bd206977",
+  "active": "191c4fcddfc2d47b",
   "lastOpenFiles": [
-    "Deep-research.md",
-    "CospectYeti.md",
-    "node_modules/bl/LICENSE.md",
-    "apps/macos/node_modules/slice-ansi/node_modules/ansi-styles/readme.md",
-    "apps/macos/node_modules/eslint-plugin-react/README.md",
-    "Без названия 1.md",
-    "README.md"
+    "training-app-mobile/__tests__/components/TrainingProgramDoneState.test.tsx",
+    "training-app-mobile/__tests__/components/TrainingMicrocycleBreakState.test.tsx",
+    "training-app-mobile/__tests__/components/TrainingLockedState.test.tsx",
+    "training-app-mobile/__tests__/components/TrainingErrorBoundary.test.tsx",
+    "training-app-mobile/__tests__/components/TrainingActiveState.test.tsx",
+    "training-app-mobile/__tests__/components",
+    "training-app-mobile/__tests__",
+    "training-app-mobile/src/components/ui/TrainingErrorBoundary.tsx",
+    "training-app-mobile/jest.setup.ts",
+    "training-app-mobile/jest.config.js",
+    "training-app-mobile/node_modules/@jest/pattern/src/__tests__/__snapshots__/TestPathPatterns.test.ts.snap",
+    "training-app-mobile/node_modules/@jest/pattern/README.md",
+    "training-app-mobile/node_modules/stacktrace-gps/node_modules/source-map/README.md",
+    "training-app-mobile/node_modules/stacktrace-gps/node_modules/source-map/CHANGELOG.md",
+    "training-app-mobile/node_modules/stacktrace-gps/README.md",
+    "training-app-mobile/node_modules/eslint-scope/node_modules/estraverse/README.md",
+    "training-app-mobile/node_modules/eslint-scope/README.md",
+    "training-app-mobile/node_modules/eslint-scope/CHANGELOG.md",
+    "training-app-mobile/node_modules/domexception/node_modules/webidl-conversions/README.md",
+    "training-app-mobile/node_modules/domexception/node_modules/webidl-conversions/LICENSE.md",
+    "training-app-mobile/node_modules/domexception/README.md",
+    "training-app-mobile/node_modules/tough-cookie/node_modules/universalify/README.md",
+    "training-app-mobile/node_modules/tough-cookie/README.md",
+    "training-app-mobile/node_modules/react-shallow-renderer/node_modules/react-is/README.md",
+    "training-app-mobile/node_modules/react-shallow-renderer/README.md",
+    "training-app-mobile/node_modules/escodegen/node_modules/source-map/CHANGELOG.md",
+    "training-app-mobile/node_modules/escodegen/node_modules/source-map/README.md",
+    "training-app-mobile/node_modules/escodegen/README.md",
+    "training-app-mobile/node_modules/parse5/node_modules/entities/readme.md",
+    "training-app-mobile/node_modules/parse5/README.md",
+    "training-app-mobile/node_modules/cssstyle/README.md",
+    "training-app-mobile/node_modules/@jest/source-map/node_modules/callsites/readme.md",
+    "training-app-mobile/node_modules/string-length/node_modules/strip-ansi/readme.md",
+    "training-app-mobile/node_modules/string-length/readme.md",
+    "training-app-mobile/node_modules/istanbul-lib-source-maps/node_modules/source-map/README.md",
+    "training-app-mobile/node_modules/istanbul-lib-source-maps/node_modules/source-map/CHANGELOG.md",
+    "training-app-mobile/node_modules/@jest/reporters/assets/jest_logo.png",
+    "training-app-mobile/node_modules/psl/browserstack-logo.svg",
+    "training-app-mobile/node_modules/istanbul-reports/lib/html-spa/assets/sort-arrow-sprite.png",
+    "training-app-mobile/node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png",
+    "training-app-mobile/node_modules/istanbul-reports/lib/html/assets/favicon.png"
   ]
 }

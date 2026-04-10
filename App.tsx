@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 
 // ============================================================
@@ -883,7 +883,7 @@ function ProgressionBlock({ config, result }: { config: ExerciseConfig; result: 
   const [hovRow, setHovRow] = useState<number | null>(null)
 
   // Вычисляем строки таблицы: рабочий вес, схема, суммарные повторения
-  const weekRows = config.percentages.map((pct, i) => {
+  const weekRows = useMemo(() => config.percentages.map((pct, i) => {
     const totalWeight = calcWorkingWeight(result.oneRM, pct, config)
     const scheme = config.weekSchemes[i]
     const totalReps = scheme.sets * scheme.reps
@@ -892,7 +892,7 @@ function ProgressionBlock({ config, result }: { config: ExerciseConfig; result: 
       ? totalWeight - result.bodyWeight  // может быть отрицательным — ассистированные повторения
       : totalWeight
     return { week: i + 1, pct, weight: displayWeight, rawWeight: totalWeight, scheme, totalReps }
-  })
+  }), [config, result.oneRM, result.bodyWeight])
 
   // Заголовок колонки "Вес" меняется для подтягиваний
   const weightColLabel = config.isPullup ? '+кг к телу' : 'Вес, кг'

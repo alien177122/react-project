@@ -93,9 +93,9 @@ export function RPEScale() {
 
 const styles = StyleSheet.create({
   wrap: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.glass,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.sm,
     borderWidth: 1.5,
     flex: 1,
+    minHeight: 68,
     paddingVertical: 10,
     rowGap: 4,
   },

@@ -1,6 +1,6 @@
 import { Redirect, Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import { ActivityIndicator, Text, View } from 'react-native'
+import { AppLoadingScreen } from '../../src/components/ui/AppLoadingScreen'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 import { theme } from '../../src/theme'
 
@@ -28,10 +28,11 @@ export default function TabsLayout() {
 
   if (sessionLoading) {
     return (
-      <View style={{ alignItems: 'center', backgroundColor: theme.colors.bg, flex: 1, justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color={theme.colors.accent} />
-        <Text style={{ color: theme.colors.muted, marginTop: 16 }}>Загружаем мобильную оболочку…</Text>
-      </View>
+      <AppLoadingScreen
+        label="Tabs"
+        message="Собираем навигационную оболочку и восстанавливаем пользовательский контекст."
+        title="Загружаем мобильную оболочку"
+      />
     )
   }
 
@@ -44,7 +45,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: theme.colors.bg },
-        tabBarActiveTintColor: theme.colors.text,
+        tabBarActiveTintColor: theme.colors.accent,
         tabBarInactiveTintColor: theme.colors.muted,
         tabBarLabelStyle: {
           fontSize: 11,
@@ -55,11 +56,17 @@ export default function TabsLayout() {
           marginTop: 4,
         },
         tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-          height: 64,
-          paddingBottom: 6,
-          paddingTop: 4,
+          backgroundColor: 'rgba(11,15,26,0.96)',
+          borderTopColor: theme.colors.glassBorder,
+          borderTopWidth: 1,
+          elevation: 0,
+          height: 70,
+          paddingBottom: 8,
+          paddingTop: 8,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: -6 },
+          shadowOpacity: 0.12,
+          shadowRadius: 18,
         },
       }}
     >

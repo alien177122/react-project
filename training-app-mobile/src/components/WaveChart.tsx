@@ -53,8 +53,10 @@ export default function WaveChart({ schemes, activeIndex }: WaveChartProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    backgroundColor: theme.colors.bg,
+    backgroundColor: theme.colors.glass,
+    borderColor: theme.colors.glassBorder,
     borderRadius: theme.radius.md,
+    borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 10,
     rowGap: 8,
@@ -66,9 +68,12 @@ const styles = StyleSheet.create({
     height: 112,
   },
   barSlot: {
+    backgroundColor: 'rgba(255,255,255,0.035)',
+    borderRadius: 6,
     flex: 1,
     height: '100%',
     justifyContent: 'flex-end',
+    overflow: 'hidden',
   },
   bar: {
     borderRadius: 6,

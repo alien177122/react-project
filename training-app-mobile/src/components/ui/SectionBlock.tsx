@@ -11,7 +11,12 @@ export function SectionBlock({ num, title, children }: SectionBlockProps) {
   return (
     <View style={styles.section}>
       <View style={styles.header}>
-        <Text style={styles.num}>{num}</Text>
+        <View style={styles.headerTop}>
+          <View style={styles.numBadge}>
+            <Text style={styles.num}>{num}</Text>
+          </View>
+          <View style={styles.headerLine} />
+        </View>
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.body}>{children}</View>
@@ -21,22 +26,38 @@ export function SectionBlock({ num, title, children }: SectionBlockProps) {
 
 const styles = StyleSheet.create({
   section: {
-    rowGap: theme.spacing.md,
+    rowGap: theme.spacing.lg,
   },
   header: {
+    rowGap: theme.spacing.sm,
+  },
+  headerTop: {
     ...mx.row,
-    borderBottomColor: theme.colors.border,
-    borderBottomWidth: 1,
-    columnGap: theme.spacing.md,
-    paddingBottom: theme.spacing.sm,
+    columnGap: theme.spacing.sm,
+  },
+  numBadge: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.accentDim,
+    borderColor: theme.colors.accent,
+    borderRadius: 999,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minWidth: 42,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  headerLine: {
+    backgroundColor: theme.colors.glassBorder,
+    flex: 1,
+    height: 1,
   },
   num: {
     ...mx.textEyebrow,
     color: theme.colors.accent,
-    letterSpacing: 2,
+    letterSpacing: 1.4,
   },
   title: {
-    ...mx.textTitleLg,
+    ...mx.textTitle,
     flex: 1,
   },
   body: {

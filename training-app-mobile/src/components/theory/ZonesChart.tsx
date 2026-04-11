@@ -103,9 +103,9 @@ export function ZonesChart() {
 
 const styles = StyleSheet.create({
   wrap: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.glass,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   track: {
-    backgroundColor: theme.colors.card,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 4,
     flex: 1,
     height: 8,

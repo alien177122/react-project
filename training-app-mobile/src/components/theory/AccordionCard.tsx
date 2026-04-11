@@ -73,22 +73,24 @@ export const AccordionCard = memo(function AccordionCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.glass,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
     borderWidth: 1,
     overflow: 'hidden',
   },
   cardOpen: {
     borderColor: theme.colors.accent + '55',
+    backgroundColor: 'rgba(255,107,53,0.05)',
   },
   cardPressed: {
-    opacity: 0.8,
+    opacity: 0.88,
   },
   header: {
     alignItems: 'center',
     columnGap: theme.spacing.sm,
     flexDirection: 'row',
+    minHeight: 68,
     padding: theme.spacing.md,
   },
   titleWrap: {
@@ -110,9 +112,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: theme.colors.text,
-    fontSize: 15,
-    fontWeight: '700',
-    lineHeight: 20,
+    fontSize: 16,
+    fontWeight: '800',
+    lineHeight: 22,
   },
   chevron: {
     color: theme.colors.muted,
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '90deg' }],
   },
   body: {
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.glassBorder,
     borderTopWidth: 1,
     padding: theme.spacing.md,
     rowGap: 10,
@@ -135,8 +137,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   patternBox: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.radius.sm,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
     padding: theme.spacing.sm,
   },
   patternText: {

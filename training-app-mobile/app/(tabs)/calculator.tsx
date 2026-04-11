@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: theme.colors.card,
-    borderColor: theme.colors.border,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: theme.colors.glassBorder,
     borderRadius: theme.radius.md,
     borderWidth: 1,
     color: theme.colors.text,
@@ -395,8 +395,8 @@ const styles = StyleSheet.create({
   },
   savedItem: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.glass,
+    borderColor: theme.colors.glassBorder,
     borderRadius: theme.radius.md,
     borderWidth: 1,
     columnGap: theme.spacing.md,

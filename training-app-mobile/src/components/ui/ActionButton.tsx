@@ -1,5 +1,14 @@
 import type { PropsWithChildren } from 'react'
-import { Pressable, StyleSheet, Text } from 'react-native'
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type StyleProp,
+  type TextStyle,
+  type ViewStyle,
+} from 'react-native'
 import { mx, theme } from '../../theme'
 
 interface ActionButtonProps extends PropsWithChildren {
@@ -7,6 +16,9 @@ interface ActionButtonProps extends PropsWithChildren {
   onPress: () => void
   variant?: 'primary' | 'ghost' | 'danger'
   disabled?: boolean
+  loading?: boolean
+  style?: StyleProp<ViewStyle>
+  textStyle?: StyleProp<TextStyle>
 }
 
 export function ActionButton({
@@ -14,20 +26,37 @@ export function ActionButton({
   onPress,
   variant = 'primary',
   disabled = false,
+  loading = false,
+  style,
+  textStyle,
   children,
 }: ActionButtonProps) {
+  const blocked = disabled || loading
+
   return (
     <Pressable
-      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ busy: loading, disabled: blocked }}
+      disabled={blocked}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
         variantStyles[variant],
-        disabled ? mx.disabledOpacity : null,
+        style,
+        blocked ? mx.disabledOpacity : null,
         pressed ? mx.pressedOpacity : null,
       ]}
     >
-      {children ?? <Text style={[styles.text, textStyles[variant]]}>{label}</Text>}
+      {children ?? (
+        loading ? (
+          <View style={styles.loadingRow}>
+            <ActivityIndicator color={indicatorColors[variant]} size="small" />
+            <Text style={[styles.text, textStyles[variant], textStyle]}>{label ?? 'Загрузка…'}</Text>
+          </View>
+        ) : (
+          <Text style={[styles.text, textStyles[variant], textStyle]}>{label}</Text>
+        )
+      )}
     </Pressable>
   )
 }
@@ -35,10 +64,16 @@ export function ActionButton({
 const styles = StyleSheet.create({
   base: {
     ...mx.center,
-    borderRadius: theme.radius.md,
-    minHeight: 50,
-    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    minHeight: 52,
+    paddingHorizontal: theme.spacing.lg,
     paddingVertical: 12,
+  },
+  loadingRow: {
+    alignItems: 'center',
+    columnGap: theme.spacing.sm,
+    flexDirection: 'row',
   },
   text: {
     fontSize: theme.typography.button,
@@ -49,22 +84,25 @@ const styles = StyleSheet.create({
 const variantStyles = StyleSheet.create({
   primary: {
     backgroundColor: theme.colors.accent,
+    borderColor: theme.colors.accent,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
   },
   ghost: {
-    backgroundColor: 'transparent',
-    borderColor: theme.colors.border,
-    borderWidth: 1,
+    backgroundColor: theme.colors.glass,
+    borderColor: theme.colors.glassBorder,
   },
   danger: {
     backgroundColor: 'rgba(255,77,77,0.14)',
     borderColor: 'rgba(255,77,77,0.35)',
-    borderWidth: 1,
   },
 })
 
 const textStyles = StyleSheet.create({
   primary: {
-    color: '#111111',
+    color: '#0b0f1a',
   },
   ghost: {
     color: theme.colors.text,
@@ -73,3 +111,9 @@ const textStyles = StyleSheet.create({
     color: theme.colors.red,
   },
 })
+
+const indicatorColors = {
+  primary: '#0b0f1a',
+  ghost: theme.colors.text,
+  danger: theme.colors.red,
+} as const

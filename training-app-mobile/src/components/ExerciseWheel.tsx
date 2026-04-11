@@ -12,6 +12,7 @@ import { EXERCISES, SHORT_NAMES, TYPE_COLORS, TYPE_LABELS, WHEEL_ORDER } from '.
 import { theme } from '../theme'
 import type { SavedExercise } from '../types'
 import { donutArc, pol } from '../utils/geometry'
+import { GlossyCard } from './ui/GlossyCard'
 
 interface ExerciseWheelProps {
   value: string
@@ -36,6 +37,8 @@ export default function ExerciseWheel({ value, onChange, savedExercises = [] }: 
   }
 
   const selectedKey = activeKey ?? value
+  const selectedExercise = EXERCISES[value]
+  const savedSelected = savedByKey.get(value)
   const modalSize = Math.min(width - 32, 340)
 
   const N = WHEEL_ORDER.length
@@ -50,16 +53,26 @@ export default function ExerciseWheel({ value, onChange, savedExercises = [] }: 
 
   return (
     <>
-      <Pressable onPress={() => setOpen(true)} style={({ pressed }) => [styles.trigger, pressed ? styles.pressed : null]}>
-        <Text style={styles.triggerName}>{EXERCISES[value].name}</Text>
-        <Text style={styles.triggerIcon}>◈</Text>
-      </Pressable>
+      <GlossyCard contentStyle={styles.trigger} onPress={() => setOpen(true)} variant="accent">
+        <View style={styles.triggerCopy}>
+          <Text style={styles.triggerLabel}>Упражнение</Text>
+          <Text style={styles.triggerName}>{selectedExercise.name}</Text>
+          <Text style={styles.triggerMeta}>
+            {TYPE_LABELS[selectedExercise.type]}
+            {savedSelected ? ` · 1ПМ ${savedSelected.oneRM} кг` : ''}
+          </Text>
+        </View>
+        <Text style={styles.triggerIcon}>↗</Text>
+      </GlossyCard>
 
       <Modal visible={open} animationType="fade" transparent onRequestClose={() => setOpen(false)}>
         <View style={styles.overlay}>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
-          <View style={[styles.modal, { width: modalSize }]}>
+          <GlossyCard contentStyle={styles.modalCard} style={[styles.modal, { width: modalSize }]}>
             <Text style={styles.modalTitle}>Выбери упражнение</Text>
+            <Text style={styles.modalBody}>
+              Колесо собрано по паттернам движения. Нажми на сектор, чтобы быстро переключить упражнение без поиска по длинному списку.
+            </Text>
             <Svg width="100%" height={modalSize} viewBox="0 0 380 380">
               {WHEEL_ORDER.map((key, index) => {
                 const exercise = EXERCISES[key]
@@ -150,7 +163,7 @@ export default function ExerciseWheel({ value, onChange, savedExercises = [] }: 
                 </View>
               ))}
             </View>
-          </View>
+          </GlossyCard>
         </View>
       </Modal>
     </>
@@ -160,47 +173,61 @@ export default function ExerciseWheel({ value, onChange, savedExercises = [] }: 
 const styles = StyleSheet.create({
   trigger: {
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 58,
-    paddingHorizontal: 16,
+    minHeight: 72,
+    paddingHorizontal: theme.spacing.md,
   },
-  pressed: {
-    opacity: 0.85,
+  triggerCopy: {
+    flex: 1,
+    rowGap: 6,
+  },
+  triggerLabel: {
+    color: theme.colors.orange,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
   },
   triggerName: {
     color: theme.colors.text,
-    flex: 1,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
+  },
+  triggerMeta: {
+    color: theme.colors.muted,
+    fontSize: 13,
   },
   triggerIcon: {
     color: theme.colors.accent,
-    fontSize: 18,
+    fontSize: 20,
+    marginLeft: theme.spacing.md,
   },
   overlay: {
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.72)',
     flex: 1,
     justifyContent: 'center',
-    padding: 16,
+    padding: theme.spacing.md,
   },
   modal: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
-    padding: 16,
+    maxWidth: 380,
+  },
+  modalCard: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.md,
     rowGap: 12,
   },
   modalTitle: {
     color: theme.colors.text,
     fontSize: 20,
     fontWeight: '800',
+    textAlign: 'center',
+  },
+  modalBody: {
+    color: theme.colors.muted,
+    fontSize: 13,
+    lineHeight: 20,
     textAlign: 'center',
   },
   legend: {

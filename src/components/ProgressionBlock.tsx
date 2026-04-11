@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { ExerciseConfig, SavedExercise } from '../types'
 import { calcWorkingWeight, volumeClass } from '../utils/calc'
 import WaveChart from './WaveChart'
@@ -11,7 +11,7 @@ import WaveChart from './WaveChart'
 export default function ProgressionBlock({ config, result }: { config: ExerciseConfig; result: SavedExercise }) {
   const [hovRow, setHovRow] = useState<number | null>(null)
 
-  const weekRows = config.percentages.map((pct, i) => {
+  const weekRows = useMemo(() => config.percentages.map((pct, i) => {
     const totalWeight = calcWorkingWeight(result.oneRM, pct, config)
     const scheme = config.weekSchemes[i]
     const totalReps = scheme.sets * scheme.reps
@@ -19,7 +19,7 @@ export default function ProgressionBlock({ config, result }: { config: ExerciseC
       ? totalWeight - result.bodyWeight
       : totalWeight
     return { week: i + 1, pct, weight: displayWeight, rawWeight: totalWeight, scheme, totalReps }
-  })
+  }), [config, result.bodyWeight, result.oneRM])
 
   const weightColLabel = config.isPullup ? '+кг к телу' : 'Вес, кг'
 

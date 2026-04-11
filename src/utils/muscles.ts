@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/utils/muscles'
+export * from '../../packages/shared/src/utils/muscles.ts'

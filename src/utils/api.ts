@@ -1,4 +1,4 @@
-import { createApiClient } from '../../packages/shared/src/utils/api'
+import { createApiClient } from '../../packages/shared/src/utils/api.ts'
 
 export const API = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api'
 

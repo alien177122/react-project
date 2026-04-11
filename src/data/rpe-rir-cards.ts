@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/data/rpe-rir-cards'
+export * from '../../packages/shared/src/data/rpe-rir-cards.ts'

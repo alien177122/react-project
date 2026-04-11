@@ -8,6 +8,7 @@ import {
   createApiClient,
   normalizeLoadedUser,
 } from '../packages/shared/src/api/index.ts'
+import { createApiClient as createSessionApiClient } from '../packages/shared/src/utils/api.ts'
 
 function createTestClient(overrides?: {
   onUnauthorized?: () => void | Promise<void>
@@ -207,4 +208,55 @@ test('normalizeLoadedUser keeps only valid exercises and progress payloads', () 
     bodyWeight: 82,
     date: '2026-04-08',
   })
+})
+
+test('shared session loadUser returns fallback data on backend and network failures', async t => {
+  const originalFetch = globalThis.fetch
+  t.after(() => {
+    globalThis.fetch = originalFetch
+  })
+
+  const sessionClient = createSessionApiClient('/api')
+
+  globalThis.fetch = (async () => new Response('broken', {
+    status: 500,
+    headers: { 'Content-Type': 'text/plain' },
+  })) as typeof fetch
+
+  assert.deepEqual(await sessionClient.loadUser('Steve', 'token'), {
+    name: 'Steve',
+    exercises: [],
+  })
+
+  globalThis.fetch = (async () => {
+    throw new Error('Network error')
+  }) as typeof fetch
+
+  assert.deepEqual(await sessionClient.loadUser('Steve', 'token'), {
+    name: 'Steve',
+    exercises: [],
+  })
+})
+
+test('shared session loadUser returns null when auth is expired', async t => {
+  const originalFetch = globalThis.fetch
+  t.after(() => {
+    globalThis.fetch = originalFetch
+  })
+
+  const sessionClient = createSessionApiClient('/api')
+
+  globalThis.fetch = (async () => new Response(JSON.stringify({ error: 'expired' }), {
+    status: 401,
+    headers: { 'Content-Type': 'application/json' },
+  })) as typeof fetch
+
+  assert.equal(await sessionClient.loadUser('Steve', 'token'), null)
+
+  globalThis.fetch = (async () => new Response(JSON.stringify({ error: 'forbidden' }), {
+    status: 403,
+    headers: { 'Content-Type': 'application/json' },
+  })) as typeof fetch
+
+  assert.equal(await sessionClient.loadUser('Steve', 'token'), null)
 })

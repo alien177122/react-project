@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import Svg, { Circle, Defs, Pattern, Rect } from 'react-native-svg'
 import { ScreenLayout } from '../../src/components/ScreenLayout'
+import { TheoryDeepDive } from '../../src/components/theory/TheoryDeepDive'
 import { TheoryStage, type TheoryStageIcon } from '../../src/components/theory/TheoryStage'
 import { RPEScale } from '../../src/components/theory/RPEScale'
 import { GlossyCard } from '../../src/components/ui/GlossyCard'
@@ -302,6 +303,8 @@ export default function TheoryScreen() {
             </TheoryStage>
           ))}
         </View>
+
+        <TheoryDeepDive />
       </View>
     </ScreenLayout>
   )

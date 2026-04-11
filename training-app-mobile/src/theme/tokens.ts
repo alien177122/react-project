@@ -1,8 +1,12 @@
 export const theme = {
   colors: {
     bg: '#0d0d0d',
+    bgGradientTop: '#121827',
+    bgGradientBottom: '#070a12',
     surface: '#141414',
     card: '#1a1a1a',
+    glass: 'rgba(255,255,255,0.045)',
+    glassBorder: 'rgba(255,255,255,0.11)',
     border: '#252525',
     text: '#e0e0d8',
     muted: '#666666',
@@ -12,6 +16,8 @@ export const theme = {
     green: '#3affb8',
     blue: '#5ba4ff',
     orange: '#ff9f40',
+    glowWarm: 'rgba(255,107,53,0.20)',
+    glowCool: 'rgba(91,164,255,0.16)',
   },
   spacing: {
     xs: 6,

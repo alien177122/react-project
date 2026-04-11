@@ -1,5 +1,5 @@
-import type { StoredSession, TokenStorage } from '../../packages/shared/src/types'
-import { jwtName } from '../../packages/shared/src/utils/api'
+import type { StoredSession, TokenStorage } from '../../packages/shared/src/types/index.ts'
+import { jwtName } from '../../packages/shared/src/utils/api.ts'
 
 const TOKEN_KEY = 'gym_token'
 const USERNAME_KEY = 'gym_username'

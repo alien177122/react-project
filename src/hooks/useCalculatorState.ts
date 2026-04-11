@@ -1,5 +1,5 @@
-import { useCalculatorState as useSharedCalculatorState } from '../../packages/shared/src/hooks/useCalculatorState'
-import type { UseCalculatorStateOptions as SharedUseCalculatorStateOptions } from '../../packages/shared/src/hooks/useCalculatorState'
+import { useCalculatorState as useSharedCalculatorState } from '../../packages/shared/src/hooks/useCalculatorState.ts'
+import type { UseCalculatorStateOptions as SharedUseCalculatorStateOptions } from '../../packages/shared/src/hooks/useCalculatorState.ts'
 import { saveUser } from '../utils/api'
 
 type UseCalculatorStateOptions = Omit<SharedUseCalculatorStateOptions, 'saveUser'>

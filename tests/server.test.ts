@@ -164,6 +164,59 @@ test('auth endpoints and protected user lifecycle work with validated payloads',
   assert.ok(typeof login.body.token === 'string')
 })
 
+test('register endpoint validates required fields and duplicate users', async t => {
+  const ctx = await createTestContext()
+  t.after(async () => ctx.close())
+
+  const missingName = await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: 'squat123' }),
+  })
+  assert.equal(missingName.response.status, 400)
+  assert.equal(missingName.body.error, 'Заполни все поля')
+
+  const missingPassword = await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve' }),
+  })
+  assert.equal(missingPassword.response.status, 400)
+  assert.equal(missingPassword.body.error, 'Заполни все поля')
+
+  const shortName = await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: ' A ', password: 'squat123' }),
+  })
+  assert.equal(shortName.response.status, 400)
+  assert.equal(shortName.body.error, 'Имя минимум 2 символа')
+
+  const shortPassword = await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: '123' }),
+  })
+  assert.equal(shortPassword.response.status, 400)
+  assert.equal(shortPassword.body.error, 'Пароль минимум 4 символа')
+
+  const created = await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: ' Steve ', password: 'squat123' }),
+  })
+  assert.equal(created.response.status, 200)
+  assert.equal(created.body.name, 'Steve')
+
+  const duplicate = await requestJson(ctx.baseUrl, '/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Steve', password: 'another-pass' }),
+  })
+  assert.equal(duplicate.response.status, 409)
+  assert.equal(duplicate.body.error, 'Пользователь уже существует')
+})
+
 test('PUT /api/users/:name rejects malformed or mismatched user payloads', async t => {
   const ctx = await createTestContext()
   t.after(async () => ctx.close())

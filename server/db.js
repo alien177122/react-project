@@ -20,9 +20,20 @@ function safeParseUserData(raw) {
   }
 }
 
+function resolveDbPath(rawPath, env = process.env) {
+  const configuredPath = dbPathOrDefault(rawPath, env)
+  return configuredPath === ':memory:' ? configuredPath : resolve(configuredPath)
+}
+
+function dbPathOrDefault(rawPath, env = process.env) {
+  return rawPath || getDefaultDbPath(env)
+}
+
 export function createDb({ dbPath, env = process.env } = {}) {
-  const resolvedDbPath = resolve(dbPath || getDefaultDbPath(env))
-  mkdirSync(dirname(resolvedDbPath), { recursive: true })
+  const resolvedDbPath = resolveDbPath(dbPath, env)
+  if (resolvedDbPath !== ':memory:') {
+    mkdirSync(dirname(resolvedDbPath), { recursive: true })
+  }
 
   const db = new Database(resolvedDbPath)
 

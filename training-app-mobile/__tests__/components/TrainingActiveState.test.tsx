@@ -1,9 +1,10 @@
-import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react-native'
 import { TrainingActiveState } from '../../src/components/training/TrainingActiveState'
 
 jest.mock('../../src/components/TrainingDayCard', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react')
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Text } = require('react-native')
 
   return function MockTrainingDayCard({

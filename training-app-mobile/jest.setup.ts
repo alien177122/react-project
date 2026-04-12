@@ -1,14 +1,17 @@
 import type { PropsWithChildren } from 'react'
 
 jest.mock('expo-blur', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   BlurView: require('react-native').View,
 }))
 
 jest.mock('expo-linear-gradient', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   LinearGradient: require('react-native').View,
 }))
 
 jest.mock('react-native-reanimated', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Reanimated = require('react-native-reanimated/mock')
 
   Reanimated.default.call = () => {}

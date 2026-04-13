@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -716,44 +716,50 @@ function donutArc(cx: number, cy: number, ro: number, ri: number, s: number, e: 
 
 function VolumeDonut() {
   const [hov, setHov] = useState<string | null>(null)
-  const vol = computeMuscleVol()
-  const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
 
-  const SEG_GAP = 1.5, CAT_GAP = 5
-  const usable = 360 - CAT_GAP * 3
+  const vol = useMemo(() => computeMuscleVol(), [])
+  const { total, segs, catArcs, catVols } = useMemo(() => {
+    const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
 
-  interface DonutSeg {
-    muscle: string; value: number; pct: number
-    startDeg: number; endDeg: number; catKey: string
-  }
-  const segs: DonutSeg[] = []
-  let deg = -90
+    const SEG_GAP = 1.5, CAT_GAP = 5
+    const usable = 360 - CAT_GAP * 3
 
-  for (const catKey of CAT_ORDER) {
-    const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
-    const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
-    const catDegTotal = (catVol / total) * usable
-    const mUsable = catDegTotal - SEG_GAP * (muscles.length - 1)
-    for (let i = 0; i < muscles.length; i++) {
-      const m = muscles[i], mVol = vol[m] || 0
-      const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
-      segs.push({ muscle: m, value: mVol, pct: (mVol / total) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
-      deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
+    interface DonutSeg {
+      muscle: string; value: number; pct: number
+      startDeg: number; endDeg: number; catKey: string
     }
-    deg += CAT_GAP
-  }
+    const segs: DonutSeg[] = []
+    let deg = -90
+
+    for (const catKey of CAT_ORDER) {
+      const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
+      const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
+      const catDegTotal = (catVol / total) * usable
+      const mUsable = catDegTotal - SEG_GAP * (muscles.length - 1)
+      for (let i = 0; i < muscles.length; i++) {
+        const m = muscles[i], mVol = vol[m] || 0
+        const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
+        segs.push({ muscle: m, value: mVol, pct: (mVol / total) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
+        deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
+      }
+      deg += CAT_GAP
+    }
+
+    const catArcs = CAT_ORDER.map(catKey => {
+      const cs = segs.filter(s => s.catKey === catKey)
+      if (!cs.length) return null
+      return { catKey, startDeg: cs[0].startDeg, endDeg: cs[cs.length - 1].endDeg, color: CAT_META[catKey].color }
+    })
+
+    const catVols = CAT_ORDER.map(c => MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === c).reduce((s, m) => s + (vol[m] || 0), 0))
+
+    return { total, segs, catArcs, catVols }
+  }, [vol])
 
   const cx = 120, cy = 120
   const RO_OUT = 108, RO_IN = 96 // outer ring = category
   const RI_OUT = 92,  RI_IN = 56 // inner ring = muscles
 
-  const catArcs = CAT_ORDER.map(catKey => {
-    const cs = segs.filter(s => s.catKey === catKey)
-    if (!cs.length) return null
-    return { catKey, startDeg: cs[0].startDeg, endDeg: cs[cs.length - 1].endDeg, color: CAT_META[catKey].color }
-  })
-
-  const catVols = CAT_ORDER.map(c => MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === c).reduce((s, m) => s + (vol[m] || 0), 0))
   const hovSeg = segs.find(s => s.muscle === hov)
 
   return (
@@ -876,7 +882,7 @@ function ProgressionBlock({ config, result }: { config: ExerciseConfig; result: 
   const [hovRow, setHovRow] = useState<number | null>(null)
 
   // Вычисляем строки таблицы: рабочий вес, схема, суммарные повторения
-  const weekRows = config.percentages.map((pct, i) => {
+  const weekRows = useMemo(() => config.percentages.map((pct, i) => {
     const totalWeight = calcWorkingWeight(result.oneRM, pct, config)
     const scheme = config.weekSchemes[i]
     const totalReps = scheme.sets * scheme.reps
@@ -885,7 +891,7 @@ function ProgressionBlock({ config, result }: { config: ExerciseConfig; result: 
       ? totalWeight - result.bodyWeight  // может быть отрицательным — ассистированные повторения
       : totalWeight
     return { week: i + 1, pct, weight: displayWeight, rawWeight: totalWeight, scheme, totalReps }
-  })
+  }), [config, result.oneRM, result.bodyWeight])
 
   // Заголовок колонки "Вес" меняется для подтягиваний
   const weightColLabel = config.isPullup ? '+кг к телу' : 'Вес, кг'

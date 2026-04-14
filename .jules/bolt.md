@@ -1,0 +1,3 @@
+## 2025-04-14 - Prevent re-renders on complex SVG components via useMemo
+**Learning:** Complex UI components (like the `VolumeDonut` donut chart) that have many child elements and calculate geometry dynamically from static data can cause heavy frame drop when they have local state (like `hov` for mouse hover interaction) that triggers re-renders, as all the calculations execute on every hover event.
+**Action:** Always wrap heavy data processing and geometry computation inside `useMemo` for SVG/Canvas visualization components to ensure they do not recalculate purely static data on hover state changes.

@@ -4,9 +4,10 @@ import { calcWorkingWeight } from '../utils/calc'
 import ProgressionBlock from '../components/ProgressionBlock'
 import VolumeDonut from '../components/VolumeDonut'
 import ExerciseWheel from '../components/ExerciseWheel'
-import { CLASSES } from '@/styles/classes'
+import { SectionBlock, NoteBox } from '../components/TheoryTab'
+import { HeroSection } from '../components/ui/HeroSection'
 import { Button } from '../components/ui/Button'
-import { Input } from '../components/ui/Input'
+import { PremiumInput } from '../components/ui/PremiumInput'
 
 export interface CalculatorTabProps {
   userData: UserData
@@ -56,207 +57,199 @@ export default function CalculatorTab({
   const w8 = weekRows[weekRows.length - 1]
 
   return (
-    <>
-      <div className={CLASSES.SECTION}>
-        <div className={CLASSES.SECTION_HEADER}>
-          <span className={CLASSES.SECTION_NUM}>01</span>
-          <span className={CLASSES.SECTION_TITLE}>Тестовый подход</span>
-        </div>
+    <div className="theory-shell">
+      <HeroSection
+        label="Calculator"
+        title="1ПМ и прогрессия"
+        subtitle="Отказной подход → расчёт 1ПМ → рабочие веса на 8 недель с реальными схемами."
+      />
 
-        <div className="input-grid">
-          <div className="input-group">
-            <label className="input-label">Упражнение</label>
-            <ExerciseWheel
-              value={selectedExercise}
-              onChange={selectExercise}
-              savedExercises={userData.exercises}
-            />
-          </div>
+      <div className="theory-stack">
+        <SectionBlock num="01" title="Тестовый подход">
+          <div className="input-grid">
+            <div className="input-group">
+              <label className="input-label">Упражнение</label>
+              <ExerciseWheel
+                value={selectedExercise}
+                onChange={selectExercise}
+                savedExercises={userData.exercises}
+              />
+            </div>
 
-          {EXERCISES[selectedExercise].isPullup
-            ? (
-              <>
-                <div className="input-group">
-                  <label className="input-label">Вес тела (кг)</label>
-                  <Input
+            {EXERCISES[selectedExercise].isPullup
+              ? (
+                <>
+                  <PremiumInput
+                    id="calc-body-weight"
+                    label="Вес тела"
                     type="number"
+                    inputMode="decimal"
                     placeholder="80"
+                    unit="кг"
                     value={testBodyWeight}
                     onChange={(e) => setTestBodyWeight(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
                   />
-                </div>
-                <div className="input-group">
-                  <label className="input-label">Доп. вес (кг)</label>
-                  <Input
+                  <PremiumInput
+                    id="calc-extra-weight"
+                    label="Доп. вес"
                     type="number"
+                    inputMode="decimal"
                     placeholder="0"
+                    unit="кг"
                     value={testExtraWeight}
                     onChange={(e) => setTestExtraWeight(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
                   />
-                </div>
-              </>
-            )
-            : (
-              <div className="input-group">
-                <label className="input-label">Вес (кг)</label>
-                <Input
+                </>
+              )
+              : (
+                <PremiumInput
+                  id="calc-weight"
+                  label="Вес"
                   type="number"
+                  inputMode="decimal"
                   placeholder="80"
+                  unit="кг"
                   value={testWeight}
                   onChange={(e) => setTestWeight(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
                 />
-              </div>
-            )}
+              )}
 
-          <div className="input-group">
-            <label className="input-label">Повторений</label>
-            <Input
+            <PremiumInput
+              id="calc-reps"
+              label="Повторений"
               type="number"
+              inputMode="numeric"
               placeholder="6"
               min="1"
               max="20"
+              unit="повт"
               value={testReps}
               onChange={(e) => setTestReps(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
             />
-          </div>
-          <Button onClick={handleCalculate}>Рассчитать</Button>
-        </div>
-
-        <div className="note-box" style={{ marginTop: 16 }}>
-          {EXERCISES[selectedExercise].isPullup
-            ? (
-              <>
-                <strong>Подтягивания:</strong> введи вес тела + доп. вес (если есть). Итоговый 1ПМ = тело + доп.
-                В прогрессии показана только прибавка к весу тела (+X кг к поясу). Если результат отрицательный — ассистированные подтягивания.
-              </>
-            )
-            : (
-              <>
-                <strong>Инструкция:</strong> Отказной подход в диапазоне 4–8 повторений → калькулятор пересчитает 1ПМ
-                и покажет рабочие веса на 8 недель с реальными схемами. Наведи на строку — бар подсветится.
-              </>
-            )}
-        </div>
-      </div>
-
-      {activeResult && (
-        <div className={CLASSES.SECTION}>
-          <div className={CLASSES.SECTION_HEADER}>
-            <span className={CLASSES.SECTION_NUM}>02</span>
-            <span className={CLASSES.SECTION_TITLE}>Прогрессия — {config.name}</span>
+            <Button onClick={handleCalculate}>Рассчитать</Button>
           </div>
 
-          <div className="insight">
-            <strong>Объём снижается по мере роста весов</strong> — линейная волна с откатом на неделе 5.
-            {w1 && w8 && (
-              <>
-                <br /><br />
-                Нед 1: <code>{w1.weight} кг · {w1.scheme.sets}×{w1.scheme.reps} = {w1.totalReps} повт</code>
-                {' → '}
-                Нед 8: <code>{w8.weight} кг · {w8.scheme.sets}×{w8.scheme.reps} = {w8.totalReps} повт</code>
-                {'. Вес +'}
-                <strong>{Math.round((w8.weight / w1.weight - 1) * 100)}%</strong>
-                {', объём '}
-                {w1.totalReps > w8.totalReps
-                  ? <>упал в <strong>{(w1.totalReps / w8.totalReps).toFixed(1)}×</strong></>
-                  : <>стабилен</>
-                }.
-              </>
-            )}
-          </div>
-
-          <ProgressionBlock config={config} result={activeResult} />
-
-          <div className="result-card" style={{ marginTop: 16 }}>
-            <div className="result-label">Расчётный 1ПМ</div>
-            <div className="result-value">{activeResult.oneRM}<span>кг</span></div>
-            <div className="result-meta">
-              Тест: {activeResult.testWeight} кг × {activeResult.testReps} повт &nbsp;|&nbsp;
-              {TYPE_LABELS[config.type]} &nbsp;|&nbsp; Шаг: {config.step} кг &nbsp;|&nbsp; {activeResult.date}
-            </div>
-          </div>
-
-          <div className="note-box">
-            <strong>↺ Нед 5 — волновой откат:</strong> вес снижается, объём восстанавливается.
-            &nbsp;·&nbsp; <strong>Жирный</strong> в «Схема» = отклонение от 4 подходов.
-            <br /><br />
-            <strong>Цвет объёма:</strong>{' '}
-            <span style={{ color: '#ffb347', fontWeight: 600 }}>оранжевый ≥28</span>&nbsp;·&nbsp;
-            <span style={{ color: '#aaa' }}>серый 17–27</span>&nbsp;·&nbsp;
-            <span style={{ color: '#ff4d4d', fontWeight: 600 }}>красный ≤16</span>
-          </div>
-        </div>
-      )}
-
-      {userData.exercises.length > 0 && (
-        <div className={CLASSES.SECTION}>
-          <div className={CLASSES.SECTION_HEADER}>
-            <span className={CLASSES.SECTION_NUM}>03</span>
-            <span className={CLASSES.SECTION_TITLE}>
-              Сохранённые
-              <span style={{ fontFamily: 'Courier New', fontSize: 14, color: 'var(--muted)', marginLeft: 12 }}>
-                {userData.exercises.length}/{EX_COUNT}
-              </span>
-            </span>
-          </div>
-          <div className="saved-list">
-            {userData.exercises.map(saved => {
-              const ex = EXERCISES[saved.exerciseKey]
-              if (!ex) return null
-              const isActive = activeResult?.exerciseKey === saved.exerciseKey
-              return (
-                <div
-                  key={saved.exerciseKey}
-                  className={`saved-item${isActive ? ' saved-item-active' : ''}`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => handleSelectSaved(saved)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      handleSelectSaved(saved)
-                    }
-                  }}
-                >
-                  <div>
-                    <div className="saved-item-name">{ex.name}</div>
-                    <div className="saved-item-info">{saved.testWeight}кг × {saved.testReps} повт &nbsp;|&nbsp; {saved.date}</div>
-                  </div>
-                  <div className="saved-item-actions">
-                    <span className="saved-item-1rm">{saved.oneRM} кг</span>
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={e => {
-                        e.stopPropagation()
-                        handleDelete(saved.exerciseKey)
-                      }}
-                    >
-                      ×
-                    </Button>
-                  </div>
-                </div>
+          <NoteBox>
+            {EXERCISES[selectedExercise].isPullup
+              ? (
+                <>
+                  <strong>Подтягивания:</strong> введи вес тела + доп. вес (если есть). Итоговый 1ПМ = тело + доп.
+                  В прогрессии показана только прибавка к весу тела (+X кг к поясу). Если результат отрицательный — ассистированные подтягивания.
+                </>
               )
-            })}
-          </div>
-        </div>
-      )}
+              : (
+                <>
+                  <strong>Инструкция:</strong> Отказной подход в диапазоне 4–8 повторений → калькулятор пересчитает 1ПМ
+                  и покажет рабочие веса на 8 недель с реальными схемами. Наведи на строку — бар подсветится.
+                </>
+              )}
+          </NoteBox>
+        </SectionBlock>
 
-      <div className={CLASSES.SECTION}>
-        <div className={CLASSES.SECTION_HEADER}>
-          <span className={CLASSES.SECTION_NUM}>04</span>
-          <span className={CLASSES.SECTION_TITLE}>Распределение объёма</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 20 }}>
-          Средние рабочие подходы за цикл (3 дня), распределённые по мышечным группам.
-          Наведи на сектор чтобы увидеть детали.
-        </div>
-        <VolumeDonut />
+        {activeResult && (
+          <SectionBlock num="02" title={`Прогрессия — ${config.name}`}>
+            <div className="insight">
+              <strong>Объём снижается по мере роста весов</strong> — линейная волна с откатом на неделе 5.
+              {w1 && w8 && (
+                <>
+                  <br /><br />
+                  Нед 1: <code>{w1.weight} кг · {w1.scheme.sets}×{w1.scheme.reps} = {w1.totalReps} повт</code>
+                  {' → '}
+                  Нед 8: <code>{w8.weight} кг · {w8.scheme.sets}×{w8.scheme.reps} = {w8.totalReps} повт</code>
+                  {'. Вес +'}
+                  <strong>{Math.round((w8.weight / w1.weight - 1) * 100)}%</strong>
+                  {', объём '}
+                  {w1.totalReps > w8.totalReps
+                    ? <>упал в <strong>{(w1.totalReps / w8.totalReps).toFixed(1)}×</strong></>
+                    : <>стабилен</>
+                  }.
+                </>
+              )}
+            </div>
+
+            <ProgressionBlock config={config} result={activeResult} />
+
+            <div className="result-card">
+              <div className="result-label">Расчётный 1ПМ</div>
+              <div className="result-value">{activeResult.oneRM}<span>кг</span></div>
+              <div className="result-meta">
+                Тест: {activeResult.testWeight} кг × {activeResult.testReps} повт &nbsp;|&nbsp;
+                {TYPE_LABELS[config.type]} &nbsp;|&nbsp; Шаг: {config.step} кг &nbsp;|&nbsp; {activeResult.date}
+              </div>
+            </div>
+
+            <NoteBox>
+              <strong>↺ Нед 5 — волновой откат:</strong> вес снижается, объём восстанавливается.
+              &nbsp;·&nbsp; <strong>Жирный</strong> в «Схема» = отклонение от 4 подходов.
+              <br /><br />
+              <strong>Цвет объёма:</strong>{' '}
+              <span style={{ color: '#ffb347', fontWeight: 600 }}>оранжевый ≥28</span>&nbsp;·&nbsp;
+              <span style={{ color: '#aaa' }}>серый 17–27</span>&nbsp;·&nbsp;
+              <span style={{ color: '#ff4d4d', fontWeight: 600 }}>красный ≤16</span>
+            </NoteBox>
+          </SectionBlock>
+        )}
+
+        {userData.exercises.length > 0 && (
+          <SectionBlock
+            num="03"
+            title={`Сохранённые (${userData.exercises.length}/${EX_COUNT})`}
+          >
+            <div className="saved-list">
+              {userData.exercises.map(saved => {
+                const ex = EXERCISES[saved.exerciseKey]
+                if (!ex) return null
+                const isActive = activeResult?.exerciseKey === saved.exerciseKey
+                return (
+                  <div
+                    key={saved.exerciseKey}
+                    className={`saved-item${isActive ? ' saved-item-active' : ''}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleSelectSaved(saved)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleSelectSaved(saved)
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="saved-item-name">{ex.name}</div>
+                      <div className="saved-item-info">{saved.testWeight}кг × {saved.testReps} повт &nbsp;|&nbsp; {saved.date}</div>
+                    </div>
+                    <div className="saved-item-actions">
+                      <span className="saved-item-1rm">{saved.oneRM} кг</span>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={e => {
+                          e.stopPropagation()
+                          handleDelete(saved.exerciseKey)
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </SectionBlock>
+        )}
+
+        <SectionBlock num="04" title="Распределение объёма">
+          <NoteBox>
+            Средние рабочие подходы за цикл (3 дня), распределённые по мышечным группам.
+            Наведи на сектор чтобы увидеть детали.
+          </NoteBox>
+          <VolumeDonut />
+        </SectionBlock>
       </div>
-    </>
+    </div>
   )
 }

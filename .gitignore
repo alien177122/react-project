@@ -27,4 +27,4 @@ docker-data/
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw?&#10;# VS Code settings excludes&#10;**/ios/Pods&#10;**/ios/build&#10;**/android/build&#10;**/android/.gradle&#10;**/.expo

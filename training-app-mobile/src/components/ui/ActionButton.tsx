@@ -9,7 +9,14 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated'
 import { mx, theme } from '../../theme'
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
 interface ActionButtonProps extends PropsWithChildren {
   label?: string
@@ -32,19 +39,36 @@ export function ActionButton({
   children,
 }: ActionButtonProps) {
   const blocked = disabled || loading
+  const scale = useSharedValue(1)
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }))
+
+  const handlePressIn = () => {
+    if (!blocked) {
+      scale.value = withSpring(0.97, { damping: 18, stiffness: 400 })
+    }
+  }
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 18, stiffness: 400 })
+  }
 
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       accessibilityState={{ busy: loading, disabled: blocked }}
       disabled={blocked}
       onPress={onPress}
-      style={({ pressed }) => [
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={[
         styles.base,
         variantStyles[variant],
         style,
+        animatedStyle,
         blocked ? mx.disabledOpacity : null,
-        pressed ? mx.pressedOpacity : null,
       ]}
     >
       {children ?? (
@@ -57,7 +81,7 @@ export function ActionButton({
           <Text style={[styles.text, textStyles[variant], textStyle]}>{label}</Text>
         )
       )}
-    </Pressable>
+    </AnimatedPressable>
   )
 }
 

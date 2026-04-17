@@ -11,5 +11,17 @@
   --orange: #ff9f40;
   --text: #e0e0d8;
   --muted: #666;
+
+  /* Theory palette — available globally so HeroSection works outside .theory-shell */
+  --theory-bg: #0a0c10;
+  --theory-surface: #151a22;
+  --theory-card: #1c222c;
+  --theory-border: #232934;
+  --theory-border-strong: #343c49;
+  --theory-text: #f3efe6;
+  --theory-muted: #99a1ad;
+  --theory-accent: #f07a43;
+  --theory-accent-soft: rgba(240, 122, 67, 0.1);
+  --theory-accent-border: rgba(240, 122, 67, 0.32);
 }
 

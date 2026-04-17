@@ -1,288 +1,300 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import {
-  MTOR_CONCEPTS,
-  THEORY_CONCEPTS,
-  SUPPLEMENT_TIERS,
   MECHANICAL_CONCEPTS,
+  MTOR_CONCEPTS,
+  SUPPLEMENT_TIERS,
+  THEORY_CONCEPTS,
 } from '../data/theory'
+import { HeroSection } from './ui/HeroSection'
+import { StrengthFormulaSection } from './StrengthFormulaSection'
+import { TendonProtocolSection } from './TendonProtocolSection'
 
-type TheoryCardStyle = CSSProperties & Record<'--card-index', number>
+const CARD_COLORS = [
+  '#ff6b35',
+  '#ff9f40',
+  '#5ba4ff',
+  '#3affb8',
+  '#f2a65a',
+  '#bb86fc',
+  '#ff4d4d',
+  '#4cd97b',
+]
 
-interface TheoryCardProps {
+const TOP_THREE = [
+  {
+    num: '01',
+    color: '#ff6b35',
+    name: 'Креатин моногидрат',
+    dose: '3-5 г/сут',
+    desc: 'Самая надёжная база для силы и прогрессии у натурального атлета. Если нужен минимальный набор, отсюда логично начинать.',
+  },
+  {
+    num: '02',
+    color: '#ff9f40',
+    name: 'Кофеин',
+    dose: '~200 мг до тренировки',
+    desc: 'Поднимает концентрацию, выносливость и готовность работать тяжело. Но если кофеин бьёт по сну, сон важнее.',
+  },
+  {
+    num: '03',
+    color: '#9e9e9e',
+    name: 'Магний бисглицинат',
+    dose: '~400 мг элементарного магния',
+    desc: 'Имеет смысл при дефиците и высокой нагрузке. Это инструмент восстановления, а не волшебный бустер мышечного роста.',
+  },
+] as const
+
+const PERCENT_TABLE = [
+  { pct: '100%', reps: '1-3', zone: 'Максимум', color: '#ff6b35' },
+  { pct: '90-95%', reps: '2-5', zone: 'Сила', color: '#ff6b35' },
+  { pct: '80-89%', reps: '6-8', zone: 'Сила', color: '#ff6b35' },
+  { pct: '70-79%', reps: '8-12', zone: 'Гипертрофия', color: '#ff9f40' },
+  { pct: '65-69%', reps: '12-15', zone: 'Гипертрофия', color: '#ff9f40' },
+  { pct: '60-64%', reps: '15-20', zone: 'Выносливость', color: '#5ba4ff' },
+  { pct: '<60%', reps: '>20', zone: 'Выносливость', color: '#5ba4ff' },
+] as const
+
+const RPE_TABLE = [
+  { rpe: '10', reserve: '0', desc: 'Максимальный отказ', color: '#ff4d4d' },
+  { rpe: '9', reserve: '~1', desc: 'Мог сделать ещё 1', color: '#ff4d4d' },
+  { rpe: '8', reserve: '~2', desc: 'Ещё 2 в запасе', color: '#ff9f40' },
+  { rpe: '7', reserve: '~3', desc: 'Ещё 3 в запасе', color: '#ff9f40' },
+  { rpe: '6', reserve: '~4', desc: 'Ещё 4 в запасе', color: '#3affb8' },
+  { rpe: '<6', reserve: '>4', desc: 'Лёгкая нагрузка', color: '#3affb8' },
+] as const
+
+type SectionBlockProps = {
+  num: string
   title: string
-  idx: number
   children: ReactNode
-  accentColor?: string
 }
 
-function TheoryCard({ title, idx, children, accentColor }: TheoryCardProps) {
-  const style: TheoryCardStyle = {
-    '--card-index': idx,
-    ...(accentColor ? { borderLeft: `3px solid ${accentColor}` } : {}),
-  }
-
+export function SectionBlock({ num, title, children }: SectionBlockProps) {
   return (
-    <article className="theory-card" style={style}>
-      <div className="theory-card-title">{title}</div>
-      <div className="theory-card-body">{children}</div>
-    </article>
+    <section className="theory-section">
+      <div className="theory-section-header">
+        <div className="theory-section-pill">{num}</div>
+        <h2 className="theory-section-title">{title}</h2>
+      </div>
+      <div className="theory-section-body">{children}</div>
+    </section>
   )
 }
 
-// ============================================================
-// КОМПОНЕНТ ТЕОРИЯ — весь контент вкладки в одном месте
-// Разбит на 7 секций: понятия, mTOR, tier-лист, топ-3, таблицы, сухожилия, источники
-// ============================================================
+export function NoteBox({ children }: { children: ReactNode }) {
+  return <div className="theory-note-box">{children}</div>
+}
+
 export default function TheoryTab() {
   return (
-    <>
-      {/* ── Секция 1: базовые понятия ─────────────────────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">01</span>
-          <span className="section-title">Основы тренировки</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          Ключевые понятия, которые лежат в основе программы. Разберись с ними — и любая схема прогрессии станет понятна.
-        </div>
-        <div className="theory-grid">
-          {THEORY_CONCEPTS.map((concept, idx) => (
-            <TheoryCard key={concept.title} title={concept.title} idx={idx}>
-              {concept.body}
-            </TheoryCard>
-          ))}
-        </div>
-      </div>
+    <div className="theory-shell">
+      <HeroSection
+        label="Theory"
+        title="Теория тренинга"
+        subtitle="Основы прогрессии, mTOR, tier-лист добавок и ключевые ориентиры собраны в одном справочном разделе."
+      />
 
-      {/* ── Секция 2: mTOR и анаболический отклик ─────────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">02</span>
-          <span className="section-title">mTOR и анаболический отклик</span>
-        </div>
-        <div className="theory-grid">
-          {MTOR_CONCEPTS.map((concept, idx) => (
-            <TheoryCard key={concept.title} title={concept.title} idx={idx}>
-                <strong>Определение:</strong> {concept.definition}
-                {concept.pattern && (
-                  <>
-                    <br /><br />
-                    <strong>Закономерность:</strong> {concept.pattern}
-                  </>
-                )}
-                {concept.bullets && (
-                  <ul style={{ margin: '12px 0 0', paddingLeft: 18 }}>
-                    {concept.bullets.map(item => (
-                      <li key={item} style={{ marginBottom: 6 }}>{item}</li>
+      <div className="theory-stack">
+        <SectionBlock num="01" title="Основы тренировки">
+          <NoteBox>
+            Ключевые понятия, которые лежат в основе программы. Разберись с
+            ними, и вся схема прогрессии станет прозрачной.
+          </NoteBox>
+          <div className="theory-card-grid">
+            {THEORY_CONCEPTS.map((item, index) => {
+              const color = CARD_COLORS[index % CARD_COLORS.length]
+              return (
+                <article
+                  key={item.title}
+                  className="theory-card theory-top-card"
+                  style={{ borderTopColor: color }}
+                >
+                  <h3 className="theory-card-title" style={{ color }}>{item.title}</h3>
+                  <p className="theory-card-body">{item.body}</p>
+                </article>
+              )
+            })}
+          </div>
+        </SectionBlock>
+
+        <SectionBlock num="02" title="mTOR и анаболический отклик">
+          <div className="theory-card-grid">
+            {MTOR_CONCEPTS.map((item, index) => {
+              const color = CARD_COLORS[index % CARD_COLORS.length]
+              return (
+              <article key={item.title} className="theory-card theory-top-card" style={{ borderTopColor: color }}>
+                <h3 className="theory-card-title" style={{ color }}>{item.title}</h3>
+                <p className="theory-card-body">
+                  <strong className="theory-card-strong">Определение:</strong>{' '}
+                  {item.definition}
+                  {item.pattern ? (
+                    <>
+                      <br />
+                      <br />
+                      <strong className="theory-card-strong">
+                        Закономерность:
+                      </strong>{' '}
+                      {item.pattern}
+                    </>
+                  ) : null}
+                </p>
+                {item.bullets ? (
+                  <div className="theory-bullet-list">
+                    {item.bullets.map(bullet => (
+                      <div key={bullet} className="theory-bullet-row">
+                        <span className="theory-bullet-dot" style={{ color }}>•</span>
+                        <span className="theory-bullet-text">{bullet}</span>
+                      </div>
                     ))}
-                  </ul>
-                )}
-            </TheoryCard>
-          ))}
-        </div>
-      </div>
+                  </div>
+                ) : null}
+              </article>
+              )
+            })}
+          </div>
+        </SectionBlock>
 
-      {/* ── Секция 3: tier-лист добавок ───────────────────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">03</span>
-          <span className="section-title">Tier List добавок</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          По материалам <strong>Evolution Yeti</strong>: пост «TIER LIST СПОРТИВНЫХ ДОБАВОК» (08.01.2026) +
-          видео «БИОХАКИНГ / НЕЗАМЕНИМЫЕ ДОБАВКИ» (YouTube, 14.02.2025).
-          Рейтинг: рост мышц → сила → выносливость → восстановление → здоровье.
-        </div>
-        <div className="tier-list">
-          {SUPPLEMENT_TIERS.map(t => (
-            <div key={t.tier} className="tier-row">
-              <div className="tier-badge" style={{ background: t.color, color: t.textColor }}>
-                {t.tier}
-              </div>
-              <div className="tier-content">
-                <div className="tier-label" style={{ color: t.color }}>{t.label}</div>
-                <div className="tier-items">
-                  {t.items.map(item => (
-                    <span key={item} className="tier-item">{item}</span>
-                  ))}
+        <SectionBlock num="03" title="Tier List добавок">
+          <NoteBox>
+            Смотри на список как на приоритизацию. Верхние уровни дают реальную
+            отдачу чаще, нижние либо ситуативны, либо сильно зависят от
+            дефицитов.
+          </NoteBox>
+          <div className="theory-tier-list">
+            {SUPPLEMENT_TIERS.map(tier => (
+              <article key={tier.tier} className="theory-tier-row">
+                <div
+                  className="theory-tier-badge"
+                  style={{ backgroundColor: tier.color, color: tier.textColor }}
+                >
+                  {tier.tier}
                 </div>
-                <div className="tier-note">{t.note}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+                <div className="theory-tier-content">
+                  <h3
+                    className="theory-tier-title"
+                    style={{ color: tier.color }}
+                  >
+                    {tier.label}
+                  </h3>
+                  <div className="theory-chip-list">
+                    {tier.items.map(item => (
+                      <span key={item} className="theory-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="theory-card-body">{tier.note}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </SectionBlock>
 
-      {/* ── Секция 4: топ-3 рекомендации ─────────────────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">04</span>
-          <span className="section-title">Топ-3 если выбирать</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          Если можешь позволить себе только 2–3 добавки — вот список от автора. Всё остальное даёт либо незаметный эффект, либо требует анализов.
-        </div>
-        <div className="theory-top3">
-          <div className="theory-top3-card">
-            <div className="theory-top3-num" style={{ color: '#ff6b35' }}>01</div>
-            <div className="theory-top3-name">Креатин моногидрат</div>
-            <div className="theory-top3-dose">3–5 г/сут (60–70 кг) · до 10 г (100+ кг)</div>
-            <div className="theory-top3-desc">
-              Единственная добавка с реальным доказанным приростом силы у натуральных атлетов.
-              По систематическому обзору: +4 кг к жиму, +11 кг к упражнениям на ноги.
-              Хорошо работает у ~40% людей. При отсутствии эффекта — попробуй гидрохлорид или цитрат.
-              Загрузочная доза: до 20 г/сут в первую неделю (необязательно).
-            </div>
+        <SectionBlock num="04" title="Топ-3 если выбирать">
+          <div className="theory-card-grid theory-card-grid-compact">
+            {TOP_THREE.map(item => (
+              <article
+                key={item.num}
+                className="theory-card theory-top-card"
+                style={{ borderTopColor: item.color }}
+              >
+                <div className="theory-top-num" style={{ color: item.color }}>
+                  {item.num}
+                </div>
+                <h3 className="theory-top-name">{item.name}</h3>
+                <div className="theory-top-dose">{item.dose}</div>
+                <p className="theory-card-body">{item.desc}</p>
+              </article>
+            ))}
           </div>
-          <div className="theory-top3-card">
-            <div className="theory-top3-num" style={{ color: '#ff9f40' }}>02</div>
-            <div className="theory-top3-name">Кофеин</div>
-            <div className="theory-top3-dose">~200 мг до тренировки</div>
-            <div className="theory-top3-desc">
-              Самая изученная добавка: 8 из 9 исследований подтвердили рост силовых показателей.
-              Улучшает выносливость, концентрацию и обучение новым движениям.
-              Через кофе или предтрен. <strong>Противопоказан при хронических нарушениях сна</strong> — в таком случае сон важнее.
-            </div>
-          </div>
-          <div className="theory-top3-card">
-            <div className="theory-top3-num" style={{ color: '#9e9e9e' }}>03</div>
-            <div className="theory-top3-name">Магний бисглицинат</div>
-            <div className="theory-top3-dose">4 капс / ~400 мг элемент. магния</div>
-            <div className="theory-top3-desc">
-              При интенсивных тренировках потребность в магнии на 20% выше нормы.
-              Участвует в углеводном обмене, важен для восстановления мышц.
-              <strong>Принимать только при подтверждённом дефиците</strong> по результатам анализов крови.
-            </div>
-          </div>
-        </div>
-      </div>
+        </SectionBlock>
 
-      {/* ── Секция 5: таблица %ПМ → повторения + RPE ──────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">05</span>
-          <span className="section-title">Таблица %ПМ и RPE</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          Взаимосвязь процента от повторного максимума, количества повторений и уровня RPE.
-          Используй для планирования нагрузки и оценки тяжести подхода.
-        </div>
-        <div className="theory-tables-wrap">
-          <div className="theory-table-card">
-            <div className="theory-table-title">% от 1ПМ → Повторения</div>
-            <table className="pt theory-ref-table">
-              <thead>
-                <tr><th style={{ textAlign: 'left' }}>% ПМ</th><th>Повт</th><th>Зона</th></tr>
-              </thead>
-              <tbody>
-                {([
-                  ['100%', '1', 'Сила'],
-                  ['95%', '~2', 'Сила'],
-                  ['90%', '~4', 'Сила'],
-                  ['85%', '~6', 'Сила'],
-                  ['80%', '~8', 'Сила / Гипертрофия'],
-                  ['75%', '~10', 'Гипертрофия'],
-                  ['70%', '~12', 'Гипертрофия'],
-                  ['67%', '~15', 'Выносливость'],
-                  ['65%', '15+', 'Выносливость'],
-                ] as const).map(([pct, reps, zone], i) => (
-                  <tr key={i}>
-                    <td className="w-kg" style={{ textAlign: 'left' }}>{pct}</td>
-                    <td className="w-sr">{reps}</td>
-                    <td style={{ color: zone === 'Сила' ? '#ff6b35' : zone === 'Гипертрофия' ? '#ff9f40' : zone.includes('Сила') ? '#e85a2a' : '#5ba4ff', fontSize: 11 }}>
-                      {zone}
-                    </td>
+        <SectionBlock num="05" title="Таблица %ПМ и RPE">
+          <NoteBox>
+            Таблица 1: интенсивность (% от 1ПМ), количество повторений и зоны
+            тренировочного воздействия. Таблица 2: RPE как быстрая шкала для
+            оценки тяжести подхода.
+          </NoteBox>
+          <div className="theory-table-grid">
+            <div className="theory-table-shell">
+              <div className="theory-table-caption">% ПМ и зоны</div>
+              <table className="theory-table">
+                <thead>
+                  <tr>
+                    <th>% ПМ</th>
+                    <th>Повт</th>
+                    <th>Зона</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {PERCENT_TABLE.map(row => (
+                    <tr key={row.pct}>
+                      <td style={{ color: row.color }}>{row.pct}</td>
+                      <td>{row.reps}</td>
+                      <td style={{ color: row.color }}>{row.zone}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <div className="theory-table-card">
-            <div className="theory-table-title">Шкала RPE</div>
-            <table className="pt theory-ref-table">
-              <thead>
-                <tr><th style={{ textAlign: 'left' }}>RPE</th><th>Повторы в запасе</th><th>Описание</th></tr>
-              </thead>
-              <tbody>
-                {([
-                  ['10', '0', 'Полный отказ — больше ни одного повт'],
-                  ['9.5', '0–1', 'Возможно ещё 1, но не уверен'],
-                  ['9', '1', 'Мог бы сделать ещё 1 повт'],
-                  ['8', '2', 'Ещё 2 повторения в запасе'],
-                  ['7', '3', 'Ещё 3 повторения, средне'],
-                  ['6', '4', 'Ещё 4 в запасе, ощутимо легко'],
-                  ['5', '5+', 'Разминочная нагрузка'],
-                  ['4', '6+', 'Очень лёгкая работа'],
-                ] as const).map(([rpe, rir, desc], i) => (
-                  <tr key={i}>
-                    <td className="w-kg" style={{ textAlign: 'left', color: Number(rpe) >= 9 ? '#ff4d4d' : Number(rpe) >= 7 ? '#ff9f40' : '#3affb8' }}>{rpe}</td>
-                    <td className="w-sr">{rir}</td>
-                    <td style={{ color: 'var(--muted)', fontSize: 11, textAlign: 'left' }}>{desc}</td>
+            <div className="theory-table-shell">
+              <div className="theory-table-caption">Шкала RPE</div>
+              <table className="theory-table">
+                <thead>
+                  <tr>
+                    <th>RPE</th>
+                    <th>В запасе</th>
+                    <th>Описание</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {RPE_TABLE.map(row => (
+                    <tr key={row.rpe}>
+                      <td style={{ color: row.color }}>{row.rpe}</td>
+                      <td>{row.reserve}</td>
+                      <td style={{ color: row.color }}>{row.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </div>
+        </SectionBlock>
 
-      {/* ── Секция 6: протокол укрепления сухожилий ─────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">06</span>
-          <span className="section-title">Протокол укрепления сухожилий</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          По материалам <strong>Evolution Yeti</strong> и систематических обзоров.
-          Сухожилия адаптируются только при нагрузке &gt;70% ПМ (деформация 4,5–6,5%).
-          Многоповторка закачивает мышцы, но <strong>не сухожилия</strong> — создаёт дисбаланс и повышает травматизм.
-        </div>
-        <div className="theory-grid">
-          <TheoryCard title="Рабочий протокол" idx={0} accentColor="#ff6b35">
-              Частота: ~3 раза/нед. Интенсивность: 85–90% ПМ. Схема: 5 подходов × 4 повторения.
-              Время под нагрузкой (TUT): ~3 сек в целевой части амплитуды или ~6 сек в полной амплитуде.
-              Ориентир — TUT на нужной деформации, а не отказ. Используй изолированные упражнения для точного попадания в целевое сухожилие.
-          </TheoryCard>
-          <TheoryCard title="Если сухожилие «податливое»" idx={1} accentColor="#ff9f40">
-              Если на тесте деформация &gt;10% — начинай с ~60% ПМ и постепенно наращивай к 70–90%.
-              Здоровым для прогресса нередко нужны до 90% ПМ. Прогрессируй вес постепенно, следи за болевыми ощущениями.
-              При стихании боли — переходи к базовым движениям, сохраняя принцип дозировки.
-          </TheoryCard>
-          <TheoryCard title="Что НЕ работает" idx={2} accentColor="#ff4d4d">
-              Растяжка снижает жёсткость сухожилий — в силовом тренинге это минус.
-              НПВС (ибупрофен, мелоксикам, МСМ, куркумин) убирают боль, но не улучшают ремоделирование.
-              Пептиды коллагена теоретически могут помочь (более устойчивы к разрушению в ЖКТ), но доказательства неоднозначные.
-          </TheoryCard>
-          <TheoryCard title="Почему фармакология ≠ крепкие сухожилия" idx={3} accentColor="#5ba4ff">
-              Анаболические стероиды резко повышают силу мышц, но сухожилия не успевают адаптироваться.
-              Натуральный атлет набирает силу за 1–2 года — сухожилия укрепляются параллельно.
-              Химик достигает тех же показателей за пару месяцев — деформация уходит за 9%, копятся микротравмы и отрывы.
-          </TheoryCard>
-        </div>
-      </div>
+        <SectionBlock num="06" title="Протокол укрепления сухожилий">
+          <NoteBox>
+            Сухожилия адаптируются только при деформации 4,5-6,5%, что
+            соответствует нагрузкам &gt;70% ПМ. Протокол: 5x4 на 85-90% ПМ, 3
+            раза в неделю, удержание около 3 секунд в пике момента силы.
+          </NoteBox>
+          <TendonProtocolSection />
+        </SectionBlock>
 
-      {/* ── Секция 7: механическое преимущество ─────────── */}
-      <div className="section">
-        <div className="section-header">
-          <span className="section-num">07</span>
-          <span className="section-title">Механическое преимущество</span>
-        </div>
-        <div className="note-box" style={{ marginBottom: 24 }}>
-          Сила — это не только мышцы, но и рычаги. Плохой результат в движении не всегда означает
-          плохую подготовку: часто это вопрос антропометрии и механики. Понимание этого даёт быстрый
-          рост результата даже без роста мышечной массы.
-        </div>
-        <div className="theory-grid">
-          {MECHANICAL_CONCEPTS.map((concept, idx) => (
-            <TheoryCard key={concept.title} title={concept.title} idx={idx}>
-              {concept.body}
-            </TheoryCard>
-          ))}
-        </div>
-      </div>
+        <SectionBlock num="07" title="Механическое преимущество">
+          <NoteBox>
+            Механика важнее мотивации. Один и тот же вес может быть лёгким или
+            тяжёлым в зависимости от рычагов, антропометрии и конкретной
+            позиции в амплитуде.
+          </NoteBox>
+          <div className="theory-card-grid">
+            {MECHANICAL_CONCEPTS.map((item, index) => {
+              const color = CARD_COLORS[index % CARD_COLORS.length]
+              return (
+                <article key={item.title} className="theory-card theory-top-card" style={{ borderTopColor: color }}>
+                  <h3 className="theory-card-title" style={{ color }}>{item.title}</h3>
+                  <p className="theory-card-body">{item.body}</p>
+                </article>
+              )
+            })}
+          </div>
+        </SectionBlock>
 
-    </>
+        <SectionBlock num="08" title="Формула силы">
+          <StrengthFormulaSection />
+        </SectionBlock>
+      </div>
+    </div>
   )
 }

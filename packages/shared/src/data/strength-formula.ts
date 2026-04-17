@@ -477,10 +477,14 @@ const strengthFormulaFallback: StrengthFormulaData = {
 const parsedStrengthFormulaData =
   StrengthFormulaDataSchema.safeParse(strengthFormulaDataInput)
 
+const runtimeProcess =
+  typeof globalThis === 'object' && 'process' in globalThis
+    ? (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process
+    : undefined
+
 if (
   !parsedStrengthFormulaData.success &&
-  typeof process !== 'undefined' &&
-  process.env.NODE_ENV !== 'production'
+  runtimeProcess?.env?.NODE_ENV !== 'production'
 ) {
   console.warn(
     '[strength-formula] Zod validation failed, using fallback data.',

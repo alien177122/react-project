@@ -185,6 +185,7 @@ export const textTitle: TextStyle = {
   color: theme.colors.text,
   fontSize: theme.typography.title,
   fontWeight: '800',
+  letterSpacing: theme.letterSpacing.snug,
   lineHeight: 28,
 }
 
@@ -193,6 +194,7 @@ export const textTitleLg: TextStyle = {
   color: theme.colors.text,
   fontSize: 28,
   fontWeight: '800',
+  letterSpacing: theme.letterSpacing.snug,
   lineHeight: 32,
 }
 
@@ -201,6 +203,7 @@ export const textHero: TextStyle = {
   color: theme.colors.text,
   fontSize: theme.typography.hero,
   fontWeight: '800',
+  letterSpacing: theme.letterSpacing.tight,
   lineHeight: 38,
 }
 
@@ -217,19 +220,20 @@ export const tableHeadCell: TextStyle = {
   textTransform: 'uppercase',
 }
 
-/** Numeric data cell — monospace, centred */
+/** Numeric data cell — tabular figures, centred */
 export const numericCell: TextStyle = {
   color: theme.colors.text,
   flex: 1,
-  fontFamily: 'Courier',
+  fontVariant: ['tabular-nums'],
   fontSize: 13,
+  fontWeight: '600',
   textAlign: 'center',
 }
 
 export const numericCellMd: TextStyle = {
   color: theme.colors.text,
   flex: 1,
-  fontFamily: 'Courier',
+  fontVariant: ['tabular-nums'],
   fontSize: 14,
   fontWeight: '700',
   textAlign: 'center',

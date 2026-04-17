@@ -12,6 +12,7 @@ import AuthScreen from './src/screens/AuthScreen'
 import CalculatorTab from './src/screens/CalculatorTab'
 import TrainingTab from './src/screens/TrainingTab'
 import { Button } from './src/components/ui/Button'
+import { HeroSection } from './src/components/ui/HeroSection'
 
 // ============================================================
 // APP — главный компонент, управляет всем состоянием приложения
@@ -89,10 +90,11 @@ function App() {
 
   if (sessionLoading) return (
     <>
-      <div className="hero">
-        <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
-      </div>
+      <HeroSection
+        label="Тренировочный калькулятор"
+        title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
+        subtitle=""
+      />
       <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '48px 0' }}>Восстанавливаем сессию...</div>
     </>
   )
@@ -118,21 +120,22 @@ function App() {
   // Loading
   if (!userData) return (
     <>
-      <div className="hero">
-        <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
-      </div>
+      <HeroSection
+        label="Тренировочный калькулятор"
+        title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
+        subtitle=""
+      />
       <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '48px 0' }}>Загрузка данных...</div>
     </>
   )
 
   return (
     <>
-      <div className="hero">
-        <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
-        <p>Введи тестовый вес и повторения — получи расклад рабочих весов с реальными схемами на 8 недель</p>
-      </div>
+      <HeroSection
+        label="Тренировочный калькулятор"
+        title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
+        subtitle="Введи тестовый вес и повторения — получи расклад рабочих весов с реальными схемами на 8 недель"
+      />
 
       {/* User bar */}
       <div className="user-bar">

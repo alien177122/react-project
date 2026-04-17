@@ -32,6 +32,21 @@ export const theme = {
     lg: 24,
   },
   /**
+   * Letter-spacing tokens (positive = expanded, negative = tight/premium)
+   *   tight   -0.5   large display / hero text
+   *   snug    -0.3   section titles and subheadlines
+   *   normal   0     body copy
+   *   caps     1.5   uppercase small text
+   *   label    2     eyebrow / screen labels
+   */
+  letterSpacing: {
+    tight: -0.5,
+    snug: -0.3,
+    normal: 0,
+    caps: 1.5,
+    label: 2,
+  },
+  /**
    * Named type scale — use these in StyleSheet / mixins instead of raw numbers.
    *   caption  11  table column headers
    *   eyebrow  12  screen labels, tags

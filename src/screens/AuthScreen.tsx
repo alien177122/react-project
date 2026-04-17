@@ -1,5 +1,8 @@
+import { motion } from 'framer-motion'
+import { HeroSection } from '../components/ui/HeroSection'
+import { PremiumInput } from '../components/ui/PremiumInput'
 import { Button } from '../components/ui/Button'
-import { Input } from '../components/ui/Input'
+import { fadeInScale } from '../theme/animations'
 
 export interface AuthScreenProps {
   authMode: 'login' | 'register'
@@ -32,13 +35,18 @@ export default function AuthScreen({
 }: AuthScreenProps) {
   return (
     <>
-      <div className="hero">
-        <div className="hero-label">Тренировочный калькулятор</div>
-        <h1>ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ</h1>
-        <p>Рассчитай рабочие веса на 8 недель по своему 1ПМ. Реальные схемы с волновой периодизацией.</p>
-      </div>
+      <HeroSection
+        label="Тренировочный калькулятор"
+        title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
+        subtitle="Рассчитай рабочие веса на 8 недель по своему 1ПМ. Реальные схемы с волновой периодизацией."
+      />
 
-      <div className="auth-card">
+      <motion.div
+        className="auth-card"
+        variants={fadeInScale}
+        initial="hidden"
+        animate="show"
+      >
         <div className="auth-tabs">
           <button
             className={`auth-tab${authMode === 'login' ? ' auth-tab-active' : ''}`}
@@ -61,44 +69,45 @@ export default function AuthScreen({
         </div>
 
         <div className="auth-form">
-          <div className="input-group">
-            <label className="input-label">Имя пользователя</label>
-            <Input
-              placeholder="Стив"
-              autoComplete="username"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
-            />
-          </div>
+          <PremiumInput
+            id="auth-name"
+            label="Имя пользователя"
+            placeholder="Стив"
+            autoComplete="username"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+          />
 
-          <div className="input-group">
-            <label className="input-label">Пароль</label>
-            <Input
-              type="password"
-              placeholder="••••••"
-              autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
-              value={passInput}
-              onChange={(e) => setPassInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
-            />
-          </div>
+          <PremiumInput
+            id="auth-pass"
+            label="Пароль"
+            type="password"
+            placeholder="••••••"
+            autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
+            value={passInput}
+            onChange={(e) => setPassInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+          />
 
           {authMode === 'register' && (
-            <div className="input-group">
-              <label className="input-label">Повторить пароль</label>
-              <Input
-                type="password"
-                placeholder="••••••"
-                autoComplete="new-password"
-                value={pass2Input}
-                onChange={(e) => setPass2Input(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
-              />
-            </div>
+            <PremiumInput
+              id="auth-pass2"
+              label="Повторить пароль"
+              type="password"
+              placeholder="••••••"
+              autoComplete="new-password"
+              value={pass2Input}
+              onChange={(e) => setPass2Input(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+            />
           )}
 
-          {authError && <div className="auth-error">{authError}</div>}
+          {authError && (
+            <div className="auth-error" role="alert">
+              {authError}
+            </div>
+          )}
 
           <Button
             style={{ width: '100%', marginTop: 8 }}
@@ -108,8 +117,7 @@ export default function AuthScreen({
             {authLoading ? '...' : authMode === 'login' ? 'Войти' : 'Создать аккаунт'}
           </Button>
         </div>
-      </div>
+      </motion.div>
     </>
   )
 }
-

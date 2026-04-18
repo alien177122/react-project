@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import './src/styles/animations.css'
 
 // Данные
 import { EX_COUNT } from './src/data/exercises'
@@ -168,55 +170,60 @@ function App() {
         </button>
       </div>
 
-      {/* ====== CALCULATOR TAB ====== */}
-      {activeTab === 'calculator' && (
-        <CalculatorTab
-          userData={userData}
-          selectedExercise={selectedExercise}
-          selectExercise={selectExercise}
-          testWeight={testWeight}
-          setTestWeight={setTestWeight}
-          testBodyWeight={testBodyWeight}
-          setTestBodyWeight={setTestBodyWeight}
-          testExtraWeight={testExtraWeight}
-          setTestExtraWeight={setTestExtraWeight}
-          testReps={testReps}
-          setTestReps={setTestReps}
-          activeResult={activeResult}
-          handleCalculate={handleCalculate}
-          handleDelete={handleDelete}
-          handleSelectSaved={handleSelectSaved}
-        />
-      )}
+      {/* ====== TAB CONTENT ====== */}
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+        >
+          {activeTab === 'calculator' && (
+            <CalculatorTab
+              userData={userData}
+              selectedExercise={selectedExercise}
+              selectExercise={selectExercise}
+              testWeight={testWeight}
+              setTestWeight={setTestWeight}
+              testBodyWeight={testBodyWeight}
+              setTestBodyWeight={setTestBodyWeight}
+              testExtraWeight={testExtraWeight}
+              setTestExtraWeight={setTestExtraWeight}
+              testReps={testReps}
+              setTestReps={setTestReps}
+              activeResult={activeResult}
+              handleCalculate={handleCalculate}
+              handleDelete={handleDelete}
+              handleSelectSaved={handleSelectSaved}
+            />
+          )}
 
-      {/* ====== THEORY TAB ====== */}
-      {activeTab === 'theory' && <TheoryTab />}
+          {activeTab === 'theory' && <TheoryTab />}
 
-      {/* ====== FILES TAB ====== */}
-
-      {/* ====== TRAINING TAB ====== */}
-      {activeTab === 'training' && (
-        <TrainingTab
-          userData={userData}
-          allSaved={allSaved}
-          missingExercises={missingExercises}
-          completedSessions={completedSessions}
-          currentDayIdx={currentDayIdx}
-          currentWeekIdx={currentWeekIdx}
-          programDone={programDone}
-          nextSessions={nextSessions}
-          nextDayIdx={nextDayIdx}
-          nextWeekIdx={nextWeekIdx}
-          isMicrocycleBreak={isMicrocycleBreak}
-          completedMicrocycle={completedMicrocycle}
-          currentTrainingExercises={currentTrainingExercises}
-          nextTrainingExercises={nextTrainingExercises}
-          handleComplete={handleComplete}
-          handleReset={handleReset}
-          setRestDismissed={setRestDismissed}
-          onGoCalculator={() => setActiveTab('calculator')}
-        />
-      )}
+          {activeTab === 'training' && (
+            <TrainingTab
+              userData={userData}
+              allSaved={allSaved}
+              missingExercises={missingExercises}
+              completedSessions={completedSessions}
+              currentDayIdx={currentDayIdx}
+              currentWeekIdx={currentWeekIdx}
+              programDone={programDone}
+              nextSessions={nextSessions}
+              nextDayIdx={nextDayIdx}
+              nextWeekIdx={nextWeekIdx}
+              isMicrocycleBreak={isMicrocycleBreak}
+              completedMicrocycle={completedMicrocycle}
+              currentTrainingExercises={currentTrainingExercises}
+              nextTrainingExercises={nextTrainingExercises}
+              handleComplete={handleComplete}
+              handleReset={handleReset}
+              setRestDismissed={setRestDismissed}
+              onGoCalculator={() => setActiveTab('calculator')}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </>
   )
 }

@@ -88,7 +88,7 @@ export function ActionButton({
 const styles = StyleSheet.create({
   base: {
     ...mx.center,
-    borderRadius: theme.radius.lg,
+    borderRadius: 14,
     borderWidth: 1,
     minHeight: 52,
     paddingHorizontal: theme.spacing.lg,

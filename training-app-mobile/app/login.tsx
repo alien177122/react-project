@@ -6,13 +6,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { GlossyCard } from '../src/components/ui/GlossyCard'
 import { ActionButton } from '../src/components/ui/ActionButton'
 import { AppLoadingScreen } from '../src/components/ui/AppLoadingScreen'
+import { IOSInput } from '../src/components/ui/IOSInput'
 import { ScreenBackground } from '../src/components/ui/ScreenBackground'
 import { useAuthSessionContext } from '../src/providers/AuthSessionProvider'
 import { theme } from '../src/theme'
@@ -40,7 +39,7 @@ export default function LoginScreen() {
     return (
       <AppLoadingScreen
         label="Auth"
-        message="Восстанавливаем сохранённую авторизацию, чтобы не заставлять пользователя логиниться заново."
+        message="Восстанавливаем сохранённую авторизацию."
         title="Восстанавливаем сессию"
       />
     )
@@ -62,100 +61,70 @@ export default function LoginScreen() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
+            {/* Large Title hero */}
             <View style={styles.hero}>
-              <Text style={styles.heroLabel}>Training calculator</Text>
-              <Text style={styles.heroTitle}>Единый mobile shell</Text>
-              <Text style={styles.heroText}>
-                Вход теперь выглядит как часть того же приложения: те же surface-слои, та же иерархия, тот же ритм spacing.
+              <Text style={styles.heroEyebrow}>Training calculator</Text>
+              <Text style={styles.heroTitle}>
+                {authMode === 'login' ? 'Вход' : 'Регистрация'}
               </Text>
-
-              <View style={styles.heroChips}>
-                <View style={styles.heroChip}>
-                  <Text style={styles.heroChipText}>Shared auth</Text>
-                </View>
-                <View style={styles.heroChip}>
-                  <Text style={styles.heroChipText}>Expo router</Text>
-                </View>
-                <View style={styles.heroChip}>
-                  <Text style={styles.heroChipText}>Glass UI</Text>
-                </View>
-              </View>
+              <Text style={styles.heroSubtitle}>
+                Войдите, чтобы открыть персональный план тренировок на 8 недель
+              </Text>
             </View>
 
-            <GlossyCard contentStyle={styles.card} variant="accent">
-              <View style={styles.tabs}>
+            {/* Form card */}
+            <View style={styles.formCard}>
+              {/* iOS Segmented Control */}
+              <View style={styles.segControl}>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityState={{ selected: authMode === 'login' }}
-                  onPress={() => {
-                    setAuthMode('login')
-                    setAuthError('')
-                  }}
-                  style={({ pressed }) => [
-                    styles.tab,
-                    authMode === 'login' ? styles.tabActive : null,
-                    pressed ? styles.tabPressed : null,
-                  ]}
+                  onPress={() => { setAuthMode('login'); setAuthError('') }}
+                  style={[styles.segment, authMode === 'login' && styles.segmentActive]}
                 >
-                  <Text style={[styles.tabText, authMode === 'login' ? styles.tabTextActive : null]}>Войти</Text>
+                  <Text style={[styles.segText, authMode === 'login' && styles.segTextActive]}>
+                    Войти
+                  </Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityState={{ selected: authMode === 'register' }}
-                  onPress={() => {
-                    setAuthMode('register')
-                    setAuthError('')
-                  }}
-                  style={({ pressed }) => [
-                    styles.tab,
-                    authMode === 'register' ? styles.tabActive : null,
-                    pressed ? styles.tabPressed : null,
-                  ]}
+                  onPress={() => { setAuthMode('register'); setAuthError('') }}
+                  style={[styles.segment, authMode === 'register' && styles.segmentActive]}
                 >
-                  <Text style={[styles.tabText, authMode === 'register' ? styles.tabTextActive : null]}>Регистрация</Text>
+                  <Text style={[styles.segText, authMode === 'register' && styles.segTextActive]}>
+                    Регистрация
+                  </Text>
                 </Pressable>
               </View>
 
-              <View style={styles.form}>
-                <View style={styles.field}>
-                  <Text style={styles.label}>Имя пользователя</Text>
-                  <TextInput
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onChangeText={setNameInput}
-                    placeholder="steve"
-                    placeholderTextColor={theme.colors.muted}
-                    style={styles.input}
-                    value={nameInput}
-                  />
-                </View>
-
-                <View style={styles.field}>
-                  <Text style={styles.label}>Пароль</Text>
-                  <TextInput
-                    onChangeText={setPassInput}
+              {/* Fields */}
+              <View style={styles.fields}>
+                <IOSInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  label="Имя пользователя"
+                  onChangeText={setNameInput}
+                  placeholder="steve"
+                  value={nameInput}
+                />
+                <IOSInput
+                  label="Пароль"
+                  onChangeText={setPassInput}
+                  onSubmitEditing={() => void handleAuth()}
+                  placeholder="••••••"
+                  secureTextEntry
+                  value={passInput}
+                />
+                {authMode === 'register' ? (
+                  <IOSInput
+                    label="Повторить пароль"
+                    onChangeText={setPass2Input}
                     onSubmitEditing={() => void handleAuth()}
                     placeholder="••••••"
-                    placeholderTextColor={theme.colors.muted}
                     secureTextEntry
-                    style={styles.input}
-                    value={passInput}
+                    value={pass2Input}
                   />
-                </View>
-
-                {authMode === 'register' ? (
-                  <View style={styles.field}>
-                    <Text style={styles.label}>Повторить пароль</Text>
-                    <TextInput
-                      onChangeText={setPass2Input}
-                      onSubmitEditing={() => void handleAuth()}
-                      placeholder="••••••"
-                      placeholderTextColor={theme.colors.muted}
-                      secureTextEntry
-                      style={styles.input}
-                      value={pass2Input}
-                    />
-                  </View>
                 ) : null}
 
                 {authError ? <Text style={styles.error}>{authError}</Text> : null}
@@ -167,14 +136,7 @@ export default function LoginScreen() {
                   onPress={() => void handleAuth()}
                 />
               </View>
-            </GlossyCard>
-
-            <GlossyCard contentStyle={styles.noteCard}>
-              <Text style={styles.noteTitle}>Что уже унифицировано</Text>
-              <Text style={styles.noteBody}>
-                Авторизация, tabs, training, calculator, files и theory теперь опираются на один background-layer и одну систему surface-компонентов.
-              </Text>
-            </GlossyCard>
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </ScreenBackground>
@@ -193,123 +155,81 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: theme.spacing.lg,
-    rowGap: theme.spacing.lg,
+    padding: 20,
+    rowGap: 28,
   },
+
+  // Large Title hero
   hero: {
-    borderLeftColor: theme.colors.accent,
-    borderLeftWidth: 3,
-    paddingLeft: theme.spacing.md,
-    rowGap: theme.spacing.sm,
+    rowGap: 6,
   },
-  heroLabel: {
+  heroEyebrow: {
     color: theme.colors.orange,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
   heroTitle: {
-    color: theme.colors.text,
+    color: '#FFFFFF',
     fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 38,
-  },
-  heroText: {
-    color: theme.colors.muted,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  heroChips: {
-    columnGap: theme.spacing.sm,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    rowGap: theme.spacing.sm,
-  },
-  heroChip: {
-    backgroundColor: 'rgba(255,107,53,0.14)',
-    borderColor: 'rgba(255,107,53,0.28)',
-    borderRadius: 999,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-  },
-  heroChipText: {
-    color: theme.colors.text,
-    fontSize: 12,
     fontWeight: '700',
+    letterSpacing: 0.37,
+    lineHeight: 41,
   },
-  card: {
-    padding: theme.spacing.lg,
-    rowGap: theme.spacing.lg,
-  },
-  tabs: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
-  },
-  tab: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderColor: theme.colors.glassBorder,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
-    flex: 1,
-    paddingVertical: 12,
-  },
-  tabActive: {
-    backgroundColor: 'rgba(255,107,53,0.16)',
-    borderColor: theme.colors.accent,
-  },
-  tabPressed: {
-    opacity: 0.9,
-  },
-  tabText: {
-    color: theme.colors.muted,
+  heroSubtitle: {
+    color: '#8E8E93',
     fontSize: 15,
-    fontWeight: '700',
+    lineHeight: 20,
+    marginTop: 2,
   },
-  tabTextActive: {
-    color: theme.colors.text,
+
+  // Form container (Inset Grouped)
+  formCard: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    overflow: 'hidden',
+    padding: 20,
+    rowGap: 20,
   },
-  form: {
-    rowGap: theme.spacing.md,
+
+  // iOS Segmented Control
+  segControl: {
+    backgroundColor: 'rgba(118,118,128,0.24)',
+    borderRadius: 9,
+    flexDirection: 'row',
+    padding: 2,
   },
-  field: {
-    rowGap: theme.spacing.sm,
+  segment: {
+    alignItems: 'center',
+    borderRadius: 7,
+    flex: 1,
+    paddingVertical: 8,
   },
-  label: {
-    color: theme.colors.text,
+  segmentActive: {
+    backgroundColor: '#3A3A3C',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  segText: {
+    color: '#8E8E93',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '600',
   },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderColor: theme.colors.glassBorder,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
-    color: theme.colors.text,
-    fontSize: 16,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: 14,
+  segTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // Fields
+  fields: {
+    rowGap: 16,
   },
   error: {
     color: theme.colors.red,
     fontSize: 14,
     lineHeight: 20,
-  },
-  noteCard: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    rowGap: theme.spacing.sm,
-  },
-  noteTitle: {
-    color: theme.colors.text,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  noteBody: {
-    color: theme.colors.muted,
-    fontSize: 14,
-    lineHeight: 21,
+    marginTop: -4,
   },
 })

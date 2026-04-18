@@ -553,35 +553,40 @@ table.pt tr:hover td { background: #1e1e1e; }
 
 /* ===== AUTH ===== */
 .auth-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 32px;
-  max-width: 400px;
+  background: #1c1c1e;
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 440px;
 }
 .auth-tabs {
   display: flex;
+  background: rgba(118, 118, 128, 0.24);
+  border-bottom: none;
+  border-radius: 9px;
   gap: 0;
-  margin-bottom: 28px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  padding: 2px;
 }
 .auth-tab {
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.08em;
-  padding: 8px 20px 10px;
+  border-radius: 7px;
+  color: #8e8e93;
   cursor: pointer;
-  margin-bottom: -1px;
-  transition: color 0.15s, border-color 0.15s;
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding: 8px 16px;
+  transition: background 0.15s, color 0.15s;
 }
 .auth-tab:hover { color: var(--text); }
 .auth-tab-active {
-  color: #fff;
-  border-bottom-color: var(--accent);
+  background: #3a3a3c;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  color: #ffffff;
 }
 .auth-form {
   display: flex;
@@ -589,12 +594,12 @@ table.pt tr:hover td { background: #1e1e1e; }
   gap: 16px;
 }
 .auth-error {
-  font-size: 12px;
-  color: var(--red);
-  padding: 8px 12px;
-  background: rgba(255,77,77,0.08);
-  border: 1px solid rgba(255,77,77,0.25);
-  border-radius: 3px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: #ff453a;
+  font-size: 13px;
+  padding: 0;
 }
 
 /* ===== EXERCISE WHEEL ===== */
@@ -809,9 +814,9 @@ table.pt tr:hover td { background: #1e1e1e; }
   --border: #232934;
   --muted: #99a1ad;
   background:
-    radial-gradient(circle at 0% 0%, rgba(240, 122, 67, 0.14), transparent 32%),
-    radial-gradient(circle at 100% 0%, rgba(126, 164, 255, 0.12), transparent 28%),
-    linear-gradient(180deg, rgba(10, 12, 16, 0.96) 0%, rgba(10, 12, 16, 0.9) 100%);
+    radial-gradient(ellipse 62% 48% at 5% 4%, rgba(240, 122, 67, 0.13), transparent 42%),
+    radial-gradient(ellipse 48% 38% at 96% 92%, rgba(240, 122, 67, 0.07), transparent 46%),
+    linear-gradient(180deg, rgba(10, 12, 16, 0.97) 0%, rgba(10, 12, 16, 0.92) 100%);
   border: 1px solid rgba(52, 60, 73, 0.65);
   border-radius: 28px;
   color: var(--theory-text);
@@ -837,6 +842,27 @@ table.pt tr:hover td { background: #1e1e1e; }
 .theory-hero {
   position: relative;
   z-index: 1;
+}
+
+@keyframes sectionIn {
+  from { opacity: 0; transform: translateY(18px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0px); }
+}
+
+.theory-stack > * {
+  animation: sectionIn 0.42s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.theory-stack > *:nth-child(1) { animation-delay: 0.06s; }
+.theory-stack > *:nth-child(2) { animation-delay: 0.14s; }
+.theory-stack > *:nth-child(3) { animation-delay: 0.22s; }
+.theory-stack > *:nth-child(4) { animation-delay: 0.30s; }
+.theory-stack > *:nth-child(5) { animation-delay: 0.38s; }
+.theory-stack > *:nth-child(6) { animation-delay: 0.46s; }
+.theory-stack > *:nth-child(7) { animation-delay: 0.54s; }
+.theory-stack > *:nth-child(8) { animation-delay: 0.62s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .theory-stack > * { animation: none; }
 }
 
 .theory-stack {
@@ -1241,21 +1267,24 @@ table.pt tr:hover td { background: #1e1e1e; }
 }
 
 .theory-strength-factor-row {
+  align-items: start;
   display: grid;
-  gap: 16px;
-  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 14px 16px;
+  grid-template-columns: 76px minmax(0, 1fr);
 }
 
 .theory-strength-factor-badge {
   align-items: center;
   border-radius: 999px;
   display: flex;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
   justify-content: center;
   letter-spacing: 0.08em;
-  min-height: 36px;
-  padding: 8px 10px;
+  min-height: 32px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .theory-strength-factor-content,
@@ -1266,6 +1295,12 @@ table.pt tr:hover td { background: #1e1e1e; }
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.theory-strength-research-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .theory-strength-phase-header,

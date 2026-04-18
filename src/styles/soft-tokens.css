@@ -47,18 +47,13 @@
   }
 }
 
-/* Мягкий шум (grain) + оранжевое свечение */
-body::before {
+/* Grain noise overlay — поверх всего, не мешает кликам */
+body::after {
   content: "";
   position: fixed;
   inset: 0;
-  /* Оранжевый градиент свечение проекта */
-  background: 
-    radial-gradient(ellipse farthest-corner at 30% 70%, rgba(255, 165, 0, 0.025) 0%, transparent 40%),
-    radial-gradient(ellipse farthest-corner at 70% 30%, rgba(255, 140, 0, 0.015) 0%, transparent 50%),
-    /* Grain noise */
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.04;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.035;
   pointer-events: none;
   mix-blend-mode: overlay;
   z-index: 9999;

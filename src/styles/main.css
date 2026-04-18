@@ -2,6 +2,7 @@
 @import './base/reset.css';
 @import './layouts/app-layout.css';
 @import './components/app-components.css';
+@import './components/theory-apple.css';
 
 @import './soft-tokens.css';
 

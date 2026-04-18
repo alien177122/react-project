@@ -1,4 +1,6 @@
-const PROTOCOL_CARDS = [
+import { TimelineConnector } from './TimelineConnector'
+
+const PROTOCOL_STEPS = [
   {
     num: '1',
     color: '#ff6b35',
@@ -27,20 +29,16 @@ const PROTOCOL_CARDS = [
 
 export function TendonProtocolSection() {
   return (
-    <div className="theory-protocol-grid">
-      {PROTOCOL_CARDS.map(card => (
-        <article
-          key={card.num}
-          className="theory-card theory-protocol-card"
-          style={{ borderLeftColor: card.color }}
-        >
-          <div className="theory-protocol-num" style={{ color: card.color }}>
-            {card.num}
-          </div>
-          <h3 className="theory-top-name">{card.title}</h3>
-          <p className="theory-card-body">{card.body}</p>
-        </article>
+    <TimelineConnector gradient="linear-gradient(to bottom, #ff6b35, #ff4d4d, #5ba4ff)">
+      {PROTOCOL_STEPS.map(step => (
+        <div key={step.num} className="timeline-step">
+          <div className="timeline-dot" style={{ background: step.color }} />
+          <h3 className="theory-top-name" style={{ color: step.color, marginBottom: 6 }}>
+            {step.num}. {step.title}
+          </h3>
+          <p className="theory-card-body">{step.body}</p>
+        </div>
       ))}
-    </div>
+    </TimelineConnector>
   )
 }

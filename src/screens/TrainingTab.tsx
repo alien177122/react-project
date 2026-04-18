@@ -1,7 +1,7 @@
 import type { UserData } from '../types'
 import { TRAINING_DAYS, EX_COUNT } from '../data/exercises'
 import TrainingDayCard from '../components/TrainingDayCard'
-import { SectionBlock } from '../components/TheoryTab'
+import { SectionBlock } from '../components/SectionBlock'
 import { HeroSection } from '../components/ui/HeroSection'
 import type { TrainingExerciseRow } from '../utils/training'
 import { Button } from '../components/ui/Button'

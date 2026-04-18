@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties } from 'react'
 
 import {
   MECHANICAL_CONCEPTS,
@@ -6,295 +6,284 @@ import {
   SUPPLEMENT_TIERS,
   THEORY_CONCEPTS,
 } from '../data/theory'
-import { HeroSection } from './ui/HeroSection'
+import { BentoGrid, type BentoItem } from './BentoGrid'
+import { MechanicsCarousel, type MechanicsSlide } from './MechanicsCarousel'
+import { PullQuote } from './PullQuote'
+import { RevealTimeline, type TimelineNode } from './RevealTimeline'
+import { SpecsTables, type PercentRow, type RpeRow } from './SpecsTables'
 import { StrengthFormulaSection } from './StrengthFormulaSection'
 import { TendonProtocolSection } from './TendonProtocolSection'
+import { TheoryChapterNav, THEORY_CHAPTERS } from './TheoryChapterNav'
+import { TheoryHero } from './TheoryHero'
+import { TheoryOutro } from './TheoryOutro'
+import { TierPyramid } from './TierPyramid'
+import { Top3Podium, type PodiumEntry } from './Top3Podium'
 
-const CARD_COLORS = [
-  '#ff6b35',
-  '#ff9f40',
-  '#5ba4ff',
-  '#3affb8',
-  '#f2a65a',
-  '#bb86fc',
-  '#ff4d4d',
-  '#4cd97b',
-]
+// ─── Section 01: Bento layout for basics ───────────────────────────
+// First item is the featured centerpiece, next two are large, rest small.
+const BASICS_ITEMS: BentoItem[] = THEORY_CONCEPTS.slice(0, 9).map((c, i) => {
+  let size: BentoItem['size'] = 'small'
+  if (i === 0) size = 'large'
+  else if (i === 1 || i === 2) size = 'medium'
+  return {
+    id: `basic-${i}`,
+    title: c.title,
+    body: c.body,
+    size,
+    featured: i === 0,
+    badge: i === 0 ? 'Базис' : undefined,
+    icon: String(i + 1).padStart(2, '0'),
+  }
+})
 
-const TOP_THREE = [
+// ─── Section 02: mTOR timeline ─────────────────────────────────────
+const MTOR_TIMELINE: TimelineNode[] = MTOR_CONCEPTS.map((c, i) => ({
+  id: `mtor-${i}`,
+  title: c.title,
+  definition: c.definition,
+  pattern: c.pattern,
+  bullets: c.bullets,
+}))
+
+// ─── Section 04: Podium ───────────────────────────────────────────
+const TOP_THREE: PodiumEntry[] = [
   {
     num: '01',
-    color: '#ff6b35',
+    rank: 1,
+    color: '#ff9f40',
     name: 'Креатин моногидрат',
-    dose: '3-5 г/сут',
-    desc: 'Самая надёжная база для силы и прогрессии у натурального атлета. Если нужен минимальный набор, отсюда логично начинать.',
+    dose: '3–5 г/сут',
+    desc: 'Самая надёжная база для силы и прогрессии у натурального атлета. Минимальный набор — начни отсюда.',
   },
   {
     num: '02',
-    color: '#ff9f40',
+    rank: 2,
+    color: '#5ba4ff',
     name: 'Кофеин',
     dose: '~200 мг до тренировки',
-    desc: 'Поднимает концентрацию, выносливость и готовность работать тяжело. Но если кофеин бьёт по сну, сон важнее.',
+    desc: 'Концентрация, выносливость и готовность работать тяжело. Если бьёт по сну — сон важнее.',
   },
   {
     num: '03',
-    color: '#9e9e9e',
+    rank: 3,
+    color: '#a78bfa',
     name: 'Магний бисглицинат',
-    dose: '~400 мг элементарного магния',
-    desc: 'Имеет смысл при дефиците и высокой нагрузке. Это инструмент восстановления, а не волшебный бустер мышечного роста.',
+    dose: '~400 мг элементарного',
+    desc: 'Имеет смысл при дефиците и высокой нагрузке. Инструмент восстановления, не бустер роста.',
   },
-] as const
+]
 
-const PERCENT_TABLE = [
-  { pct: '100%', reps: '1-3', zone: 'Максимум', color: '#ff6b35' },
-  { pct: '90-95%', reps: '2-5', zone: 'Сила', color: '#ff6b35' },
-  { pct: '80-89%', reps: '6-8', zone: 'Сила', color: '#ff6b35' },
-  { pct: '70-79%', reps: '8-12', zone: 'Гипертрофия', color: '#ff9f40' },
-  { pct: '65-69%', reps: '12-15', zone: 'Гипертрофия', color: '#ff9f40' },
-  { pct: '60-64%', reps: '15-20', zone: 'Выносливость', color: '#5ba4ff' },
-  { pct: '<60%', reps: '>20', zone: 'Выносливость', color: '#5ba4ff' },
-] as const
+// ─── Section 05: Specs tables ─────────────────────────────────────
+const PERCENT_TABLE: PercentRow[] = [
+  { pct: '100%',    reps: '1–3',   zone: 'Максимум',    color: '#ff6b6b', scale: 1.00 },
+  { pct: '90–95%',  reps: '2–5',   zone: 'Сила',        color: '#ff9f40', scale: 0.92 },
+  { pct: '80–89%',  reps: '6–8',   zone: 'Сила',        color: '#ff9f40', scale: 0.82 },
+  { pct: '70–79%',  reps: '8–12',  zone: 'Гипертрофия', color: '#fbbf24', scale: 0.72 },
+  { pct: '65–69%',  reps: '12–15', zone: 'Гипертрофия', color: '#fbbf24', scale: 0.65 },
+  { pct: '60–64%',  reps: '15–20', zone: 'Выносливость', color: '#5ba4ff', scale: 0.60 },
+  { pct: '<60%',    reps: '>20',   zone: 'Выносливость', color: '#5ba4ff', scale: 0.50 },
+]
 
-const RPE_TABLE = [
-  { rpe: '10', reserve: '0', desc: 'Максимальный отказ', color: '#ff4d4d' },
-  { rpe: '9', reserve: '~1', desc: 'Мог сделать ещё 1', color: '#ff4d4d' },
-  { rpe: '8', reserve: '~2', desc: 'Ещё 2 в запасе', color: '#ff9f40' },
-  { rpe: '7', reserve: '~3', desc: 'Ещё 3 в запасе', color: '#ff9f40' },
-  { rpe: '6', reserve: '~4', desc: 'Ещё 4 в запасе', color: '#3affb8' },
-  { rpe: '<6', reserve: '>4', desc: 'Лёгкая нагрузка', color: '#3affb8' },
-] as const
+const RPE_TABLE: RpeRow[] = [
+  { rpe: '10',  reserve: '0',  desc: 'Максимальный отказ', color: '#ff4d4d' },
+  { rpe: '9',   reserve: '~1', desc: 'Мог сделать ещё 1',  color: '#ff4d4d' },
+  { rpe: '8',   reserve: '~2', desc: 'Ещё 2 в запасе',     color: '#ff9f40' },
+  { rpe: '7',   reserve: '~3', desc: 'Ещё 3 в запасе',     color: '#ff9f40' },
+  { rpe: '6',   reserve: '~4', desc: 'Ещё 4 в запасе',     color: '#3affb8' },
+  { rpe: '<6',  reserve: '>4', desc: 'Лёгкая нагрузка',    color: '#3affb8' },
+]
 
-type SectionBlockProps = {
-  num: string
-  title: string
-  children: ReactNode
+// ─── Section 07: Mechanics carousel ──────────────────────────────
+const MECHANICS_SLIDES: MechanicsSlide[] = MECHANICAL_CONCEPTS.map((c, i) => ({
+  id: `mech-${i}`,
+  title: c.title,
+  body: c.body,
+}))
+
+// ─── Helpers ─────────────────────────────────────────────────────
+function sectionStyle(
+  accentVar: string,
+  tintVar: string,
+): CSSProperties {
+  return {
+    ['--ta-sec' as string]: `var(${accentVar})`,
+    ['--ta-sec-tint' as string]: `var(${tintVar})`,
+  }
 }
 
-export function SectionBlock({ num, title, children }: SectionBlockProps) {
+interface SectionProps {
+  id: string
+  num: string
+  title: string
+  lede?: string
+  accentVar: string
+  tintVar: string
+  children: React.ReactNode
+}
+
+function Section({ id, num, title, lede, accentVar, tintVar, children }: SectionProps) {
   return (
-    <section className="theory-section">
-      <div className="theory-section-header">
-        <div className="theory-section-pill">{num}</div>
-        <h2 className="theory-section-title">{title}</h2>
+    <section id={id} className="ta-section" style={sectionStyle(accentVar, tintVar)}>
+      <div className="ta-section-inner">
+        <header className="ta-section-head">
+          <span className="ta-section-pill">{num} · Глава</span>
+          <h2 className="ta-section-title">{title}</h2>
+          {lede && <p className="ta-section-lede">{lede}</p>}
+        </header>
+        {children}
       </div>
-      <div className="theory-section-body">{children}</div>
     </section>
   )
 }
 
-export function NoteBox({ children }: { children: ReactNode }) {
-  return <div className="theory-note-box">{children}</div>
-}
-
+// ─── Main component ──────────────────────────────────────────────
 export default function TheoryTab() {
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY - 80
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+
   return (
-    <div className="theory-shell">
-      <HeroSection
-        label="Theory"
-        title="Теория тренинга"
-        subtitle="Основы прогрессии, mTOR, tier-лист добавок и ключевые ориентиры собраны в одном справочном разделе."
+    <div className="ta-shell">
+      <TheoryChapterNav />
+
+      <TheoryHero onCTAClick={(target) => scrollTo(target)} />
+
+      <Section
+        id="basics"
+        num="01"
+        title="Основы тренировки"
+        lede="Ключевые понятия, на которых держится прогрессия. Разберись — и вся схема становится прозрачной."
+        accentVar="--ta-sec-01"
+        tintVar="--ta-sec-01-tint"
+      >
+        <BentoGrid
+          items={BASICS_ITEMS}
+          accentVar="--ta-sec-01"
+          tintVar="--ta-sec-01-tint"
+        />
+      </Section>
+
+      <Section
+        id="mtor"
+        num="02"
+        title="mTOR и анаболический отклик"
+        accentVar="--ta-sec-02"
+        tintVar="--ta-sec-02-tint"
+      >
+        <RevealTimeline
+          items={MTOR_TIMELINE}
+          asideEyebrow="Интегратор роста"
+          asideQuote="mTOR — это термостат роста, а не выключатель."
+          asideNote="Он включается только когда совпадают механический стимул, аминокислоты и энергетический профицит."
+        />
+      </Section>
+
+      <Section
+        id="tiers"
+        num="03"
+        title="Tier List добавок"
+        lede="Смотри как на приоритизацию. Верхние тиры дают реальную отдачу чаще, нижние — ситуативны или зависят от дефицитов."
+        accentVar="--ta-sec-03"
+        tintVar="--ta-sec-03-tint"
+      >
+        <TierPyramid tiers={SUPPLEMENT_TIERS} />
+      </Section>
+
+      <Section
+        id="top3"
+        num="04"
+        title="Топ-3, если выбирать"
+        lede="Если нужен минимальный набор — эти три проверены временем и работают на натуральных атлетах."
+        accentVar="--ta-sec-04"
+        tintVar="--ta-sec-04-tint"
+      >
+        <Top3Podium items={TOP_THREE} />
+      </Section>
+
+      <Section
+        id="tables"
+        num="05"
+        title="Интенсивность и RPE"
+        lede="Интенсивность задаёт результат, RPE — цену. Две шкалы, которые держат тренировку в рамках."
+        accentVar="--ta-sec-05"
+        tintVar="--ta-sec-05-tint"
+      >
+        <SpecsTables percentRows={PERCENT_TABLE} rpeRows={RPE_TABLE} />
+      </Section>
+
+      <PullQuote
+        eyebrow="Сухожилия"
+        figure="4.5–6.5%"
+        caption="Зона деформации, в которой сухожилия адаптируются. Всё ниже — просто нагрузка, всё выше — риск."
+        color="var(--ta-sec-06)"
+        tint="rgba(255, 107, 107, 0.08)"
       />
 
-      <div className="theory-stack">
-        <SectionBlock num="01" title="Основы тренировки">
-          <NoteBox>
-            Ключевые понятия, которые лежат в основе программы. Разберись с
-            ними, и вся схема прогрессии станет прозрачной.
-          </NoteBox>
-          <div className="theory-card-grid">
-            {THEORY_CONCEPTS.map((item, index) => {
-              const color = CARD_COLORS[index % CARD_COLORS.length]
-              return (
-                <article
-                  key={item.title}
-                  className="theory-card theory-top-card"
-                  style={{ borderTopColor: color }}
-                >
-                  <h3 className="theory-card-title" style={{ color }}>{item.title}</h3>
-                  <p className="theory-card-body">{item.body}</p>
-                </article>
-              )
-            })}
-          </div>
-        </SectionBlock>
-
-        <SectionBlock num="02" title="mTOR и анаболический отклик">
-          <div className="theory-card-grid">
-            {MTOR_CONCEPTS.map((item, index) => {
-              const color = CARD_COLORS[index % CARD_COLORS.length]
-              return (
-              <article key={item.title} className="theory-card theory-top-card" style={{ borderTopColor: color }}>
-                <h3 className="theory-card-title" style={{ color }}>{item.title}</h3>
-                <p className="theory-card-body">
-                  <strong className="theory-card-strong">Определение:</strong>{' '}
-                  {item.definition}
-                  {item.pattern ? (
-                    <>
-                      <br />
-                      <br />
-                      <strong className="theory-card-strong">
-                        Закономерность:
-                      </strong>{' '}
-                      {item.pattern}
-                    </>
-                  ) : null}
-                </p>
-                {item.bullets ? (
-                  <div className="theory-bullet-list">
-                    {item.bullets.map(bullet => (
-                      <div key={bullet} className="theory-bullet-row">
-                        <span className="theory-bullet-dot" style={{ color }}>•</span>
-                        <span className="theory-bullet-text">{bullet}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-              )
-            })}
-          </div>
-        </SectionBlock>
-
-        <SectionBlock num="03" title="Tier List добавок">
-          <NoteBox>
-            Смотри на список как на приоритизацию. Верхние уровни дают реальную
-            отдачу чаще, нижние либо ситуативны, либо сильно зависят от
-            дефицитов.
-          </NoteBox>
-          <div className="theory-tier-list">
-            {SUPPLEMENT_TIERS.map(tier => (
-              <article key={tier.tier} className="theory-tier-row">
-                <div
-                  className="theory-tier-badge"
-                  style={{ backgroundColor: tier.color, color: tier.textColor }}
-                >
-                  {tier.tier}
-                </div>
-                <div className="theory-tier-content">
-                  <h3
-                    className="theory-tier-title"
-                    style={{ color: tier.color }}
-                  >
-                    {tier.label}
-                  </h3>
-                  <div className="theory-chip-list">
-                    {tier.items.map(item => (
-                      <span key={item} className="theory-chip">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="theory-card-body">{tier.note}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </SectionBlock>
-
-        <SectionBlock num="04" title="Топ-3 если выбирать">
-          <div className="theory-card-grid theory-card-grid-compact">
-            {TOP_THREE.map(item => (
-              <article
-                key={item.num}
-                className="theory-card theory-top-card"
-                style={{ borderTopColor: item.color }}
-              >
-                <div className="theory-top-num" style={{ color: item.color }}>
-                  {item.num}
-                </div>
-                <h3 className="theory-top-name">{item.name}</h3>
-                <div className="theory-top-dose">{item.dose}</div>
-                <p className="theory-card-body">{item.desc}</p>
-              </article>
-            ))}
-          </div>
-        </SectionBlock>
-
-        <SectionBlock num="05" title="Таблица %ПМ и RPE">
-          <NoteBox>
-            Таблица 1: интенсивность (% от 1ПМ), количество повторений и зоны
-            тренировочного воздействия. Таблица 2: RPE как быстрая шкала для
-            оценки тяжести подхода.
-          </NoteBox>
-          <div className="theory-table-grid">
-            <div className="theory-table-shell">
-              <div className="theory-table-caption">% ПМ и зоны</div>
-              <table className="theory-table">
-                <thead>
-                  <tr>
-                    <th>% ПМ</th>
-                    <th>Повт</th>
-                    <th>Зона</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PERCENT_TABLE.map(row => (
-                    <tr key={row.pct}>
-                      <td style={{ color: row.color }}>{row.pct}</td>
-                      <td>{row.reps}</td>
-                      <td style={{ color: row.color }}>{row.zone}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="theory-table-shell">
-              <div className="theory-table-caption">Шкала RPE</div>
-              <table className="theory-table">
-                <thead>
-                  <tr>
-                    <th>RPE</th>
-                    <th>В запасе</th>
-                    <th>Описание</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {RPE_TABLE.map(row => (
-                    <tr key={row.rpe}>
-                      <td style={{ color: row.color }}>{row.rpe}</td>
-                      <td>{row.reserve}</td>
-                      <td style={{ color: row.color }}>{row.desc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </SectionBlock>
-
-        <SectionBlock num="06" title="Протокол укрепления сухожилий">
-          <NoteBox>
-            Сухожилия адаптируются только при деформации 4,5-6,5%, что
-            соответствует нагрузкам &gt;70% ПМ. Протокол: 5x4 на 85-90% ПМ, 3
-            раза в неделю, удержание около 3 секунд в пике момента силы.
-          </NoteBox>
+      <Section
+        id="tendon"
+        num="06"
+        title="Протокол укрепления сухожилий"
+        lede="5×4 на 85–90% ПМ, 3 раза в неделю, удержание ~3 секунды в пике момента силы."
+        accentVar="--ta-sec-06"
+        tintVar="--ta-sec-06-tint"
+      >
+        <div className="ta-custom-frame">
           <TendonProtocolSection />
-        </SectionBlock>
+        </div>
+      </Section>
 
-        <SectionBlock num="07" title="Механическое преимущество">
-          <NoteBox>
-            Механика важнее мотивации. Один и тот же вес может быть лёгким или
-            тяжёлым в зависимости от рычагов, антропометрии и конкретной
-            позиции в амплитуде.
-          </NoteBox>
-          <div className="theory-card-grid">
-            {MECHANICAL_CONCEPTS.map((item, index) => {
-              const color = CARD_COLORS[index % CARD_COLORS.length]
-              return (
-                <article key={item.title} className="theory-card theory-top-card" style={{ borderTopColor: color }}>
-                  <h3 className="theory-card-title" style={{ color }}>{item.title}</h3>
-                  <p className="theory-card-body">{item.body}</p>
-                </article>
-              )
-            })}
-          </div>
-        </SectionBlock>
+      <Section
+        id="mechanics"
+        num="07"
+        title="Механика важнее мотивации"
+        lede="Один и тот же вес может быть лёгким или тяжёлым — зависит от рычагов, антропометрии и позиции в амплитуде."
+        accentVar="--ta-sec-07"
+        tintVar="--ta-sec-07-tint"
+      >
+        <MechanicsCarousel items={MECHANICS_SLIDES} />
+      </Section>
 
-        <SectionBlock num="08" title="Формула силы">
+      <Section
+        id="formula"
+        num="08"
+        title="Формула силы"
+        accentVar="--ta-sec-08"
+        tintVar="--ta-sec-08-tint"
+      >
+        <div className="ta-custom-frame">
           <StrengthFormulaSection />
-        </SectionBlock>
-      </div>
+        </div>
+      </Section>
+
+      <TheoryOutro
+        title="Что дальше?"
+        links={[
+          {
+            id: 'calc',
+            eyebrow: 'Расчёт',
+            title: 'Перейти к калькулятору',
+            color: 'var(--ta-sec-01)',
+            onClick: () => scrollTo(THEORY_CHAPTERS[0].id),
+          },
+          {
+            id: 'tiers-again',
+            eyebrow: 'Приоритеты',
+            title: 'Tier List добавок',
+            color: 'var(--ta-sec-03)',
+            onClick: () => scrollTo('tiers'),
+          },
+          {
+            id: 'formula-again',
+            eyebrow: 'Силовой протокол',
+            title: 'Формула силы',
+            color: 'var(--ta-sec-08)',
+            onClick: () => scrollTo('formula'),
+          },
+        ]}
+      />
     </div>
   )
 }

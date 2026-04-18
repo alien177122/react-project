@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1017,6 +1017,12 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const USABLE = 360 - GAP * N
   const SD = USABLE / N     // угол одного сегмента
 
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    savedExercises.forEach(s => map.set(s.exerciseKey, s))
+    return map
+  }, [savedExercises])
+
   // Размеры SVG увеличены для лучшей читаемости подписей
   const cx = 190, cy = 190  // центр круга
   const RO = 165            // внешний радиус сегмента
@@ -1076,7 +1082,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1458,10 +1464,16 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   const nextDayIdx     = nextSessions % 3
   const nextWeekIdx    = Math.floor(nextSessions / 3)
 
+  const userExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    userData.exercises.forEach(e => map.set(e.exerciseKey, e))
+    return map
+  }, [userData.exercises])
+
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      const saved = userExercisesMap.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1594,16 @@ function App() {
     }
   }, [userName, token])
 
+  const userExercisesSet = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData?.exercises])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => userExercisesSet.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !userExercisesSet.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

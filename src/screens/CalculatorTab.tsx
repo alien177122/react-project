@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { SavedExercise, UserData } from '../types'
 import { EXERCISES, EX_COUNT, TYPE_LABELS } from '../data/exercises'
 import { calcWorkingWeight } from '../utils/calc'
@@ -45,6 +46,20 @@ export default function CalculatorTab({
   handleSelectSaved,
 }: CalculatorTabProps) {
   const config = EXERCISES[activeResult?.exerciseKey || selectedExercise]
+
+  const resultRef = useRef<HTMLDivElement>(null)
+  const activeKey = activeResult?.exerciseKey
+  const shouldReduceMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+  useEffect(() => {
+    if (!activeKey || !resultRef.current) return
+    resultRef.current.scrollIntoView({
+      behavior: shouldReduceMotion ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }, [activeKey, shouldReduceMotion])
 
   const weekRows = activeResult
     ? config.percentages.map((pct, i) => {
@@ -151,6 +166,7 @@ export default function CalculatorTab({
         </SectionBlock>
 
         {activeResult && (
+          <div ref={resultRef}>
           <SectionBlock num="02" title={`Прогрессия — ${config.name}`}>
             <div className="insight">
               <strong>Объём снижается по мере роста весов</strong> — линейная волна с откатом на неделе 5.
@@ -173,7 +189,12 @@ export default function CalculatorTab({
 
             <ProgressionBlock config={config} result={activeResult} />
 
-            <div className="result-card">
+            <div
+              className="result-card"
+              role="status"
+              aria-live="polite"
+              aria-label={`Расчётный 1ПМ: ${activeResult.oneRM} килограмм`}
+            >
               <div className="result-label">Расчётный 1ПМ</div>
               <div className="result-value">{activeResult.oneRM}<span>кг</span></div>
               <div className="result-meta">
@@ -187,11 +208,12 @@ export default function CalculatorTab({
               &nbsp;·&nbsp; <strong>Жирный</strong> в «Схема» = отклонение от 4 подходов.
               <br /><br />
               <strong>Цвет объёма:</strong>{' '}
-              <span style={{ color: '#ffb347', fontWeight: 600 }}>оранжевый ≥28</span>&nbsp;·&nbsp;
-              <span style={{ color: '#aaa' }}>серый 17–27</span>&nbsp;·&nbsp;
-              <span style={{ color: '#ff4d4d', fontWeight: 600 }}>красный ≤16</span>
+              <span className="vol-legend--high">оранжевый ≥28</span>&nbsp;·&nbsp;
+              <span className="vol-legend--mid">серый 17–27</span>&nbsp;·&nbsp;
+              <span className="vol-legend--low">красный ≤16</span>
             </NoteBox>
           </SectionBlock>
+          </div>
         )}
 
         {userData.exercises.length > 0 && (
@@ -227,6 +249,7 @@ export default function CalculatorTab({
                       <Button
                         size="sm"
                         variant="danger"
+                        aria-label={`Удалить ${ex.name}`}
                         onClick={e => {
                           e.stopPropagation()
                           handleDelete(saved.exerciseKey)

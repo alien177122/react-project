@@ -365,6 +365,11 @@ table.pt tr:hover td { background: #1e1e1e; }
 }
 .note-box strong { color: var(--accent); }
 
+/* Volume legend chips inside calculator note-box */
+.vol-legend--high { color: var(--accent-soft); font-weight: 600; }
+.vol-legend--mid  { color: var(--muted); }
+.vol-legend--low  { color: var(--red); font-weight: 600; }
+
 /* SAVED EXERCISES */
 .saved-list {
   display: flex;

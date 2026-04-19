@@ -1,0 +1,3 @@
+## 2024-06-25 - React Component nested search pattern O(N*M)
+**Learning:** Calling array `.find()` inside a `.map()` during a React render cycle is an $O(N \times M)$ operation that can significantly degrade performance during high-frequency updates (e.g. tracking hover state over items or typing in text inputs). This anti-pattern was found in `ExerciseWheel` and `TrainingTab`.
+**Action:** Always index arrays that need to be searched within a `.map()` into a `Map` or Record using `useMemo` for $O(1)$ lookups. Ensure you only memoize the indexing based on the actual array object reference, not a stringified version of it, to avoid creating synchronous CPU serialization overhead.

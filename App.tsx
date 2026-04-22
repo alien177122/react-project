@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1017,6 +1017,15 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const USABLE = 360 - GAP * N
   const SD = USABLE / N     // угол одного сегмента
 
+  // Оптимизация O(N*M) поиска: кэшируем сохранённые упражнения в Map для O(1) доступа
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    for (let i = 0; i < savedExercises.length; i++) {
+      map.set(savedExercises[i].exerciseKey, savedExercises[i])
+    }
+    return map
+  }, [savedExercises])
+
   // Размеры SVG увеличены для лучшей читаемости подписей
   const cx = 190, cy = 190  // центр круга
   const RO = 165            // внешний радиус сегмента
@@ -1076,7 +1085,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14

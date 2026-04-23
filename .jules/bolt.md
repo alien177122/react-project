@@ -1,0 +1,4 @@
+## 2026-04-23 - Initializing Journal\n**Learning:** Set up journal for critical learnings.\n**Action:** Will document architecture-specific insights here.
+## 2025-03-05 - Optimize React O(N*M) lookups and high-frequency derivations
+**Learning:** Found O(N*M) lookups inside React render loops where array `.find()` or `.some()` is called inside `.map()` or `.every()`. Also found static expensive computations (like `computeMuscleVol()`) re-evaluating on every render during high-frequency state updates (e.g. `setHov` on hover interactions).
+**Action:** Use `useMemo` to convert array lookups into a `Map` keyed by the lookup value for O(1) retrieval, replacing O(N*M) with O(N + M). Wrap expensive component derivations in `useMemo` to prevent re-evaluation on high-frequency state updates. Remember not to use `JSON.stringify(obj)` for dependencies, but rather the reference.

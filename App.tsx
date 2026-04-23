@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -716,8 +716,8 @@ function donutArc(cx: number, cy: number, ro: number, ri: number, s: number, e: 
 
 function VolumeDonut() {
   const [hov, setHov] = useState<string | null>(null)
-  const vol = computeMuscleVol()
-  const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
+  const vol = useMemo(() => computeMuscleVol(), [])
+  const total = useMemo(() => MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0), [vol])
 
   const SEG_GAP = 1.5, CAT_GAP = 5
   const usable = 360 - CAT_GAP * 3
@@ -1023,6 +1023,14 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const RI = 78             // внутренний радиус (дырка в центре)
   const RL = 122            // радиус для подписей
 
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    for (const e of savedExercises) {
+      map.set(e.exerciseKey, e)
+    }
+    return map
+  }, [savedExercises])
+
   return (
     <>
       {/* Кнопка-триггер — показывает выбранное упражнение */}
@@ -1076,7 +1084,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1458,10 +1466,18 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   const nextDayIdx     = nextSessions % 3
   const nextWeekIdx    = Math.floor(nextSessions / 3)
 
+  const userExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    for (const e of userData.exercises) {
+      map.set(e.exerciseKey, e)
+    }
+    return map
+  }, [userData.exercises])
+
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      const saved = userExercisesMap.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1598,22 @@ function App() {
     }
   }, [userName, token])
 
+  const userExercisesMap = useMemo(() => {
+    const map = new Map<string, boolean>()
+    if (userData) {
+      for (const e of userData.exercises) {
+        map.set(e.exerciseKey, true)
+      }
+    }
+    return map
+  }, [userData])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => userExercisesMap.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !userExercisesMap.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

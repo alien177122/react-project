@@ -54,6 +54,29 @@ app.post('/api/auth/login', async (req, res) => {
 })
 
 // ── Данные пользователя (защищённые) ─────────────────────────
+function validateUserData(data, expectedName) {
+  if (!data || typeof data !== 'object') return 'Invalid payload format';
+  if (data.name !== expectedName) return 'Name in payload does not match URL';
+  if (!Array.isArray(data.exercises)) return 'exercises must be an array';
+
+  for (const ex of data.exercises) {
+    if (!ex || typeof ex !== 'object') return 'Invalid exercise object';
+    if (typeof ex.exerciseKey !== 'string') return 'exerciseKey must be a string';
+    if (typeof ex.testWeight !== 'number') return 'testWeight must be a number';
+    if (typeof ex.testReps !== 'number') return 'testReps must be a number';
+    if (typeof ex.oneRM !== 'number') return 'oneRM must be a number';
+    if (typeof ex.date !== 'string') return 'date must be a string';
+    if (ex.bodyWeight !== undefined && typeof ex.bodyWeight !== 'number') return 'bodyWeight must be a number';
+  }
+
+  if (data.trainingProgress !== undefined) {
+    if (!data.trainingProgress || typeof data.trainingProgress !== 'object') return 'trainingProgress must be an object';
+    if (typeof data.trainingProgress.completedSessions !== 'number') return 'completedSessions must be a number';
+  }
+
+  return null; // No errors
+}
+
 app.get('/api/users/:name', auth, (req, res) => {
   const data = getUser(req.params.name)
   const fallback = { name: req.params.name, exercises: [] }
@@ -61,6 +84,10 @@ app.get('/api/users/:name', auth, (req, res) => {
 })
 
 app.put('/api/users/:name', auth, (req, res) => {
+  const error = validateUserData(req.body, req.params.name)
+  if (error) {
+    return res.status(400).json({ error })
+  }
   putUser(req.params.name, req.body)
   res.json({ ok: true })
 })

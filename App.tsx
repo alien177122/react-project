@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -716,8 +716,8 @@ function donutArc(cx: number, cy: number, ro: number, ri: number, s: number, e: 
 
 function VolumeDonut() {
   const [hov, setHov] = useState<string | null>(null)
-  const vol = computeMuscleVol()
-  const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
+  const vol = useMemo(() => computeMuscleVol(), [])
+  const total = useMemo(() => MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0), [vol])
 
   const SEG_GAP = 1.5, CAT_GAP = 5
   const usable = 360 - CAT_GAP * 3

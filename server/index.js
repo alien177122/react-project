@@ -30,6 +30,7 @@ app.post('/api/auth/register', async (req, res) => {
   if (!name?.trim() || !password) return res.status(400).json({ error: 'Заполни все поля' })
   if (name.trim().length < 2) return res.status(400).json({ error: 'Имя минимум 2 символа' })
   if (password.length < 4)   return res.status(400).json({ error: 'Пароль минимум 4 символа' })
+  if (password.length > 72)  return res.status(400).json({ error: 'Пароль максимум 72 символа' })
   if (userExists(name.trim())) return res.status(409).json({ error: 'Пользователь уже существует' })
 
   const hash = await bcrypt.hash(password, 10)
@@ -42,6 +43,7 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   const { name, password } = req.body
   if (!name?.trim() || !password) return res.status(400).json({ error: 'Заполни все поля' })
+  if (password.length > 72)  return res.status(400).json({ error: 'Пароль максимум 72 символа' })
 
   const row = getUserAuth(name.trim())
   if (!row) return res.status(401).json({ error: 'Пользователь не найден' })

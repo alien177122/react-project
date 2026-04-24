@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1023,6 +1023,13 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const RI = 78             // внутренний радиус (дырка в центре)
   const RL = 122            // радиус для подписей
 
+  // ⚡ Bolt: Cache saved exercises in a Map to replace O(N*M) .find() inside .map() with O(N) lookup
+  const savedMap = useMemo(() => {
+    const m = new Map<string, SavedExercise>()
+    savedExercises.forEach(s => m.set(s.exerciseKey, s))
+    return m
+  }, [savedExercises])
+
   return (
     <>
       {/* Кнопка-триггер — показывает выбранное упражнение */}
@@ -1076,7 +1083,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1582,12 +1589,17 @@ function App() {
     }
   }, [userName, token])
 
+  // ⚡ Bolt: Cache saved keys in a Set to replace O(N*M) .some() inside loops with O(N) lookup
+  const savedKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData?.exercises])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

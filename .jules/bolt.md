@@ -1,0 +1,3 @@
+## 2025-02-14 - Consolidate Multiple Derivations in useMemo
+**Learning:** When multiple values depend on the same input parameters and are computed iteratively (e.g., segment generation for donut charts), their calculations should be combined. Having separate loops and filters spread throughout the component body causes redundant iterations on every state update, leading to significant synchronous CPU load during high-frequency interactions (like `onMouseEnter`/`onMouseLeave`).
+**Action:** Consolidate multiple related values into a single `useMemo` block that returns an object containing all derived state, especially when the values depend on constants and can use an empty dependency array `[]`.

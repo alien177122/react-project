@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { SavedExercise, UserData } from '../types'
 import { EXERCISES, EX_COUNT, TYPE_LABELS } from '../data/exercises'
 import { calcWorkingWeight } from '../utils/calc'
-import ProgressionBlock from '../components/ProgressionBlock'
+import PeriodizationChart from '../components/PeriodizationChart'
 import VolumeDonut from '../components/VolumeDonutLazy'
 import ExerciseWheel from '../components/ExerciseWheel'
 import { PlateDiagram } from '../components/PlateDiagram'
@@ -189,8 +189,6 @@ export default function CalculatorTab({
               )}
             </div>
 
-            <ProgressionBlock config={config} result={activeResult} />
-
             <ResultCard
               oneRM={activeResult.oneRM}
               ariaLabel={`Расчётный максимум ${activeResult.oneRM} кг. Тест ${activeResult.testWeight} кг на ${activeResult.testReps} повторений. ${TYPE_LABELS[config.type]}. Шаг ${config.step} кг. ${activeResult.date}.`}
@@ -208,6 +206,8 @@ export default function CalculatorTab({
                 barWeight={config.type === 'B' ? 10 : 20}
               />
             )}
+
+            <PeriodizationChart config={config} result={activeResult} />
 
             <NoteBox>
               <strong>↺ Нед 5 — волновой откат:</strong> вес снижается, объём восстанавливается.

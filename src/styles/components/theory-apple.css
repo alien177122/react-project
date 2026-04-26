@@ -1387,6 +1387,204 @@
   }
 }
 
+/* ============================================================
+   Periodization chart (Calculator · Phase 5)
+   ============================================================ */
+.ta-shell .ta-period {
+  background: var(--ta-calc-surface);
+  border: 1px solid var(--ta-calc-border);
+  border-radius: 16px;
+  margin: 0 0 24px;
+  padding: 16px;
+}
+
+.ta-shell .ta-period__phases {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.ta-shell .ta-period__phase {
+  background: var(--phase-bg);
+  border: 1px solid color-mix(in srgb, var(--phase-color) 30%, transparent);
+  border-radius: 8px;
+  color: var(--phase-color);
+  flex-basis: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  min-width: 0;
+  overflow: hidden;
+  padding: 7px 8px;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ta-shell .ta-period__scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ta-shell .ta-period__svg {
+  display: block;
+  min-width: 720px;
+  width: 100%;
+}
+
+.ta-shell .ta-period__grid {
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 1;
+}
+
+.ta-shell .ta-period__axis,
+.ta-shell .ta-period__week-label {
+  fill: var(--ta-text-dim);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+}
+
+.ta-shell .ta-period__area {
+  fill: var(--ta-sec-01-tint);
+  opacity: 0;
+  animation: ta-period-area-in 500ms var(--ta-ease) 700ms both;
+}
+
+.ta-shell .ta-period__line {
+  fill: none;
+  stroke: var(--ta-sec-01);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  animation: ta-period-line-in 900ms var(--ta-ease) 120ms both;
+}
+
+.ta-shell .ta-period__bar {
+  fill: var(--ta-sec-02);
+  opacity: 0.72;
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: ta-period-bar-in 360ms var(--ta-ease) both;
+}
+
+.ta-shell .ta-period__bar.is-active {
+  opacity: 1;
+}
+
+.ta-shell .ta-period__point {
+  fill: var(--ta-calc-surface);
+  stroke: var(--ta-sec-01);
+  stroke-width: 2;
+}
+
+.ta-shell .ta-period__point.is-active {
+  fill: var(--ta-sec-01);
+}
+
+.ta-shell .ta-period__cursor {
+  stroke: var(--ta-calc-accent);
+  stroke-dasharray: 4 5;
+  stroke-width: 1;
+}
+
+.ta-shell .ta-period__tip rect {
+  fill: var(--ta-surface-2);
+  stroke: var(--ta-calc-border);
+}
+
+.ta-shell .ta-period__tip text {
+  fill: var(--ta-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.ta-shell .ta-period__tip text:nth-of-type(3) {
+  fill: var(--ta-text-muted);
+}
+
+.ta-shell .ta-period__weeks {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.ta-shell .ta-period-week {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--ta-calc-border);
+  border-left: 2px solid transparent;
+  border-radius: 10px;
+  color: var(--ta-text-muted);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  grid-template-columns: 54px 1fr 80px 80px 140px;
+  gap: 10px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.ta-shell .ta-period-week strong {
+  color: var(--ta-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ta-shell .ta-period-week em {
+  color: var(--ta-text-dim);
+  font-style: normal;
+  justify-self: end;
+}
+
+.ta-shell .ta-period-week.is-active,
+.ta-shell .ta-period-week:focus-visible {
+  background: var(--ta-calc-accent-tint);
+  border-left-color: var(--ta-calc-accent);
+  outline: none;
+}
+
+@keyframes ta-period-line-in {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes ta-period-area-in {
+  to { opacity: 1; }
+}
+
+@keyframes ta-period-bar-in {
+  to { transform: scaleY(1); }
+}
+
+@media (max-width: 600px) {
+  .ta-shell .ta-period__phases {
+    flex-direction: column;
+  }
+
+  .ta-shell .ta-period-week {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ta-shell .ta-period-week em {
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-shell .ta-period__area,
+  .ta-shell .ta-period__line,
+  .ta-shell .ta-period__bar {
+    animation: none !important;
+    opacity: 1 !important;
+    stroke-dashoffset: 0 !important;
+    transform: none !important;
+  }
+}
+
+
 
 /* ============================================================
    Chapter 09 helpers — subhead and see-also

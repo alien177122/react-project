@@ -134,6 +134,14 @@ async function apiJson<T>(baseUrl: string, path: string, token: string, init?: R
   return response.json()
 }
 
+async function parseJsonSafe(response: Response): Promise<unknown> {
+  try {
+    return await response.json()
+  } catch {
+    return null
+  }
+}
+
 export function createApiClient(baseUrl: string) {
   async function loadUser(name: string, token: string): Promise<UserData | null> {
     try {
@@ -176,7 +184,27 @@ export function createApiClient(baseUrl: string) {
         body: JSON.stringify(body),
       })
 
-      return await response.json()
+      const payload = await parseJsonSafe(response)
+
+      if (!response.ok) {
+        if (isRecord(payload) && typeof payload.error === 'string' && payload.error.trim()) {
+          return { error: payload.error.trim() }
+        }
+
+        return {
+          error: response.status >= 500 ? 'Ошибка сервера' : 'Ошибка авторизации',
+        }
+      }
+
+      if (!isRecord(payload)) {
+        return { error: 'Некорректный ответ сервера' }
+      }
+
+      return {
+        ...(typeof payload.token === 'string' ? { token: payload.token } : {}),
+        ...(typeof payload.name === 'string' ? { name: payload.name } : {}),
+        ...(typeof payload.error === 'string' ? { error: payload.error } : {}),
+      }
     } catch {
       return { error: 'Нет соединения с сервером' }
     }

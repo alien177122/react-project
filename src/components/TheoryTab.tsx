@@ -3,6 +3,10 @@ import type { CSSProperties } from 'react'
 import {
   MECHANICAL_CONCEPTS,
   MTOR_CONCEPTS,
+  PERIODIZATION_HIERARCHY,
+  PERIODIZATION_MODELS,
+  PERIODIZATION_SCIENCE,
+  SPECIAL_METHODS,
   SUPPLEMENT_TIERS,
   THEORY_CONCEPTS,
 } from '../data/theory'
@@ -100,6 +104,46 @@ const MECHANICS_SLIDES: MechanicsSlide[] = MECHANICAL_CONCEPTS.map((c, i) => ({
   body: c.body,
 }))
 
+// ─── Section 09: Прогрессия 2.0 ──────────────────────────────────
+// Все четыре подсекции переиспользуют существующие компоненты.
+// Цвет иерархии общий для всех ярусов — лестница «считывается» шириной,
+// а индиго даёт мягкий контраст к остальным главам.
+const PERIODIZATION_TIER_BADGES = ['I', 'II', 'III', 'IV', 'V'] as const
+
+const HIERARCHY_TIERS = PERIODIZATION_HIERARCHY.map((row, i) => ({
+  tier: PERIODIZATION_TIER_BADGES[i],
+  color: '#6366f1',
+  label: row.label,
+  items: [row.duration],
+  note: row.note,
+}))
+
+const SCIENCE_BENTO: BentoItem[] = PERIODIZATION_SCIENCE.map((c, i) => ({
+  id: c.id,
+  title: c.title,
+  body: c.body,
+  size: c.featured ? 'large' : i === 1 ? 'medium' : 'small',
+  featured: c.featured,
+  badge: c.featured ? 'Ядро' : undefined,
+  icon: String(i + 1).padStart(2, '0'),
+}))
+
+const MODELS_BENTO: BentoItem[] = PERIODIZATION_MODELS.map((c, i) => ({
+  id: c.id,
+  title: c.title,
+  body: c.body,
+  size: 'medium',
+  icon: String(i + 1).padStart(2, '0'),
+}))
+
+const SPECIAL_METHOD_NODES: TimelineNode[] = SPECIAL_METHODS.map((m) => ({
+  id: m.id,
+  title: m.title,
+  definition: m.definition,
+  pattern: m.pattern,
+  bullets: m.bullets,
+}))
+
 // ─── Helpers ─────────────────────────────────────────────────────
 function sectionStyle(
   accentVar: string,
@@ -122,12 +166,18 @@ interface SectionProps {
 }
 
 function Section({ id, num, title, lede, accentVar, tintVar, children }: SectionProps) {
+  const titleId = `${id}-title`
   return (
-    <section id={id} className="ta-section" style={sectionStyle(accentVar, tintVar)}>
+    <section
+      id={id}
+      className="ta-section"
+      style={sectionStyle(accentVar, tintVar)}
+      aria-labelledby={titleId}
+    >
       <div className="ta-section-inner">
         <header className="ta-section-head">
           <span className="ta-section-pill">{num} · Глава</span>
-          <h2 className="ta-section-title">{title}</h2>
+          <h2 id={titleId} className="ta-section-title">{title}</h2>
           {lede && <p className="ta-section-lede">{lede}</p>}
         </header>
         {children}
@@ -258,6 +308,60 @@ export default function TheoryTab() {
         </div>
       </Section>
 
+      <Section
+        id="progression2"
+        num="09"
+        title="Прогрессия 2.0"
+        lede="От макроцикла до приёма внутри подхода — карта управления нагрузкой по «Новой школе периодизации»."
+        accentVar="--ta-sec-09"
+        tintVar="--ta-sec-09-tint"
+      >
+        <h3 className="ta-subhead">Иерархия циклов</h3>
+        <TierPyramid tiers={HIERARCHY_TIERS} />
+
+        <h3 className="ta-subhead">Научная база</h3>
+        <BentoGrid
+          items={SCIENCE_BENTO}
+          accentVar="--ta-sec-09"
+          tintVar="--ta-sec-09-tint"
+        />
+
+        <h3 className="ta-subhead">Четыре модели</h3>
+        <BentoGrid
+          items={MODELS_BENTO}
+          accentVar="--ta-sec-09"
+          tintVar="--ta-sec-09-tint"
+        />
+
+        <h3 className="ta-subhead">Специальные методы</h3>
+        <RevealTimeline
+          items={SPECIAL_METHOD_NODES}
+          asideEyebrow="14 приёмов"
+          asideQuote="Метод — это нижний этаж периодизации."
+          asideNote="От разгрузки до пика. Каждый метод — конкретная схема веса × повторов × RPE для одной сессии."
+        />
+
+        <aside className="ta-see-also" aria-label="Связанные разделы">
+          <span className="ta-see-also-label">См. также:</span>
+          <button
+            type="button"
+            className="ta-see-also-link"
+            onClick={() => scrollTo('basics')}
+            aria-label="Перейти к главе 01: 1ПМ, формула Эпли, базовая волновая периодизация"
+          >
+            01 · Основы (Эпли, 1ПМ)
+          </button>
+          <button
+            type="button"
+            className="ta-see-also-link"
+            onClick={() => scrollTo('tables')}
+            aria-label="Перейти к главе 05: полная RPE-шкала и зоны интенсивности"
+          >
+            05 · RPE-шкала
+          </button>
+        </aside>
+      </Section>
+
       <TheoryOutro
         title="Что дальше?"
         links={[
@@ -269,11 +373,11 @@ export default function TheoryTab() {
             onClick: () => scrollTo(THEORY_CHAPTERS[0].id),
           },
           {
-            id: 'tiers-again',
-            eyebrow: 'Приоритеты',
-            title: 'Tier List добавок',
-            color: 'var(--ta-sec-03)',
-            onClick: () => scrollTo('tiers'),
+            id: 'progression2-jump',
+            eyebrow: 'Управление нагрузкой',
+            title: 'Прогрессия 2.0',
+            color: 'var(--ta-sec-09)',
+            onClick: () => scrollTo('progression2'),
           },
           {
             id: 'formula-again',

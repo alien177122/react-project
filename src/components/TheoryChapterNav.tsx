@@ -16,6 +16,7 @@ export const THEORY_CHAPTERS: Chapter[] = [
   { id: 'tendon',    num: '06', title: 'Сухожилия',      accentVar: '--ta-sec-06' },
   { id: 'mechanics', num: '07', title: 'Механика',       accentVar: '--ta-sec-07' },
   { id: 'formula',   num: '08', title: 'Формула силы',   accentVar: '--ta-sec-08' },
+  { id: 'progression2', num: '09', title: 'Прогрессия 2.0', accentVar: '--ta-sec-09' },
 ]
 
 export function TheoryChapterNav() {

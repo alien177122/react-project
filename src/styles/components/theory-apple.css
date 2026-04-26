@@ -14,6 +14,7 @@
   --ta-sec-06: #ff6b6b;  --ta-sec-06-tint: rgba(255, 107, 107, 0.12);
   --ta-sec-07: #a78bfa;  --ta-sec-07-tint: rgba(167, 139, 250, 0.12);
   --ta-sec-08: #fbbf24;  --ta-sec-08-tint: rgba(251, 191, 36, 0.12);
+  --ta-sec-09: #6366f1;  --ta-sec-09-tint: rgba(99, 102, 241, 0.12);
 
   /* Surfaces */
   --ta-bg: #0a0c10;
@@ -493,7 +494,7 @@
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--ta-sec-02);
+  color: var(--ta-sec, var(--ta-sec-02));
 }
 .ta-timeline-aside-quote {
   font-family: var(--ta-display-font);
@@ -524,7 +525,7 @@
   top: 8px;
   bottom: 8px;
   width: 2px;
-  background: linear-gradient(to bottom, var(--ta-sec-02) 0%, transparent 100%);
+  background: linear-gradient(to bottom, var(--ta-sec, var(--ta-sec-02)) 0%, transparent 100%);
   transform: scaleY(0);
   transform-origin: top;
   transition: transform 1.2s var(--ta-ease);
@@ -548,14 +549,14 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--ta-sec-02);
-  box-shadow: 0 0 0 3px rgba(91, 164, 255, 0.18);
+  background: var(--ta-sec, var(--ta-sec-02));
+  box-shadow: 0 0 0 3px var(--ta-sec-tint, rgba(91, 164, 255, 0.18));
 }
 
 .ta-timeline-card {
   background: var(--ta-surface);
   border: 1px solid var(--ta-border);
-  border-left: 3px solid var(--ta-sec-02);
+  border-left: 3px solid var(--ta-sec, var(--ta-sec-02));
   border-radius: var(--ta-radius-card);
   padding: 24px;
   display: flex;
@@ -583,8 +584,8 @@
   font-size: 0.78rem;
   line-height: 1.55;
   color: var(--ta-text-muted);
-  background: rgba(91, 164, 255, 0.06);
-  border: 1px solid rgba(91, 164, 255, 0.18);
+  background: var(--ta-sec-tint, rgba(91, 164, 255, 0.12));
+  border: 1px solid var(--ta-sec-tint, rgba(91, 164, 255, 0.18));
   border-radius: 12px;
   padding: 12px 14px;
   margin: 0;
@@ -611,7 +612,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--ta-sec-02);
+  background: var(--ta-sec, var(--ta-sec-02));
   margin-top: 9px;
   flex-shrink: 0;
 }
@@ -666,6 +667,16 @@
 .ta-tier--D { width: 76%; }
 .ta-tier--E { width: 70%; }
 .ta-tier--F { width: 64%; }
+
+/* Periodization hierarchy widths (chapter 09). Tier values are roman
+   numerals I→V so the existing TierPyramid renders them in the badge
+   without a new prop. The ladder narrows top→bottom as the scope
+   shrinks from Macrocycle to single Method. */
+.ta-tier--I   { width: 100%; }
+.ta-tier--II  { width: 86%; }
+.ta-tier--III { width: 70%; }
+.ta-tier--IV  { width: 56%; }
+.ta-tier--V   { width: 44%; }
 
 .ta-tier-badge {
   width: 64px;
@@ -731,7 +742,12 @@
   .ta-tier--C,
   .ta-tier--D,
   .ta-tier--E,
-  .ta-tier--F { width: 100%; }
+  .ta-tier--F,
+  .ta-tier--I,
+  .ta-tier--II,
+  .ta-tier--III,
+  .ta-tier--IV,
+  .ta-tier--V { width: 100%; }
   .ta-tier { grid-template-columns: 48px 1fr; gap: 14px; padding: 16px; }
   .ta-tier-badge { width: 48px; height: 48px; font-size: 22px; border-radius: 14px; }
 }
@@ -1185,3 +1201,61 @@
   .ta-timeline-item { opacity: 1 !important; transform: none !important; }
   .ta-timeline-line { transform: scaleY(1) !important; }
 }
+
+/* ============================================================
+   Chapter 09 helpers — subhead and see-also
+   ============================================================ */
+.ta-shell .ta-subhead {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ta-sec, var(--ta-text-dim));
+  margin: 32px 0 14px;
+}
+.ta-shell .ta-subhead:first-child {
+  margin-top: 0;
+}
+
+.ta-shell .ta-see-also {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin: 32px 0 0;
+  padding: 14px 18px;
+  border: 1px solid var(--ta-border);
+  border-radius: var(--ta-radius-card);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.9rem;
+  color: var(--ta-text-muted);
+}
+.ta-shell .ta-see-also-label {
+  font-weight: 600;
+  color: var(--ta-text);
+  margin-right: 4px;
+}
+.ta-shell .ta-see-also-link {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--ta-border);
+  border-radius: var(--ta-radius-pill);
+  color: var(--ta-text);
+  font: inherit;
+  font-weight: 500;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition:
+    background 0.2s var(--ta-ease-micro),
+    border-color 0.2s var(--ta-ease-micro),
+    color 0.2s var(--ta-ease-micro);
+}
+.ta-shell .ta-see-also-link:hover {
+  background: var(--ta-sec-tint, rgba(255, 255, 255, 0.06));
+  border-color: var(--ta-sec, var(--ta-border-strong));
+  color: var(--ta-text);
+}
+.ta-shell .ta-see-also-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ta-sec-tint, rgba(255, 159, 64, 0.32));
+  border-color: var(--ta-sec, var(--ta-border-strong));

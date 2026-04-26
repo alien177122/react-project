@@ -25,6 +25,7 @@
     "./utils/calcValidators": "./src/utils/calcValidators.ts",
     "./utils/geometry": "./src/utils/geometry.ts",
     "./utils/muscles": "./src/utils/muscles.ts",
+    "./utils/plates": "./src/utils/plates.ts",
     "./utils/training": "./src/utils/training.ts",
     "./hooks/useCalculatorState": "./src/hooks/useCalculatorState.ts",
     "./hooks/useTrainingProgram": "./src/hooks/useTrainingProgram.ts",

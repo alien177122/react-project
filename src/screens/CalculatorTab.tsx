@@ -5,10 +5,12 @@ import { calcWorkingWeight } from '../utils/calc'
 import ProgressionBlock from '../components/ProgressionBlock'
 import VolumeDonut from '../components/VolumeDonutLazy'
 import ExerciseWheel from '../components/ExerciseWheel'
+import { PlateDiagram } from '../components/PlateDiagram'
 import { SectionBlock, NoteBox } from '../components/SectionBlock'
 import { HeroSection } from '../components/ui/HeroSection'
 import { Button } from '../components/ui/Button'
 import { PremiumInput } from '../components/ui/PremiumInput'
+import { ResultCard } from '../components/ui/ResultCard'
 
 export interface CalculatorTabProps {
   userData: UserData
@@ -189,19 +191,23 @@ export default function CalculatorTab({
 
             <ProgressionBlock config={config} result={activeResult} />
 
-            <div
-              className="result-card"
-              role="status"
-              aria-live="polite"
-              aria-label={`Расчётный 1ПМ: ${activeResult.oneRM} килограмм`}
-            >
-              <div className="result-label">Расчётный 1ПМ</div>
-              <div className="result-value">{activeResult.oneRM}<span>кг</span></div>
-              <div className="result-meta">
-                Тест: {activeResult.testWeight} кг × {activeResult.testReps} повт &nbsp;|&nbsp;
-                {TYPE_LABELS[config.type]} &nbsp;|&nbsp; Шаг: {config.step} кг &nbsp;|&nbsp; {activeResult.date}
-              </div>
-            </div>
+            <ResultCard
+              oneRM={activeResult.oneRM}
+              ariaLabel={`Расчётный максимум ${activeResult.oneRM} кг. Тест ${activeResult.testWeight} кг на ${activeResult.testReps} повторений. ${TYPE_LABELS[config.type]}. Шаг ${config.step} кг. ${activeResult.date}.`}
+              chips={[
+                `Тест: ${activeResult.testWeight} кг × ${activeResult.testReps} повт`,
+                TYPE_LABELS[config.type],
+                `Шаг: ${config.step} кг`,
+                activeResult.date,
+              ]}
+            />
+
+            {!config.isPullup && (config.type === 'A' || config.type === 'B') && (
+              <PlateDiagram
+                weight={activeResult.testWeight}
+                barWeight={config.type === 'B' ? 10 : 20}
+              />
+            )}
 
             <NoteBox>
               <strong>↺ Нед 5 — волновой откат:</strong> вес снижается, объём восстанавливается.

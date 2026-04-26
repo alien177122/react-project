@@ -40,6 +40,31 @@
     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Display',
     'Inter', system-ui, sans-serif;
 
+  /* Calculator sub-namespace (ta-calc-*). Orange accent already present
+     as --ta-sec-01; aliased here so .ta-calc-* components stay decoupled
+     from Theory chapter accents. */
+  --ta-calc-accent: var(--ta-sec-01);
+  --ta-calc-accent-tint: var(--ta-sec-01-tint);
+  --ta-calc-surface: var(--ta-surface);
+  --ta-calc-border: var(--ta-border);
+  --ta-calc-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  --ta-calc-error: #ff3b30;
+  --plate-25: #d93025;
+  --plate-20: #2563eb;
+  --plate-15: #facc15;
+  --plate-10: #22c55e;
+  --plate-5: #f8fafc;
+  --plate-2_5: #d93025;
+  --plate-1_25: #94a3b8;
+
+  /* Motion tokens used by Calculator components (Phase 2+). */
+  --ta-duration-micro: 200ms;
+  --ta-duration-component: 400ms;
+  --ta-duration-section: 500ms;
+  --ta-ease-transition: cubic-bezier(0.4, 0, 0.2, 1);
+
   position: relative;
   background:
     radial-gradient(ellipse 60% 40% at 8% 0%, rgba(255, 159, 64, 0.10), transparent 50%),
@@ -1201,6 +1226,167 @@
   .ta-timeline-item { opacity: 1 !important; transform: none !important; }
   .ta-timeline-line { transform: scaleY(1) !important; }
 }
+
+/* ============================================================
+   Result card (Calculator · Phase 3)
+   ============================================================ */
+.ta-shell .ta-result-card {
+  position: relative;
+  background: var(--ta-calc-surface);
+  border: 1px solid var(--ta-calc-border);
+  border-left: 2px solid var(--ta-calc-accent);
+  border-radius: 16px;
+  box-shadow: var(--ta-calc-shadow);
+  padding: 24px;
+  margin-bottom: 24px;
+  font-variant-numeric: tabular-nums;
+  transform-origin: center;
+  animation: ta-result-card-in 400ms var(--ta-ease) both;
+}
+
+@keyframes ta-result-card-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ta-shell .ta-result-card__label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ta-calc-accent);
+  margin: 0 0 6px;
+}
+
+.ta-shell .ta-result-card__value {
+  font-family: var(--ta-display-font);
+  font-weight: 700;
+  font-size: clamp(48px, 11vw, 72px);
+  line-height: 1;
+  color: var(--ta-text);
+  letter-spacing: -0.02em;
+}
+
+.ta-shell .ta-result-card__unit {
+  font-size: 0.42em;
+  font-weight: 500;
+  color: var(--ta-text-muted);
+  margin-left: 6px;
+  letter-spacing: 0;
+}
+
+.ta-shell .ta-result-card__chips {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ta-shell .ta-result-card__chip {
+  padding: 5px 10px;
+  border: 1px solid var(--ta-calc-border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--ta-text-muted);
+  background: transparent;
+  white-space: nowrap;
+  animation: ta-result-chip-in 300ms var(--ta-ease) both;
+}
+
+.ta-shell .ta-result-card__chip:nth-child(1) { animation-delay: 120ms; }
+.ta-shell .ta-result-card__chip:nth-child(2) { animation-delay: 180ms; }
+.ta-shell .ta-result-card__chip:nth-child(3) { animation-delay: 240ms; }
+.ta-shell .ta-result-card__chip:nth-child(4) { animation-delay: 300ms; }
+
+@keyframes ta-result-chip-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-shell .ta-result-card,
+  .ta-shell .ta-result-card__chip {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   Plate diagram (Calculator · Phase 4)
+   ============================================================ */
+.ta-shell .ta-calc-plates {
+  background: var(--ta-calc-surface);
+  border: 1px solid var(--ta-calc-border);
+  border-radius: 16px;
+  margin: 0 0 24px;
+  padding: 16px;
+}
+
+.ta-shell .ta-calc-plates__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--ta-text-muted);
+}
+
+.ta-shell .ta-calc-plates__bar {
+  fill: var(--ta-text-dim);
+  opacity: 0.8;
+}
+
+.ta-shell .ta-calc-plates__sleeve {
+  fill: var(--ta-border-strong);
+}
+
+.ta-shell .ta-calc-plates__plate {
+  fill: var(--plate-color);
+  stroke: rgba(10, 12, 16, 0.5);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ta-plate-in 400ms var(--ta-ease) both;
+}
+
+.ta-shell .ta-calc-plates__bar-label {
+  fill: var(--ta-text-dim);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.ta-shell .ta-calc-plates__formula {
+  border: 1px solid var(--ta-calc-border);
+  border-radius: 8px;
+  color: var(--ta-text-muted);
+  display: inline-flex;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 8px;
+  padding: 6px 10px;
+}
+
+@keyframes ta-plate-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--plate-offset)) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-shell .ta-calc-plates__plate {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 
 /* ============================================================
    Chapter 09 helpers — subhead and see-also

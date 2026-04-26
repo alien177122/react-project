@@ -1757,10 +1757,7 @@ table.pt tr:hover td { background: #1e1e1e; }
 }
 
 .theory-card-grid,
-.theory-tier-list,
-.theory-protocol-grid,
-.theory-strength-factor-list,
-.theory-strength-group-list {
+.theory-tier-list {
   display: grid;
   gap: 16px;
 }
@@ -1769,35 +1766,21 @@ table.pt tr:hover td { background: #1e1e1e; }
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.theory-card-grid-compact,
-.theory-protocol-grid,
-.theory-strength-phase-grid,
-.theory-strength-protocol-grid {
+.theory-card-grid-compact {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .theory-card,
-.theory-tier-row,
-.theory-strength-hero,
-.theory-strength-factor-row,
-.theory-strength-phase-card,
-.theory-strength-callout,
-.theory-strength-research-card,
-.theory-strength-protocol-card {
+.theory-tier-row {
   background: var(--theory-surface);
   border: 1px solid var(--theory-border);
   border-radius: 18px;
   position: relative;
 }
 
-.theory-card,
-.theory-strength-factor-row,
-.theory-strength-phase-card,
-.theory-strength-callout,
-.theory-strength-research-card,
-.theory-strength-protocol-card {
+.theory-card {
   padding: 16px;
 }
 
@@ -1814,12 +1797,7 @@ table.pt tr:hover td { background: #1e1e1e; }
 
 .theory-card-title,
 .theory-top-name,
-.theory-tier-title,
-.theory-strength-title,
-.theory-strength-factor-title,
-.theory-strength-group-title,
-.theory-strength-research-question,
-.theory-strength-protocol-title {
+.theory-tier-title {
   color: var(--theory-text);
   font-family: 'Avenir Next', 'Inter', sans-serif;
   font-weight: 800;
@@ -1831,8 +1809,7 @@ table.pt tr:hover td { background: #1e1e1e; }
 }
 
 .theory-card-body,
-.theory-bullet-text,
-.theory-strength-research-text {
+.theory-bullet-text {
   color: var(--theory-muted);
   font-size: 14px;
   line-height: 1.62;
@@ -1886,23 +1863,18 @@ table.pt tr:hover td { background: #1e1e1e; }
 }
 
 .theory-tier-title,
-.theory-top-name,
-.theory-strength-phase-title {
+.theory-top-name {
   font-size: 20px;
   line-height: 1.2;
 }
 
-.theory-chip-list,
-.theory-strength-chip-row,
-.theory-strength-inline-chips {
+.theory-chip-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.theory-chip,
-.theory-strength-chip,
-.theory-strength-inline-chip {
+.theory-chip {
   background: var(--theory-card);
   border: 1px solid var(--theory-border);
   border-radius: 999px;
@@ -1912,15 +1884,11 @@ table.pt tr:hover td { background: #1e1e1e; }
   padding: 6px 10px;
 }
 
-.theory-top-card,
-.theory-strength-phase-card,
-.theory-strength-protocol-card {
+.theory-top-card {
   border-top: 3px solid var(--theory-border-strong);
 }
 
-.theory-top-num,
-.theory-protocol-num,
-.theory-strength-protocol-step {
+.theory-top-num {
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -1980,219 +1948,10 @@ table.pt tr:hover td { background: #1e1e1e; }
   vertical-align: top;
 }
 
-.theory-protocol-card {
-  border-left: 3px solid var(--theory-border-strong);
-}
-
-.theory-strength {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.theory-strength-hero {
-  border-left: 3px solid var(--theory-accent);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-}
-
-.theory-strength-eyebrow,
-.theory-strength-callout-label,
-.theory-strength-research-label,
-.theory-strength-metric-label,
-.theory-strength-caption-label {
-  color: var(--accent-soft);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.theory-strength-title {
-  font-size: 28px;
-  line-height: 1.15;
-}
-
-.theory-strength-metrics {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.theory-strength-metric {
-  background: var(--theory-card);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px;
-}
-
-.theory-strength-metric-value,
-.theory-strength-info-value,
-.theory-strength-phase-goal {
-  color: var(--theory-text);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.45;
-}
-
-.theory-strength-caption {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-}
-
-.theory-strength-caption-line {
-  background: var(--theory-border);
-  flex: 1;
-  height: 1px;
-}
-
-.theory-strength-factor-row {
-  align-items: start;
-  display: grid;
-  gap: 14px 16px;
-  grid-template-columns: 76px minmax(0, 1fr);
-}
-
-.theory-strength-factor-badge {
-  align-items: center;
-  border-radius: 999px;
-  display: flex;
-  font-size: 11px;
-  font-weight: 900;
-  justify-content: center;
-  letter-spacing: 0.08em;
-  min-height: 32px;
-  padding: 6px 10px;
-  white-space: nowrap;
-  width: 100%;
-}
-
-.theory-strength-factor-content,
-.theory-strength-group,
-.theory-strength-research-list,
-.theory-strength-phase-card,
-.theory-strength-protocol-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.theory-strength-research-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.theory-strength-phase-header,
-.theory-strength-research-header {
-  align-items: flex-start;
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-}
-
-.theory-strength-phase-badge {
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 5px 10px;
-  white-space: nowrap;
-}
-
-.theory-strength-phase-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.theory-strength-info-row {
-  align-items: center;
-  background: var(--theory-card);
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 10px;
-}
-
-.theory-strength-info-label,
-.theory-strength-research-footer,
-.theory-strength-research-id {
-  color: var(--theory-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.theory-strength-callout {
-  border-left: 3px solid var(--accent-soft);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.theory-strength-table td:nth-child(5) {
-  min-width: 240px;
-}
-
-.theory-strength-group-title {
-  font-size: 22px;
-  line-height: 1.2;
-}
-
-.theory-strength-research-tag {
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 10px;
-}
-
-.theory-strength-research-id {
-  font-family: 'SFMono-Regular', 'Menlo', monospace;
-}
-
-.theory-strength-research-question {
-  font-size: 20px;
-  line-height: 1.3;
-}
-
-.theory-strength-research-block {
-  background: var(--theory-card);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px;
-}
-
-.theory-strength-research-text {
-  color: var(--theory-text);
-}
-
-.theory-strength-research-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.theory-strength-protocol-header {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-}
-
 @media (max-width: 960px) {
   .theory-card-grid,
   .theory-card-grid-compact,
-  .theory-table-grid,
-  .theory-strength-phase-grid,
-  .theory-strength-protocol-grid {
+  .theory-table-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -2207,14 +1966,11 @@ table.pt tr:hover td { background: #1e1e1e; }
     font-size: 15px;
   }
 
-  .theory-strength-metrics,
-  .theory-strength-factor-row,
   .theory-tier-row {
     grid-template-columns: 1fr;
   }
 
-  .theory-tier-badge,
-  .theory-strength-factor-badge {
+  .theory-tier-badge {
     width: fit-content;
   }
 }
@@ -2225,18 +1981,11 @@ table.pt tr:hover td { background: #1e1e1e; }
   }
 
   .theory-card,
-  .theory-tier-row,
-  .theory-strength-hero,
-  .theory-strength-factor-row,
-  .theory-strength-phase-card,
-  .theory-strength-callout,
-  .theory-strength-research-card,
-  .theory-strength-protocol-card {
+  .theory-tier-row {
     padding: 14px;
   }
 
-  .theory-section-title,
-  .theory-strength-title {
+  .theory-section-title {
     text-wrap: balance;
   }
 

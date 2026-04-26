@@ -1,16 +1,56 @@
 import {z} from 'zod'
 
+export const FormulaPartOrderSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+])
+
+export const StrengthFormulaPartSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  hint: z.string().min(1),
+  tone: z.enum(['positive', 'negative']),
+  visualOrder: FormulaPartOrderSchema,
+})
+
 export const StrengthFormulaOverviewSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().min(1),
+  thesis: z.string().min(1),
+  formulaParts: z.array(StrengthFormulaPartSchema).length(5),
   parameters: z.array(z.string().min(1)).min(1),
   rounding: z.string().min(1),
   logic: z.string().min(1),
 })
 
+export const PriorityLevelSchema = z.enum([
+  'foundation',
+  'optimization',
+  'tuning',
+  'advanced',
+  'remove',
+])
+
+export type PriorityLevel = z.infer<typeof PriorityLevelSchema>
+
+export const PRIORITY_ORDER: Record<PriorityLevel, number> = {
+  foundation: 0,
+  optimization: 1,
+  tuning: 2,
+  advanced: 3,
+  remove: 4,
+} as const
+
 export const StrengthFactorTierSchema = z.object({
   rank: z.enum(['S-TIER', 'A-TIER', 'B-TIER', 'C-TIER', 'F-TIER']),
   zone: z.string().min(1),
+  level: PriorityLevelSchema,
+  plainLabel: z.string().min(1),
+  detail: z.string().min(1),
+  action: z.string().min(1),
   keyParameters: z.array(z.string().min(1)).min(1),
   trigger: z.string().min(1),
   color: z.string().min(1),
@@ -18,6 +58,7 @@ export const StrengthFactorTierSchema = z.object({
 })
 
 export const StrengthWavePhaseSchema = z.object({
+  id: z.string().min(1),
   phase: z.string().min(1),
   weeks: z.string().min(1),
   goal: z.string().min(1),
@@ -25,6 +66,7 @@ export const StrengthWavePhaseSchema = z.object({
   scheme: z.string().min(1),
   volume: z.string().min(1),
   focus: z.string().min(1),
+  stopRule: z.string().min(1),
   color: z.string().min(1),
 })
 
@@ -59,6 +101,12 @@ export const StrengthProtocolStepSchema = z.object({
   color: z.string().min(1),
 })
 
+export const StrengthAutoregChecklistSchema = z.object({
+  before: z.array(z.string().min(1)).min(1),
+  during: z.array(z.string().min(1)).min(1),
+  after: z.array(z.string().min(1)).min(1),
+})
+
 export const StrengthFormulaDataSchema = z.object({
   overview: StrengthFormulaOverviewSchema,
   factorTiers: z.array(StrengthFactorTierSchema).min(1),
@@ -67,22 +115,65 @@ export const StrengthFormulaDataSchema = z.object({
   warmupStack: z.array(StrengthWarmupStepSchema).min(1),
   scienceCards: z.array(StrengthScienceCardSchema).min(1),
   protocolSteps: z.array(StrengthProtocolStepSchema).min(1),
+  autoregChecklist: StrengthAutoregChecklistSchema,
 })
 
+export type FormulaPartVisualOrder = z.infer<typeof FormulaPartOrderSchema>
+export type StrengthFormulaPart = z.infer<typeof StrengthFormulaPartSchema>
 export type StrengthFormulaOverview = z.infer<typeof StrengthFormulaOverviewSchema>
 export type StrengthFactorTier = z.infer<typeof StrengthFactorTierSchema>
 export type StrengthWavePhase = z.infer<typeof StrengthWavePhaseSchema>
 export type StrengthWarmupStep = z.infer<typeof StrengthWarmupStepSchema>
 export type StrengthScienceCard = z.infer<typeof StrengthScienceCardSchema>
 export type StrengthProtocolStep = z.infer<typeof StrengthProtocolStepSchema>
+export type StrengthAutoregChecklist = z.infer<typeof StrengthAutoregChecklistSchema>
 export type StrengthFormulaData = z.infer<typeof StrengthFormulaDataSchema>
 
 const strengthFormulaDataInput = {
   overview: {
     title: 'Формула силы',
     subtitle:
-      'Системный конспект, 8-недельная волновая прогрессия и 13 научных карточек для заметок, печати и ежедневного трекинга.',
-    parameters: ['Присед 120 кг', 'Жим 120 кг', 'Бицепс 60 кг'],
+      'Практичная карта: что двигать в первую очередь, как строить 8 недель и где не накопить лишнюю усталость.',
+    thesis:
+      'Сила растёт, когда тяжёлая специфичная практика повторяется чаще, чем накапливается лишняя усталость.',
+    formulaParts: [
+      {
+        id: 'specificity',
+        label: 'Специфичность',
+        hint: 'Тренируй тот паттерн, амплитуду и скорость, в которых хочешь стать сильнее.',
+        tone: 'positive',
+        visualOrder: 1,
+      },
+      {
+        id: 'heavy-exposures',
+        label: 'Тяжёлые экспозиции',
+        hint: 'Нужны регулярные касания зоны 80-90% 1ПМ без постоянного отказа.',
+        tone: 'positive',
+        visualOrder: 2,
+      },
+      {
+        id: 'recovery',
+        label: 'Восстановление',
+        hint: 'Сон, питание и длинный отдых между сетами сохраняют качество усилия.',
+        tone: 'positive',
+        visualOrder: 3,
+      },
+      {
+        id: 'quality',
+        label: 'Качество повторов',
+        hint: 'Техника, полный ROM и внешняя задача важнее случайного добивания объёма.',
+        tone: 'positive',
+        visualOrder: 4,
+      },
+      {
+        id: 'excess-fatigue',
+        label: 'Лишняя усталость',
+        hint: 'Отказ в каждом сете, короткий отдых и лишние спецметоды крадут пик силы.',
+        tone: 'negative',
+        visualOrder: 5,
+      },
+    ],
+    parameters: ['Пример: присед 120 кг', 'жим 120 кг', 'бицепс 60 кг'],
     rounding: 'CEILING(вес / 2.5) × 2.5',
     logic: 'Накопление -> интенсификация -> откат -> пик',
   },
@@ -90,6 +181,11 @@ const strengthFormulaDataInput = {
     {
       rank: 'S-TIER',
       zone: 'Фундамент',
+      level: 'foundation',
+      plainLabel: 'Тренируй то, что хочешь улучшить',
+      detail:
+        'Сила специфична: перенос выше, когда совпадают движение, амплитуда, скорость и тип усилия.',
+      action: 'Выбери 1-2 ключевых движения на цикл и касайся их 2-3 раза в неделю.',
       keyParameters: [
         '>85% 1ПМ',
         '2-3 экспозиции в неделю',
@@ -104,6 +200,11 @@ const strengthFormulaDataInput = {
     {
       rank: 'A-TIER',
       zone: 'Оптимум',
+      level: 'optimization',
+      plainLabel: 'Держи тяжёлую работу качественной',
+      detail:
+        'Сила лучше растёт от повторяемых тяжёлых сетов с запасом, чем от хаотичного отказа.',
+      action: 'Работай чаще в RPE 8-9, оставляя 1-2 повтора в запасе на большинстве сетов.',
       keyParameters: [
         '3-6 сетов',
         'RPE 8-9 / RIR 1-2',
@@ -118,6 +219,11 @@ const strengthFormulaDataInput = {
     {
       rank: 'B-TIER',
       zone: 'Тюнинг',
+      level: 'tuning',
+      plainLabel: 'Шлифуй слабые звенья после базы',
+      detail:
+        'Подсобка, паузы и объёмная база полезны, когда они решают конкретную проблему движения.',
+      action: 'Добавляй 1-2 вспомогательных упражнения, а не отдельную программу поверх основной.',
       keyParameters: [
         'подсобка',
         'паузы',
@@ -132,6 +238,11 @@ const strengthFormulaDataInput = {
     {
       rank: 'C-TIER',
       zone: 'Спецметоды',
+      level: 'advanced',
+      plainLabel: 'Используй спецметоды только под задачу',
+      detail:
+        'Негативы, цепи, резина и изометрия помогают опытным атлетам, но быстро дорожают усталостью.',
+      action: 'Вводи один спецметод на блок и убирай его, если техника или восстановление проседают.',
       keyParameters: ['негативы', 'цепи и резина', 'изометрия'],
       trigger: 'Точечный инструмент для опытных, а не замена базе.',
       color: '#5ba4ff',
@@ -139,6 +250,11 @@ const strengthFormulaDataInput = {
     {
       rank: 'F-TIER',
       zone: 'Мусор',
+      level: 'remove',
+      plainLabel: 'Убери то, что крадёт силу',
+      detail:
+        'Пампинг ради пампинга, короткий отдых и отказ в каждом сете повышают усталость быстрее, чем силу.',
+      action: 'Если элемент не улучшает главный подъём или восстановление, вычеркни его из блока.',
       keyParameters: [
         'внутренний фокус',
         'отказ в каждом сете',
@@ -153,6 +269,7 @@ const strengthFormulaDataInput = {
   ],
   wavePhases: [
     {
+      id: 'accumulation',
       phase: 'Накопление',
       weeks: '1-2',
       goal: 'Гипертрофия и техника',
@@ -160,9 +277,11 @@ const strengthFormulaDataInput = {
       scheme: '4×8 -> 4×7',
       volume: '32 -> 28 повторов',
       focus: 'RIR 2, полный ROM, контроль эксцентрики.',
+      stopRule: 'Останови сет, если техника начинает ломаться раньше последнего повтора.',
       color: '#ff9f40',
     },
     {
+      id: 'transition',
       phase: 'Переход',
       weeks: '3-4',
       goal: 'Адаптация и сила',
@@ -170,9 +289,11 @@ const strengthFormulaDataInput = {
       scheme: '4×6 -> 4×5',
       volume: '24 -> 20 повторов',
       focus: 'Внешний фокус, отдых 4-5 минут, RIR 1-2.',
+      stopRule: 'Если RPE уже на втором сете >=9.5, снизь вес на 2.5-5 кг.',
       color: '#ff6b35',
     },
     {
+      id: 'deload',
       phase: 'Делоад',
       weeks: '5',
       goal: 'Суперкомпенсация',
@@ -180,9 +301,11 @@ const strengthFormulaDataInput = {
       scheme: '4×6',
       volume: '24 повтора',
       focus: 'Снижение RPE до 7, восстановление суставов и техники.',
+      stopRule: 'Не превращай делоад в тест: скорость и техника важнее веса.',
       color: '#5ba4ff',
     },
     {
+      id: 'peak',
       phase: 'Пик',
       weeks: '6-8',
       goal: 'Максимальная сила',
@@ -190,6 +313,7 @@ const strengthFormulaDataInput = {
       scheme: '4×5 -> 4×3',
       volume: '20 -> 12 повторов',
       focus: 'Скоростное намерение, RIR 0-1, кластеры при усталости.',
+      stopRule: 'При падении скорости более чем на четверть сократи один рабочий сет.',
       color: '#3affb8',
     },
   ],
@@ -456,12 +580,37 @@ const strengthFormulaDataInput = {
       color: '#3affb8',
     },
   ],
+  autoregChecklist: {
+    before: [
+      'Оцени сон, стресс, боль и общую готовность.',
+      'Если усталость высокая, снизь целевой тоннаж на 10-20%.',
+      'Проверь, что первый тяжёлый сет не выглядит как максимум.',
+    ],
+    during: [
+      'RPE выше плана на 1+? Остановись на один повтор раньше.',
+      'Техника ломается? Сбрось вес или заверши упражнение.',
+      'Сохраняй отдых 4-5 минут между тяжёлыми рабочими сетами.',
+    ],
+    after: [
+      'Запиши фактический вес, повторы, RPE и короткий комментарий.',
+      'Если восстановление затянулось, добавь день отдыха перед следующей сессией.',
+      'Если боль повторяется две тренировки подряд, убери один сет или спецметод.',
+    ],
+  },
 } satisfies z.input<typeof StrengthFormulaDataSchema>
 
 const strengthFormulaFallback: StrengthFormulaData = {
   overview: {
     title: 'Формула силы',
     subtitle: 'Данные секции временно недоступны.',
+    thesis: 'Данные секции временно недоступны.',
+    formulaParts: [
+      { id: 'fallback-1', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 1 },
+      { id: 'fallback-2', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 2 },
+      { id: 'fallback-3', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 3 },
+      { id: 'fallback-4', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 4 },
+      { id: 'fallback-5', label: 'Недоступно', hint: 'Недоступно', tone: 'negative', visualOrder: 5 },
+    ],
     parameters: [],
     rounding: 'Недоступно',
     logic: 'Недоступно',
@@ -472,6 +621,11 @@ const strengthFormulaFallback: StrengthFormulaData = {
   warmupStack: [],
   scienceCards: [],
   protocolSteps: [],
+  autoregChecklist: {
+    before: ['Данные секции временно недоступны.'],
+    during: ['Данные секции временно недоступны.'],
+    after: ['Данные секции временно недоступны.'],
+  },
 }
 
 const parsedStrengthFormulaData =
@@ -504,3 +658,4 @@ export const STRENGTH_BICEPS_NOTE = strengthFormulaData.bicepsNote
 export const STRENGTH_WARMUP_STACK = strengthFormulaData.warmupStack
 export const STRENGTH_SCIENCE_CARDS = strengthFormulaData.scienceCards
 export const STRENGTH_PROTOCOL_STEPS = strengthFormulaData.protocolSteps
+export const STRENGTH_AUTOREG_CHECKLIST = strengthFormulaData.autoregChecklist

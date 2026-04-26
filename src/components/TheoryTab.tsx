@@ -300,6 +300,7 @@ export default function TheoryTab() {
         id="formula"
         num="08"
         title="Формула силы"
+        lede="Практичный порядок факторов: что поднимать первым, как вести 8-недельную волну и где останавливать усталость."
         accentVar="--ta-sec-08"
         tintVar="--ta-sec-08-tint"
       >

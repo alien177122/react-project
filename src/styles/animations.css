@@ -1,13 +1,16 @@
-/* === Easing & duration tokens === */
+/* === Scroll-reveal / stagger tokens ===
+ * Core easings (--ease-out, --ease-in-out, --ease-micro) live in variables.css.
+ * Only the extra-long reveal durations and layout-specific values are defined here.
+ */
 :root {
-  --dur-fast:   250ms;
-  --dur-medium: 600ms;
+  --dur-fast:   var(--duration-short);   /* 250ms */
+  --dur-medium: var(--duration-long);    /* 600ms */
   --dur-slow:   800ms;
   --dur-slower: 1200ms;
 
-  --ease-reveal:   cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-micro:    cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Aliases kept so existing rules keep working without churn */
+  --ease-reveal:   var(--ease-out);
+  --ease-standard: var(--ease-in-out);
 
   --reveal-offset-y:    24px;
   --stagger-base-delay: 80ms;

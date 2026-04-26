@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { MUSCLE_META, MUSCLE_ORDER, CAT_ORDER, CAT_META } from '../data/muscles'
 import { computeMuscleVol } from '../utils/muscles'
 import { donutArc } from '../utils/geometry'
@@ -64,21 +64,20 @@ export default function VolumeDonut() {
       <svg width="240" height="240" viewBox="0 0 240 240">
         {catArcs.map(ca => ca && (
           <path key={ca.catKey}
+            className="donut-cat-arc"
             d={donutArc(cx, cy, RO_OUT, RO_IN, ca.startDeg, ca.endDeg)}
             fill={ca.color}
             opacity={hov && MUSCLE_META[hov]?.catKey !== ca.catKey ? 0.18 : 0.65}
-            style={{ transition: 'opacity 0.15s' }}
           />
         ))}
         {segs.map(seg => {
           const isHov = seg.muscle === hov
-          const ro = isHov ? RI_OUT + 5 : RI_OUT
           return (
             <path key={seg.muscle}
-              d={donutArc(cx, cy, ro, RI_IN, seg.startDeg, seg.endDeg)}
+              className={`donut-seg${isHov ? ' is-active' : ''}`}
+              d={donutArc(cx, cy, RI_OUT, RI_IN, seg.startDeg, seg.endDeg)}
               fill={MUSCLE_META[seg.muscle].color}
               opacity={hov && !isHov ? 0.2 : 0.88}
-              style={{ cursor: 'pointer', transition: 'opacity 0.15s' }}
               onMouseEnter={() => setHov(seg.muscle)}
               onMouseLeave={() => setHov(null)}
               onTouchStart={() => setHov(hov === seg.muscle ? null : seg.muscle)}
@@ -103,20 +102,24 @@ export default function VolumeDonut() {
           const catVol = catVols[ci]
           return (
             <div key={catKey} className="donut-cat">
-              <div className="donut-cat-hd" style={{ color: CAT_META[catKey].color }}>
+              <div
+                className="donut-cat-hd calc-vol-legend__head"
+                style={{ '--donut-color': CAT_META[catKey].color } as CSSProperties}
+              >
                 {CAT_META[catKey].label}
                 <span className="donut-cat-pct">{(total > 0 ? (catVol / total) * 100 : 0).toFixed(0)}%</span>
               </div>
               {muscles.map(m => (
                 <div key={m}
-                  className={`donut-row${hov === m ? ' donut-row-hov' : ''}`}
+                  className={`donut-row calc-vol-legend__row${hov === m ? ' donut-row-hov' : ''}`}
+                  style={{ '--donut-color': MUSCLE_META[m].color } as CSSProperties}
                   onMouseEnter={() => setHov(m)}
                   onMouseLeave={() => setHov(null)}
                   onTouchStart={() => setHov(hov === m ? null : m)}
                 >
-                  <span className="donut-dot" style={{ background: MUSCLE_META[m].color }} />
+                  <span className="donut-dot" />
                   <span className="donut-name">{MUSCLE_META[m].label}</span>
-                  <span className="donut-val" style={{ color: MUSCLE_META[m].color }}>{(vol[m] || 0).toFixed(1)}</span>
+                  <span className="donut-val">{(vol[m] || 0).toFixed(1)}</span>
                 </div>
               ))}
             </div>

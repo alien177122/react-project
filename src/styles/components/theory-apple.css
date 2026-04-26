@@ -1228,6 +1228,347 @@
 }
 
 /* ============================================================
+   SceneHero — shared hero for Apple-style tabs.
+   Strict typography (clamp scale), accent via CSS var, optional
+   parallax layer driven by --scene-hero-y (set in JS).
+   ============================================================ */
+.ta-scene-hero {
+  position: relative;
+  padding: clamp(32px, 6vw, 64px) clamp(20px, 5vw, 48px) clamp(28px, 5vw, 48px);
+  border-bottom: 1px solid var(--ta-border);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ta-scene-hero__glow {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 70%;
+  background: radial-gradient(
+    ellipse 50% 60% at 30% 20%,
+    var(--scene-hero-accent, var(--ta-calc-accent)) 0%,
+    transparent 60%
+  );
+  opacity: 0.18;
+  transform: translate3d(0, var(--scene-hero-y, 0px), 0);
+  will-change: transform;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ta-scene-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 820px;
+}
+
+.ta-scene-hero__eyebrow {
+  color: var(--ta-text-muted);
+  font-size: clamp(11px, 1.4vw, 13px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.ta-scene-hero__title {
+  font-family: var(--ta-display-font);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--ta-text);
+  margin: 0;
+}
+
+.ta-scene-hero__accent {
+  color: var(--scene-hero-accent, var(--ta-calc-accent));
+}
+
+.ta-scene-hero__subtitle {
+  color: var(--ta-text-muted);
+  font-size: clamp(14px, 2vw, 16px);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 620px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-scene-hero__glow {
+    transform: none;
+    will-change: auto;
+  }
+}
+
+/* ============================================================
+   Shared section stack (used by Calculator, later by other tabs).
+   Mirrors the legacy .theory-stack stagger so moving a shell from
+   .theory-shell to .ta-shell is a drop-in swap.
+   ============================================================ */
+.ta-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 28px;
+}
+
+@keyframes ta-stack-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ta-stack > * {
+  animation: ta-stack-in var(--ta-duration-section, 500ms) var(--ta-ease) both;
+}
+.ta-stack > *:nth-child(1) { animation-delay: 0.06s; }
+.ta-stack > *:nth-child(2) { animation-delay: 0.14s; }
+.ta-stack > *:nth-child(3) { animation-delay: 0.22s; }
+.ta-stack > *:nth-child(4) { animation-delay: 0.30s; }
+.ta-stack > *:nth-child(5) { animation-delay: 0.38s; }
+.ta-stack > *:nth-child(6) { animation-delay: 0.46s; }
+.ta-stack > *:nth-child(7) { animation-delay: 0.54s; }
+.ta-stack > *:nth-child(8) { animation-delay: 0.62s; }
+
+.ta-stack--calc {
+  gap: 0;
+  margin-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-stack > * { animation: none; }
+}
+
+/* ============================================================
+   Calculator section rhythm
+   ============================================================ */
+.ta-shell .ta-calc-section {
+  padding: 40px 28px;
+  scroll-margin-top: 88px;
+}
+
+.ta-shell .ta-calc-section + .ta-calc-section {
+  border-top: 1px solid var(--ta-border);
+}
+
+.ta-shell .ta-calc-section__inner {
+  max-width: 1140px;
+}
+
+.ta-shell .ta-calc-section__head {
+  gap: 14px;
+  margin-bottom: 28px;
+  max-width: none;
+}
+
+.ta-shell .ta-calc-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ta-shell .ta-calc-section__pill {
+  padding-inline: 14px;
+}
+
+.ta-shell .ta-calc-section__title {
+  font-size: clamp(2.1rem, 4vw, 3.1rem);
+}
+
+.ta-shell .ta-calc-note {
+  background: var(--ta-surface-2);
+  border: 1px solid var(--ta-border);
+  border-radius: 18px;
+  color: var(--ta-text-muted);
+  font-size: 15px;
+  line-height: 1.65;
+  padding: 18px 20px;
+}
+
+.ta-shell .ta-calc-note strong {
+  color: var(--ta-text);
+}
+
+/* ============================================================
+   Calculator form layout
+   ============================================================ */
+.ta-shell .ta-calc-form {
+  align-items: end;
+  display: grid;
+  gap: 18px 16px;
+  grid-template-columns:
+    minmax(280px, 1.8fr)
+    minmax(220px, 1fr)
+    minmax(220px, 1fr)
+    auto;
+}
+
+.ta-shell .ta-calc-form.is-pullup {
+  grid-template-columns:
+    minmax(260px, 1.5fr)
+    minmax(190px, 1fr)
+    minmax(190px, 1fr)
+    minmax(190px, 1fr)
+    auto;
+}
+
+.ta-shell .ta-calc-form__exercise,
+.ta-shell .ta-calc-form__field,
+.ta-shell .ta-calc-form__action {
+  min-width: 0;
+}
+
+.ta-shell .ta-calc-form__action {
+  align-self: end;
+  display: flex;
+}
+
+.ta-shell .ta-calc-form__submit {
+  border-radius: 16px;
+  min-height: 56px;
+  padding-inline: 28px;
+}
+
+.ta-shell .ta-calc-form .input-label,
+.ta-shell .ta-calc-form .pi-label {
+  color: var(--ta-text-dim);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+}
+
+.ta-shell .ta-calc-form .input-group,
+.ta-shell .ta-calc-form .pi-group {
+  gap: 10px;
+}
+
+.ta-shell .ta-calc-form .ew-trigger {
+  align-items: center;
+  border-radius: 18px;
+  min-height: 72px;
+  padding: 0 18px;
+}
+
+.ta-shell .ta-calc-form .pi-stepper {
+  gap: 8px;
+}
+
+.ta-shell .ta-calc-form .pi-wrapper--stepper {
+  align-items: center;
+  border-radius: 18px;
+  display: flex;
+  min-height: 68px;
+}
+
+.ta-shell .ta-calc-form .pi-stepper__btn {
+  border-radius: 16px;
+  font-size: 24px;
+  height: 68px;
+  width: 44px;
+}
+
+.ta-shell .ta-calc-form .pi-input {
+  font-size: clamp(18px, 2.3vw, 22px);
+  font-weight: 700;
+  padding-block: 16px;
+  text-align: center;
+}
+
+.ta-shell .ta-calc-form .pi-wrapper--focused .pi-input {
+  transform-origin: center center;
+}
+
+.ta-shell .ta-calc-form .pi-input::placeholder {
+  color: var(--ta-text-dim);
+  opacity: 0.72;
+}
+
+.ta-shell .ta-calc-form .pi-unit {
+  color: var(--ta-text-dim);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1120px) {
+  .ta-shell .ta-calc-form {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      minmax(180px, 0.86fr);
+  }
+
+  .ta-shell .ta-calc-form.is-pullup {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ta-shell .ta-calc-form__exercise {
+    grid-column: 1 / -1;
+  }
+
+  .ta-shell .ta-calc-form.is-pullup .ta-calc-form__action {
+    grid-column: 1 / -1;
+  }
+
+  .ta-shell .ta-calc-form__submit {
+    min-height: 64px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .ta-shell .ta-calc-section {
+    padding: 32px 20px;
+  }
+
+  .ta-shell .ta-calc-section__head {
+    margin-bottom: 22px;
+  }
+
+  .ta-shell .ta-calc-form .pi-stepper__btn {
+    height: 64px;
+    width: 44px;
+  }
+
+  .ta-shell .ta-calc-form .pi-wrapper--stepper,
+  .ta-shell .ta-calc-form .ew-trigger {
+    min-height: 64px;
+  }
+
+  .ta-shell .ta-calc-form__submit {
+    min-height: 60px;
+  }
+}
+
+@media (max-width: 560px) {
+  .ta-shell .ta-calc-form,
+  .ta-shell .ta-calc-form.is-pullup {
+    grid-template-columns: 1fr;
+  }
+
+  .ta-shell .ta-calc-form__exercise,
+  .ta-shell .ta-calc-form__action {
+    grid-column: auto;
+  }
+
+  .ta-shell .ta-calc-form .pi-stepper {
+    gap: 8px;
+  }
+
+  .ta-shell .ta-calc-form .pi-stepper__btn {
+    height: 64px;
+    width: 44px;
+  }
+
+  .ta-shell .ta-calc-form .pi-wrapper--stepper,
+  .ta-shell .ta-calc-form .ew-trigger {
+    min-height: 64px;
+  }
+}
+
+/* ============================================================
    Result card (Calculator · Phase 3)
    ============================================================ */
 .ta-shell .ta-result-card {
@@ -1584,7 +1925,151 @@
   }
 }
 
+/* ============================================================
+   Saved calculator results (Calculator · Phase 6)
+   ============================================================ */
+.ta-shell .ta-calc-saved-list {
+  display: grid;
+  gap: 10px;
+}
 
+.ta-shell .ta-calc-saved-card {
+  align-items: center;
+  background: var(--ta-calc-surface);
+  border: 1px solid var(--ta-calc-border);
+  border-left: 2px solid transparent;
+  border-radius: 12px;
+  color: var(--ta-text-muted);
+  cursor: pointer;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr auto;
+  padding: 14px 16px;
+  transition:
+    transform var(--ta-duration-micro) var(--ta-ease-transition),
+    border-color var(--ta-duration-micro) var(--ta-ease-transition),
+    background var(--ta-duration-micro) var(--ta-ease-transition);
+}
+
+@media (hover: hover) {
+  .ta-shell .ta-calc-saved-card:hover {
+    border-color: var(--ta-border-strong);
+    transform: translateY(-2px);
+  }
+}
+
+.ta-shell .ta-calc-saved-card:focus-visible,
+.ta-shell .ta-calc-saved-card.is-active {
+  background: var(--ta-calc-accent-tint);
+  border-left-color: var(--ta-calc-accent);
+  outline: none;
+}
+
+.ta-shell .ta-calc-saved-card__name {
+  color: var(--ta-text);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ta-shell .ta-calc-saved-card__meta {
+  color: var(--ta-text-muted);
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.ta-shell .ta-calc-saved-card__actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.ta-shell .ta-calc-saved-card__one-rm {
+  color: var(--ta-calc-accent);
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .ta-shell .ta-calc-saved-card {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .ta-shell .ta-calc-saved-card__actions {
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-shell .ta-calc-saved-card {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   Volume donut — Apple polish (Calculator · Phase 6)
+   Scoped to .ta-shell so the donut stays visually consistent
+   inside the Calculator scene without touching VolumeDonut.tsx.
+   ============================================================ */
+.ta-shell .donut-wrap {
+  gap: 28px;
+}
+
+.ta-shell .donut-cat-hd {
+  font-family: var(--ta-display-font);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ta-text);
+}
+
+.ta-shell .donut-cat-pct,
+.ta-shell .donut-val {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ta-text-muted);
+}
+
+.ta-shell .donut-name {
+  font-size: 12px;
+  color: var(--ta-text-muted);
+}
+
+.ta-shell .donut-row {
+  padding: 5px 8px;
+  border-radius: 8px;
+  transition:
+    background var(--ta-duration-micro) var(--ta-ease-transition),
+    color var(--ta-duration-micro) var(--ta-ease-transition);
+}
+
+@media (hover: hover) {
+  .ta-shell .donut-row:hover {
+    background: var(--ta-calc-accent-tint);
+  }
+}
+
+.ta-shell .donut-row.donut-row-hov {
+  background: var(--ta-calc-accent-tint);
+}
+
+.ta-shell .donut-row.donut-row-hov .donut-name {
+  color: var(--ta-text);
+}
+
+.ta-shell .donut-seg.is-active {
+  filter: drop-shadow(0 0 6px rgba(255, 159, 64, 0.35));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-shell .donut-seg.is-active {
+    filter: none;
+  }
+}
 
 /* ============================================================
    Chapter 09 helpers — subhead and see-also
@@ -1643,3 +2128,4 @@
   outline: none;
   box-shadow: 0 0 0 3px var(--ta-sec-tint, rgba(255, 159, 64, 0.32));
   border-color: var(--ta-sec, var(--ta-border-strong));
+}

@@ -114,7 +114,7 @@ export const HeroSection = memo(function HeroSection({
       <motion.div
         className="theory-hero-line"
         variants={drawLine}
-        style={{ originX: 0 }}
+        style={{ originX: className?.includes('app-hero') ? 0.5 : 0 }}
       />
     </motion.header>
   )

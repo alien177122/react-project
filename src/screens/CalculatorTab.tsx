@@ -7,7 +7,7 @@ import VolumeDonut from '../components/VolumeDonutLazy'
 import ExerciseWheel from '../components/ExerciseWheel'
 import { PlateDiagram } from '../components/PlateDiagram'
 import { SectionBlock, NoteBox } from '../components/SectionBlock'
-import { HeroSection } from '../components/ui/HeroSection'
+import { SceneHero } from '../components/ui/SceneHero'
 import { Button } from '../components/ui/Button'
 import { PremiumInput } from '../components/ui/PremiumInput'
 import { ResultCard } from '../components/ui/ResultCard'
@@ -74,17 +74,18 @@ export default function CalculatorTab({
   const w8 = weekRows[weekRows.length - 1]
 
   return (
-    <div className="theory-shell">
-      <HeroSection
-        label="Calculator"
+    <div className="ta-shell">
+      <SceneHero
+        eyebrow="Calculator"
         title="1ПМ и прогрессия"
         subtitle="Отказной подход → расчёт 1ПМ → рабочие веса на 8 недель с реальными схемами."
+        accentWord="1ПМ"
       />
 
-      <div className="theory-stack">
-        <SectionBlock num="01" title="Тестовый подход">
-          <div className="input-grid">
-            <div className="input-group">
+      <div className="ta-stack ta-stack--calc">
+        <SectionBlock num="01" title="Тестовый подход" variant="apple">
+          <div className={`ta-calc-form${EXERCISES[selectedExercise].isPullup ? ' is-pullup' : ''}`}>
+            <div className="input-group ta-calc-form__exercise">
               <label className="input-label">Упражнение</label>
               <ExerciseWheel
                 value={selectedExercise}
@@ -96,61 +97,84 @@ export default function CalculatorTab({
             {EXERCISES[selectedExercise].isPullup
               ? (
                 <>
+                  <div className="ta-calc-form__field">
+                    <PremiumInput
+                      id="calc-body-weight"
+                      variant="stepper"
+                      label="Вес тела"
+                      type="number"
+                      inputMode="decimal"
+                      placeholder="80"
+                      unit="кг"
+                      step={config.step}
+                      min={0.5}
+                      max={500}
+                      value={testBodyWeight}
+                      onValueChange={setTestBodyWeight}
+                      onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
+                    />
+                  </div>
+                  <div className="ta-calc-form__field">
+                    <PremiumInput
+                      id="calc-extra-weight"
+                      variant="stepper"
+                      label="Доп. вес"
+                      type="number"
+                      inputMode="decimal"
+                      placeholder="0"
+                      unit="кг"
+                      step={config.step}
+                      min={0}
+                      max={200}
+                      value={testExtraWeight}
+                      onValueChange={setTestExtraWeight}
+                      onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
+                    />
+                  </div>
+                </>
+              )
+              : (
+                <div className="ta-calc-form__field">
                   <PremiumInput
-                    id="calc-body-weight"
-                    label="Вес тела"
+                    id="calc-weight"
+                    variant="stepper"
+                    label="Вес"
                     type="number"
                     inputMode="decimal"
                     placeholder="80"
                     unit="кг"
-                    value={testBodyWeight}
-                    onChange={(e) => setTestBodyWeight(e.target.value)}
+                    step={config.step}
+                    min={0.5}
+                    max={1000}
+                    value={testWeight}
+                    onValueChange={setTestWeight}
                     onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
                   />
-                  <PremiumInput
-                    id="calc-extra-weight"
-                    label="Доп. вес"
-                    type="number"
-                    inputMode="decimal"
-                    placeholder="0"
-                    unit="кг"
-                    value={testExtraWeight}
-                    onChange={(e) => setTestExtraWeight(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
-                  />
-                </>
-              )
-              : (
-                <PremiumInput
-                  id="calc-weight"
-                  label="Вес"
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="80"
-                  unit="кг"
-                  value={testWeight}
-                  onChange={(e) => setTestWeight(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
-                />
+                </div>
               )}
 
-            <PremiumInput
-              id="calc-reps"
-              label="Повторений"
-              type="number"
-              inputMode="numeric"
-              placeholder="6"
-              min="1"
-              max="20"
-              unit="повт"
-              value={testReps}
-              onChange={(e) => setTestReps(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
-            />
-            <Button onClick={handleCalculate}>Рассчитать</Button>
+            <div className="ta-calc-form__field">
+              <PremiumInput
+                id="calc-reps"
+                variant="stepper"
+                label="Повторений"
+                type="number"
+                inputMode="numeric"
+                placeholder="6"
+                step={1}
+                min={1}
+                max={20}
+                value={testReps}
+                onValueChange={setTestReps}
+                onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
+              />
+            </div>
+            <div className="ta-calc-form__action">
+              <Button className="ta-calc-form__submit" onClick={handleCalculate}>Рассчитать</Button>
+            </div>
           </div>
 
-          <NoteBox>
+          <NoteBox variant="apple">
             {EXERCISES[selectedExercise].isPullup
               ? (
                 <>
@@ -169,7 +193,7 @@ export default function CalculatorTab({
 
         {activeResult && (
           <div ref={resultRef}>
-          <SectionBlock num="02" title={`Прогрессия — ${config.name}`}>
+          <SectionBlock num="02" title={`Прогрессия — ${config.name}`} variant="apple">
             <div className="insight">
               <strong>Объём снижается по мере роста весов</strong> — линейная волна с откатом на неделе 5.
               {w1 && w8 && (
@@ -209,7 +233,7 @@ export default function CalculatorTab({
 
             <PeriodizationChart config={config} result={activeResult} />
 
-            <NoteBox>
+            <NoteBox variant="apple">
               <strong>↺ Нед 5 — волновой откат:</strong> вес снижается, объём восстанавливается.
               &nbsp;·&nbsp; <strong>Жирный</strong> в «Схема» = отклонение от 4 подходов.
               <br /><br />
@@ -226,8 +250,9 @@ export default function CalculatorTab({
           <SectionBlock
             num="03"
             title={`Сохранённые (${userData.exercises.length}/${EX_COUNT})`}
+            variant="apple"
           >
-            <div className="saved-list">
+            <div className="ta-calc-saved-list">
               {userData.exercises.map(saved => {
                 const ex = EXERCISES[saved.exerciseKey]
                 if (!ex) return null
@@ -235,9 +260,10 @@ export default function CalculatorTab({
                 return (
                   <div
                     key={saved.exerciseKey}
-                    className={`saved-item${isActive ? ' saved-item-active' : ''}`}
+                    className={`ta-calc-saved-card${isActive ? ' is-active' : ''}`}
                     role="button"
                     tabIndex={0}
+                    aria-current={isActive ? 'true' : undefined}
                     onClick={() => handleSelectSaved(saved)}
                     onKeyDown={e => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -247,11 +273,11 @@ export default function CalculatorTab({
                     }}
                   >
                     <div>
-                      <div className="saved-item-name">{ex.name}</div>
-                      <div className="saved-item-info">{saved.testWeight}кг × {saved.testReps} повт &nbsp;|&nbsp; {saved.date}</div>
+                      <div className="ta-calc-saved-card__name">{ex.name}</div>
+                      <div className="ta-calc-saved-card__meta">{saved.testWeight} кг × {saved.testReps} повт · {saved.date}</div>
                     </div>
-                    <div className="saved-item-actions">
-                      <span className="saved-item-1rm">{saved.oneRM} кг</span>
+                    <div className="ta-calc-saved-card__actions">
+                      <span className="ta-calc-saved-card__one-rm">{saved.oneRM} кг</span>
                       <Button
                         size="sm"
                         variant="danger"
@@ -261,7 +287,7 @@ export default function CalculatorTab({
                           handleDelete(saved.exerciseKey)
                         }}
                       >
-                        ×
+                        <span aria-hidden="true">×</span>
                       </Button>
                     </div>
                   </div>
@@ -271,8 +297,8 @@ export default function CalculatorTab({
           </SectionBlock>
         )}
 
-        <SectionBlock num="04" title="Распределение объёма">
-          <NoteBox>
+        <SectionBlock num="04" title="Распределение объёма" variant="apple">
+          <NoteBox variant="apple">
             Средние рабочие подходы за цикл (3 дня), распределённые по мышечным группам.
             Наведи на сектор чтобы увидеть детали.
           </NoteBox>

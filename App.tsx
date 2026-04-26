@@ -93,6 +93,7 @@ function App() {
   if (sessionLoading) return (
     <>
       <HeroSection
+        className="app-hero"
         label="Тренировочный калькулятор"
         title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
         subtitle=""
@@ -123,6 +124,7 @@ function App() {
   if (!userData) return (
     <>
       <HeroSection
+        className="app-hero"
         label="Тренировочный калькулятор"
         title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
         subtitle=""
@@ -134,6 +136,7 @@ function App() {
   return (
     <>
       <HeroSection
+        className="app-hero"
         label="Тренировочный калькулятор"
         title="ПЕРИОДИЗАЦИЯ 8 НЕДЕЛЬ"
         subtitle="Введи тестовый вес и повторения — получи расклад рабочих весов с реальными схемами на 8 недель"
@@ -148,27 +151,39 @@ function App() {
       </div>
 
       {/* Tab bar */}
-      <div className="tab-bar">
-        <button className={`tab-btn${activeTab === 'calculator' ? ' tab-active' : ''}`}
-          onClick={() => setActiveTab('calculator')}>
-          Калькулятор
+      <nav className="tab-bar ta-shell ta-mode-nav" aria-label="Разделы приложения">
+        <button
+          type="button"
+          className={`tab-btn ta-mode-nav__item${activeTab === 'calculator' ? ' tab-active is-active' : ''}`}
+          aria-current={activeTab === 'calculator' ? 'page' : undefined}
+          onClick={() => setActiveTab('calculator')}
+        >
+          <span className="tab-btn-label ta-mode-nav__label">Калькулятор</span>
         </button>
         <button
-          className={`tab-btn${activeTab === 'training' ? ' tab-active' : ''}${!allSaved ? ' tab-locked' : ''}`}
+          type="button"
+          className={`tab-btn ta-mode-nav__item${activeTab === 'training' ? ' tab-active is-active' : ''}${!allSaved ? ' tab-locked is-locked' : ''}`}
+          aria-current={activeTab === 'training' ? 'page' : undefined}
+          aria-disabled={!allSaved}
           onClick={() => allSaved && setActiveTab('training')}
           title={!allSaved ? `Сохрани 1ПМ для всех ${EX_COUNT} упражнений` : undefined}
         >
-          Тренировка {!allSaved && (
-            <span style={{ fontSize: 11, marginLeft: 6, opacity: 0.55 }}>
-              ({userData?.exercises.length || 0}/{EX_COUNT})
+          <span className="tab-btn-label ta-mode-nav__label">Тренировка</span>
+          {!allSaved && (
+            <span className="tab-btn-meta ta-mode-nav__meta" aria-label={`Сохранено ${userData?.exercises.length || 0} из ${EX_COUNT}`}>
+              {userData?.exercises.length || 0}/{EX_COUNT}
             </span>
           )}
         </button>
-        <button className={`tab-btn${activeTab === 'theory' ? ' tab-active' : ''}`}
-          onClick={() => setActiveTab('theory')}>
-          Теория
+        <button
+          type="button"
+          className={`tab-btn ta-mode-nav__item${activeTab === 'theory' ? ' tab-active is-active' : ''}`}
+          aria-current={activeTab === 'theory' ? 'page' : undefined}
+          onClick={() => setActiveTab('theory')}
+        >
+          <span className="tab-btn-label ta-mode-nav__label">Теория</span>
         </button>
-      </div>
+      </nav>
 
       {/* ====== TAB CONTENT ====== */}
       <AnimatePresence initial={false}>

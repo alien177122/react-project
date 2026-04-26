@@ -16,6 +16,17 @@ dist-ssr
 .env.public.local
 .env.docker
 docker-data/
+gym.db
+*.sqlite
+.blackbox/
+workspace-files/
+
+# Local personal notes / scratch briefs
+TODO.md
+TODO_GRADIENT.md
+BLACKBOXAI.md
+PROJECT_ANALYSIS.md
+CLAUDE.md
 
 # Editor directories and files
 .vscode/*

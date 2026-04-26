@@ -6,11 +6,11 @@ services:
     image: react-project-app
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-3001}:3001"
+      - "${APP_PORT:-51330}:3001"
     environment:
       NODE_ENV: production
       PORT: 3001
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: ${JWT_SECRET:-gym-secret-dev}
       AUTH_RATE_LIMIT_WINDOW_MS: ${AUTH_RATE_LIMIT_WINDOW_MS:-600000}
       LOGIN_MAX_ATTEMPTS: ${LOGIN_MAX_ATTEMPTS:-7}
       REGISTER_MAX_ATTEMPTS: ${REGISTER_MAX_ATTEMPTS:-5}
@@ -19,7 +19,7 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       OLLAMA_OCR_MODEL: ${OLLAMA_OCR_MODEL:-glm-ocr}
     volumes:
-      - ./docker-data:/app/data
+      - app_data:/app/data
       - ./workspace-files:/app/workspace-files
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
@@ -27,3 +27,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  app_data:
+    name: react-project-app-data

@@ -1,14 +1,16 @@
 import { Redirect, Tabs } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import type { ComponentProps } from 'react'
+import { StyleSheet } from 'react-native'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { AppLoadingScreen } from '../../src/components/ui/AppLoadingScreen'
 import { useAuthSessionContext } from '../../src/providers/AuthSessionProvider'
 import { theme } from '../../src/theme'
 
 type TabRoute = 'calculator' | 'training' | 'theory' | 'files'
-const TabIonicons = Ionicons as any
+type IoniconName = ComponentProps<typeof Ionicons>['name']
 
 function tabIcon(routeName: TabRoute, color: string, focused: boolean) {
-  let iconName = 'ellipse-outline'
+  let iconName: IoniconName = 'ellipse-outline'
 
   if (routeName === 'calculator') {
     iconName = focused ? 'calculator' : 'calculator-outline'
@@ -20,7 +22,7 @@ function tabIcon(routeName: TabRoute, color: string, focused: boolean) {
     iconName = focused ? 'folder' : 'folder-outline'
   }
 
-  return <TabIonicons color={color} name={iconName} size={19} />
+  return <Ionicons color={color} name={iconName} size={19} />
 }
 
 export default function TabsLayout() {
@@ -49,52 +51,58 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: theme.colors.muted,
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '700',
+          fontWeight: '600',
+          letterSpacing: 0.4,
           marginBottom: 2,
         },
         tabBarIconStyle: {
           marginTop: 4,
         },
         tabBarStyle: {
-          backgroundColor: 'rgba(11,15,26,0.96)',
-          borderTopColor: theme.colors.glassBorder,
-          borderTopWidth: 1,
+          backgroundColor: theme.colors.tabBarBg,
+          borderTopColor: theme.colors.border,
+          borderTopWidth: StyleSheet.hairlineWidth,
           elevation: 0,
           height: 70,
           paddingBottom: 8,
           paddingTop: 8,
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: -6 },
-          shadowOpacity: 0.12,
-          shadowRadius: 18,
+          shadowOpacity: 0,
+          shadowRadius: 0,
         },
       }}
     >
       <Tabs.Screen
         name="calculator"
         options={{
-          title: 'Калькулятор',
+          title: 'Calculator',
+          tabBarAccessibilityLabel: 'Calculator tab',
+          tabBarButtonTestID: 'tab-calculator',
           tabBarIcon: ({ color, focused }) => tabIcon('calculator', color, focused),
         }}
       />
       <Tabs.Screen
         name="training"
         options={{
-          title: 'Тренировка',
+          title: 'Training',
+          tabBarAccessibilityLabel: 'Training tab',
+          tabBarButtonTestID: 'tab-training',
           tabBarIcon: ({ color, focused }) => tabIcon('training', color, focused),
         }}
       />
       <Tabs.Screen
         name="theory"
         options={{
-          title: 'Теория',
+          title: 'Theory',
+          tabBarAccessibilityLabel: 'Theory tab',
+          tabBarButtonTestID: 'tab-theory',
           tabBarIcon: ({ color, focused }) => tabIcon('theory', color, focused),
         }}
       />
       <Tabs.Screen
         name="files"
         options={{
-          title: 'Файлы',
+          href: null,
+          title: 'Files',
           tabBarIcon: ({ color, focused }) => tabIcon('files', color, focused),
         }}
       />

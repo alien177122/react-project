@@ -5,9 +5,12 @@ const VolumeDonut = lazy(() => import('./VolumeDonut'))
 
 function DonutSkeleton() {
   return (
-    <div className="donut-wrap donut-skeleton" aria-hidden="true">
-      <div className="donut-skeleton-svg" />
-      <div className="donut-skeleton-legend" />
+    <div className="ta-vol ta-vol--skeleton" aria-hidden="true">
+      <div className="ta-vol__skeleton-summary" />
+      <div className="ta-vol__skeleton-grid">
+        <div className="ta-vol__skeleton-donut" />
+        <div className="ta-vol__skeleton-list" />
+      </div>
     </div>
   )
 }

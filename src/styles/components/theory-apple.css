@@ -2770,69 +2770,6 @@
 }
 
 /* ============================================================
-   Volume donut — Apple polish (Calculator · Phase 6)
-   Scoped to .ta-shell so the donut stays visually consistent
-   inside the Calculator scene without touching VolumeDonut.tsx.
-   ============================================================ */
-.ta-shell .donut-wrap {
-  gap: 28px;
-}
-
-.ta-shell .donut-cat-hd {
-  font-family: var(--ta-display-font);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ta-text);
-}
-
-.ta-shell .donut-cat-pct,
-.ta-shell .donut-val {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--ta-text-muted);
-}
-
-.ta-shell .donut-name {
-  font-size: 12px;
-  color: var(--ta-text-muted);
-}
-
-.ta-shell .donut-row {
-  padding: 5px 8px;
-  border-radius: 8px;
-  transition:
-    background var(--ta-duration-micro) var(--ta-ease-transition),
-    color var(--ta-duration-micro) var(--ta-ease-transition);
-}
-
-@media (hover: hover) {
-  .ta-shell .donut-row:hover {
-    background: var(--ta-calc-accent-tint);
-  }
-}
-
-.ta-shell .donut-row.donut-row-hov {
-  background: var(--ta-calc-accent-tint);
-}
-
-.ta-shell .donut-row.donut-row-hov .donut-name {
-  color: var(--ta-text);
-}
-
-.ta-shell .donut-seg.is-active {
-  filter: drop-shadow(0 0 6px rgba(255, 159, 64, 0.35));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ta-shell .donut-seg.is-active {
-    filter: none;
-  }
-}
-
-/* ============================================================
    Chapter 09 helpers — subhead and see-also
    ============================================================ */
 .ta-shell .ta-subhead {

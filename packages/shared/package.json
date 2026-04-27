@@ -27,6 +27,7 @@
     "./utils/muscles": "./src/utils/muscles.ts",
     "./utils/plates": "./src/utils/plates.ts",
     "./utils/training": "./src/utils/training.ts",
+    "./utils/volume-breakdown": "./src/utils/volume-breakdown.ts",
     "./hooks/useCalculatorState": "./src/hooks/useCalculatorState.ts",
     "./hooks/useTrainingProgram": "./src/hooks/useTrainingProgram.ts",
     "./hooks/useAuthSession": "./src/hooks/useAuthSession.ts"

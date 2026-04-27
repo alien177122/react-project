@@ -298,10 +298,6 @@ export default function CalculatorTab({
         )}
 
         <SectionBlock num="04" title="Распределение объёма" variant="apple">
-          <NoteBox variant="apple">
-            Средние рабочие подходы за цикл (3 дня), распределённые по мышечным группам.
-            Наведи на сектор чтобы увидеть детали.
-          </NoteBox>
           <VolumeDonut />
         </SectionBlock>
       </div>

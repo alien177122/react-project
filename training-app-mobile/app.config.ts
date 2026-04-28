@@ -12,6 +12,7 @@ const APP_NAME = 'Training Calculator'
 const APP_SLUG = 'training-app-mobile'
 const APP_SCHEME = 'training-app-mobile'
 const APP_VERSION = '1.0.0'
+const IOS_BUNDLE_IDENTIFIER = 'com.stevegordiyenko.trainingcalculator'
 const API_PORT = '3001'
 const API_PATH = '/api'
 
@@ -45,10 +46,17 @@ function resolveDevApiUrl(defaultBaseUrl: string): string {
 }
 
 export default function appConfig({ config }: ConfigContext): ExpoConfig {
-  const apiEnv = resolveApiEnv(process.env.EXPO_PUBLIC_API_ENV)
+  const isEasProductionBuild = process.env.EAS_BUILD_PROFILE === 'production'
+  const apiEnv = resolveApiEnv(process.env.EXPO_PUBLIC_API_ENV ?? (isEasProductionBuild ? 'prod' : undefined))
   const profileConfig = getApiConfig(apiEnv)
   const isDevelopment = process.env.NODE_ENV === 'development'
-  const apiUrlOverride = process.env.EXPO_PUBLIC_API_URL?.trim()
+  const explicitApiUrl = process.env.EXPO_PUBLIC_API_URL?.trim()
+
+  if (isEasProductionBuild && !explicitApiUrl) {
+    throw new Error('EXPO_PUBLIC_API_URL is required for EAS production iOS builds.')
+  }
+
+  const apiUrlOverride = explicitApiUrl
     || (apiEnv === 'dev' && isDevelopment ? resolveDevApiUrl(profileConfig.baseUrl) : undefined)
   const resolvedApiConfig = buildApiConfig({
     platform: 'ios',
@@ -83,6 +91,14 @@ export default function appConfig({ config }: ConfigContext): ExpoConfig {
     orientation: 'portrait',
     newArchEnabled: true,
     userInterfaceStyle: 'dark',
+    ios: {
+      bundleIdentifier: IOS_BUNDLE_IDENTIFIER,
+      buildNumber: '1',
+      supportsTablet: false,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
+    },
     plugins: ['expo-router', 'expo-asset', 'expo-secure-store'],
     experiments: {
       typedRoutes: true,

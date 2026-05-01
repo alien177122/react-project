@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1023,6 +1023,11 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const RI = 78             // внутренний радиус (дырка в центре)
   const RL = 122            // радиус для подписей
 
+  // Optimize O(N*M) lookup inside mapping
+  const savedExercisesMap = useMemo(() => {
+    return new Map(savedExercises.map(s => [s.exerciseKey, s]));
+  }, [savedExercises]);
+
   return (
     <>
       {/* Кнопка-триггер — показывает выбранное упражнение */}
@@ -1076,7 +1081,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1458,10 +1463,14 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   const nextDayIdx     = nextSessions % 3
   const nextWeekIdx    = Math.floor(nextSessions / 3)
 
+  const exercisesMap = useMemo(() => {
+    return new Map(userData.exercises.map(e => [e.exerciseKey, e]))
+  }, [userData.exercises])
+
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      const saved = exercisesMap.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1591,16 @@ function App() {
     }
   }, [userName, token])
 
+  const savedExerciseKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData?.exercises])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedExerciseKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

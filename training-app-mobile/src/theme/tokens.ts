@@ -18,6 +18,25 @@ export const WEB_TOKEN_PARITY = {
   error: '#ff3b30',
 } as const
 
+/**
+ * IPF plate colours, mirrored from web `--plate-*` tokens
+ * (`src/styles/components/theory-apple.css`). Keys match the
+ * `decomposePlates` weight values with `.` replaced by `_` so
+ * lookup `PLATE_COLORS[String(weight).replace('.', '_')]` works
+ * for both whole and fractional plates (2.5 → "2_5").
+ */
+export const PLATE_COLORS = {
+  '25':   '#d93025', // red
+  '20':   '#2563eb', // blue
+  '15':   '#facc15', // yellow
+  '10':   '#22c55e', // green
+  '5':    '#f8fafc', // white
+  '2_5':  '#d93025', // red (small)
+  '1_25': '#94a3b8', // graphite
+} as const
+
+export type PlateColorKey = keyof typeof PLATE_COLORS
+
 export const theme = {
   colors: {
     bg: WEB_TOKEN_PARITY.bg,
@@ -49,6 +68,7 @@ export const theme = {
     semanticGreen: platformColor('systemGreen', '#34c759'),
     semanticBlue: platformColor('systemBlue', '#0a84ff'),
   },
+  plates: PLATE_COLORS,
   spacing: {
     xs: 6,
     sm: 10,

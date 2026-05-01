@@ -18,6 +18,11 @@ function phaseHint(phase: PeriodWeek['phase']): string {
   return 'накопление'
 }
 
+const TIP_WIDTH = 232
+const TIP_HEIGHT = 78
+const TIP_MARGIN = 16
+const CHART_WIDTH = 800
+
 export default function PeriodizationChart({
   config,
   result,
@@ -28,6 +33,9 @@ export default function PeriodizationChart({
   const { weeks, phases, linePath, areaPath, viewBox, grid } = usePeriodization(config, result)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const active = activeIndex == null ? null : weeks[activeIndex]
+  const tipX = active
+    ? Math.max(TIP_MARGIN, Math.min(CHART_WIDTH - TIP_WIDTH - TIP_MARGIN, active.x - TIP_WIDTH / 2))
+    : TIP_MARGIN
 
   const keyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape') {
@@ -94,12 +102,12 @@ export default function PeriodizationChart({
             </g>
           ))}
           {active && (
-            <g className="ta-period__tip" transform={`translate(${Math.max(16, Math.min(608, active.x - 88))}, 14)`}>
-              <line className="ta-period__cursor" x1={active.x - Math.max(16, Math.min(608, active.x - 88))} x2={active.x - Math.max(16, Math.min(608, active.x - 88))} y1="0" y2="228" />
-              <rect width="176" height="64" rx="10" />
-              <text x="12" y="20">Неделя {active.week}</text>
-              <text x="12" y="38">{weightLabel(config, active)} · {active.sets}×{active.reps} = {active.totalReps} повт</text>
-              <text x="12" y="56">{active.phase} — {phaseHint(active.phase)}</text>
+            <g className="ta-period__tip" transform={`translate(${tipX}, 14)`}>
+              <line className="ta-period__cursor" x1={active.x - tipX} x2={active.x - tipX} y1="0" y2="228" />
+              <rect width={TIP_WIDTH} height={TIP_HEIGHT} rx="10" />
+              <text x="14" y="21">Неделя {active.week} · {active.phase}</text>
+              <text x="14" y="42">{weightLabel(config, active)} · {active.sets} × {active.reps}</text>
+              <text x="14" y="63">{active.totalReps} повт · {phaseHint(active.phase)}</text>
             </g>
           )}
         </svg>

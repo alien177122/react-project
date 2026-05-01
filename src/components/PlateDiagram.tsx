@@ -56,6 +56,20 @@ export const PlateDiagram = memo(function PlateDiagram({
     return [...buildPieces(result.plates, 'left'), ...buildPieces(result.plates, 'right')]
   }, [result])
 
+  // Unique plate weights used in this decomposition, heaviest first.
+  // Each entry counts how many pairs of that weight sit on the bar so the
+  // legend can read "25 кг · 2×" rather than just listing the colour twice.
+  const usedPlates = useMemo(() => {
+    if (!result.ok) return []
+    const counts = new Map<number, number>()
+    for (const w of result.plates) {
+      counts.set(w, (counts.get(w) ?? 0) + 1)
+    }
+    return [...counts.entries()]
+      .map(([weight, pairs]) => ({ weight, pairs }))
+      .sort((a, b) => b.weight - a.weight)
+  }, [result])
+
   const formula = result.ok
     ? result.plates.length
       ? `${formatWeight(result.barWeight)} + 2 × (${result.plates.map(formatWeight).join(' + ')}) = ${formatWeight(result.totalWeight)} кг`
@@ -95,6 +109,21 @@ export const PlateDiagram = memo(function PlateDiagram({
           {formatWeight(barWeight)} кг
         </text>
       </svg>
+      {usedPlates.length > 0 && (
+        <ul className="ta-calc-plates__legend" aria-label="Цвета блинов">
+          {usedPlates.map(({ weight, pairs }) => (
+            <li
+              key={weight}
+              className="ta-calc-plates__legend-item"
+              style={{ '--plate-color': `var(${plateToken(weight)})` } as CSSProperties}
+            >
+              <span className="ta-calc-plates__legend-swatch" aria-hidden="true" />
+              <span className="ta-calc-plates__legend-weight">{formatWeight(weight)} кг</span>
+              <span className="ta-calc-plates__legend-pairs">{pairs}×2</span>
+            </li>
+          ))}
+        </ul>
+      )}
       <figcaption className="ta-calc-plates__formula">{formula}</figcaption>
     </figure>
   )

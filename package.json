@@ -5,13 +5,16 @@
   "packageManager": "npm@11.6.0",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "main": "desktop/main.cjs",
   "scripts": {
     "dev": "vite",
     "server": "node server/index.js",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
+    "icons:generate": "node scripts/generate-pwa-icons.mjs",
     "desktop": "node scripts/desktop-dev.mjs",
     "desktop:dir": "node scripts/desktop-build.mjs --dir",
     "desktop:pack": "node scripts/desktop-build.mjs",

@@ -909,7 +909,7 @@
 .ta-bar-list { display: flex; flex-direction: column; gap: 10px; }
 .ta-bar-row {
   display: grid;
-  grid-template-columns: 70px 1fr 110px;
+  grid-template-columns: 70px minmax(160px, 1fr) minmax(150px, max-content);
   gap: 12px;
   align-items: center;
   padding: 6px 0;
@@ -938,10 +938,23 @@
 }
 .ta-specs.is-visible .ta-bar-fill { transform: scaleX(var(--ta-bar-scale, 1)); }
 .ta-bar-zone {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--ta-bar-color, var(--ta-text-muted));
   text-align: right;
+  white-space: nowrap;
+}
+.ta-bar-reps {
+  flex: 0 0 auto;
+  color: var(--ta-text);
+}
+.ta-bar-zone-label {
+  flex: 0 0 auto;
+  color: var(--ta-bar-color, var(--ta-text-muted));
 }
 
 /* RPE thermometer */
@@ -2470,6 +2483,53 @@
   padding: 6px 10px;
 }
 
+/* Legend showing only the plate colours used in the current
+   decomposition. Renders contextually — never lists all 7 IPF
+   plates when the bar uses 2. */
+.ta-shell .ta-calc-plates__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.ta-shell .ta-calc-plates__legend-item {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ta-calc-border);
+  border-radius: 8px;
+  color: var(--ta-text-muted);
+  display: inline-flex;
+  font-size: 12px;
+  gap: 6px;
+  padding: 4px 8px 4px 6px;
+}
+
+.ta-shell .ta-calc-plates__legend-swatch {
+  background: var(--plate-color, var(--ta-calc-accent));
+  border: 1px solid rgba(10, 12, 16, 0.5);
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+  height: 14px;
+  width: 6px;
+}
+
+.ta-shell .ta-calc-plates__legend-weight {
+  color: var(--ta-text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.ta-shell .ta-calc-plates__legend-pairs {
+  color: var(--ta-text-dim);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
 @keyframes ta-plate-in {
   from {
     opacity: 0;
@@ -2593,6 +2653,10 @@
   stroke-width: 1;
 }
 
+.ta-shell .ta-period__tip {
+  pointer-events: none;
+}
+
 .ta-shell .ta-period__tip rect {
   fill: var(--ta-surface-2);
   stroke: var(--ta-calc-border);
@@ -2602,6 +2666,10 @@
   fill: var(--ta-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
+}
+
+.ta-shell .ta-period__tip text:first-of-type {
+  font-weight: 700;
 }
 
 .ta-shell .ta-period__tip text:nth-of-type(3) {
@@ -2762,10 +2830,44 @@
   }
 }
 
+/* Stagger entrance for saved cards — reuses the ta-stack-in keyframe.
+   Animation runs once per mount; cards added after initial render simply
+   appear without animation (animation only fires when keyframes are
+   first matched). */
+.ta-shell .ta-calc-saved-list > * {
+  animation: ta-stack-in var(--ta-duration-component, 400ms) var(--ta-ease) both;
+}
+.ta-shell .ta-calc-saved-list > *:nth-child(1) { animation-delay:  60ms; }
+.ta-shell .ta-calc-saved-list > *:nth-child(2) { animation-delay: 120ms; }
+.ta-shell .ta-calc-saved-list > *:nth-child(3) { animation-delay: 180ms; }
+.ta-shell .ta-calc-saved-list > *:nth-child(4) { animation-delay: 240ms; }
+.ta-shell .ta-calc-saved-list > *:nth-child(5) { animation-delay: 300ms; }
+.ta-shell .ta-calc-saved-list > *:nth-child(n + 6) { animation-delay: 360ms; }
+
+/* iOS HIG: minimum 44×44 hit target on the delete control. Scoped to
+   the saved-card actions so the global .btn-sm stays tight. */
+.ta-shell .ta-calc-saved-card__actions .btn-sm {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+.ta-shell .ta-calc-saved-card__actions .btn-sm:focus-visible {
+  outline: 2px solid var(--ta-calc-accent);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ta-shell .ta-calc-saved-card {
     transition: none !important;
     transform: none !important;
+  }
+  .ta-shell .ta-calc-saved-list > * {
+    animation: none !important;
   }
 }
 

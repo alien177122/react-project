@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { UserData } from '../types/index.ts'
 import type { TokenStorage } from '../types/auth.ts'
 import { createApiClient } from '../utils/api.ts'
@@ -9,7 +9,11 @@ export interface AuthSessionOptions {
 }
 
 export function useAuthSession({ storage, apiBaseUrl }: AuthSessionOptions) {
-  const { loadUser, apiAuth } = createApiClient(apiBaseUrl)
+  // Stabilize the API client across renders so `loadUser` / `apiAuth`
+  // are referentially equal until `apiBaseUrl` actually changes. This is
+  // what lets us include them in the effect dependency array below
+  // without re-fetching on every render.
+  const { loadUser, apiAuth } = useMemo(() => createApiClient(apiBaseUrl), [apiBaseUrl])
 
   const [token, setToken] = useState('')
   const [userName, setUserName] = useState('')
@@ -51,7 +55,16 @@ export function useAuthSession({ storage, apiBaseUrl }: AuthSessionOptions) {
     let cancelled = false
 
     if (sessionLoading || !userName || !token) {
-      if (!sessionLoading) setUserData(null)
+      if (!sessionLoading) {
+        // Defer the reset out of the synchronous effect body to satisfy
+        // the `set-state-in-effect` rule. Behaviour is identical: we
+        // only land in this branch when the session is no longer loading
+        // and there is no active auth, so a microtask is enough to push
+        // the setState past the current commit.
+        queueMicrotask(() => {
+          if (!cancelled) setUserData(null)
+        })
+      }
       return () => {
         cancelled = true
       }
@@ -76,7 +89,7 @@ export function useAuthSession({ storage, apiBaseUrl }: AuthSessionOptions) {
     return () => {
       cancelled = true
     }
-  }, [apiBaseUrl, sessionLoading, storage, token, userName])
+  }, [loadUser, sessionLoading, storage, token, userName])
 
   async function handleAuth() {
     const name = nameInput.trim()

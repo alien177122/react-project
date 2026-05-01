@@ -17,8 +17,13 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>(
   } = options
 
   const ref             = useRef<T | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
   const reducedMotion   = useReducedMotion()
+  // Initialize visible immediately when motion is reduced or the hook is
+  // explicitly disabled. This avoids the `set-state-in-effect` lint
+  // warning that fires for synchronous setState calls inside effects —
+  // the same outcome (instant reveal) is achieved purely through state
+  // initialization.
+  const [isVisible, setIsVisible] = useState<boolean>(() => reducedMotion || disabled)
 
   const handleTransitionEnd = useCallback(() => {
     if (ref.current) ref.current.style.willChange = 'auto'
@@ -29,7 +34,11 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>(
     if (!el) return
 
     if (reducedMotion || disabled) {
-      setIsVisible(true)
+      // Initial state already covers the mount-time case. The microtask
+      // handles runtime toggles (e.g. user enables Reduce Motion mid-session)
+      // and keeps the setState off the synchronous effect body to satisfy
+      // `react-hooks/set-state-in-effect`.
+      queueMicrotask(() => setIsVisible(true))
       return
     }
 

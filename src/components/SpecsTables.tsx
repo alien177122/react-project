@@ -60,9 +60,9 @@ export function SpecsTables({ percentRows, rpeRows }: SpecsTablesProps) {
                 <div className="ta-bar-track" role="cell" aria-label={`${row.reps} повторений`}>
                   <div className="ta-bar-fill" />
                 </div>
-                <span className="ta-bar-zone" role="cell">
-                  <span style={{ color: 'var(--ta-text)', marginRight: 8 }}>{row.reps}</span>
-                  <span>{row.zone}</span>
+                <span className="ta-bar-zone" role="cell" aria-label={`${row.reps} повторений, ${row.zone}`}>
+                  <span className="ta-bar-reps">{row.reps}</span>
+                  <span className="ta-bar-zone-label">{row.zone}</span>
                 </span>
               </div>
             )

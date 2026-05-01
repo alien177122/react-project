@@ -1,0 +1,17 @@
+node_modules
+dist
+desktop-dist
+training-app-mobile/build-ios-export
+training-app-mobile/build-web-export
+training-app-mobile/node_modules
+apps/macos
+apps/mobile
+.env
+.env.local
+.env.docker
+.env.public
+gym.db
+*.sqlite
+logs
+.blackbox
+workspace-files

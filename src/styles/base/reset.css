@@ -1,5 +1,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html, body, #root { min-height: 100%; }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -7,7 +9,15 @@ body {
   font-weight: 300;
   line-height: 1.6;
   min-height: 100vh;
+  /* iPhone Safari base hygiene: avoid horizontal scroll from edge glows
+     and prevent text size from auto-bumping in landscape. */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
+
+/* Form controls inherit font so iOS Safari doesn't fall back to a
+   different system font on inputs/buttons. */
+input, textarea, button, select { font: inherit; }
 
 /* ── Ambient glow orbs ───────────────────────────────── */
 body::before,
@@ -76,8 +86,20 @@ body::after {
   max-width: 1200px;
   margin: 0 auto;
   padding: 56px 24px;
+  /* Honour iPhone notch / home-indicator safe areas without changing
+     desktop layout. `viewport-fit=cover` in <meta name="viewport"> is
+     required for these env() values to be non-zero. */
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
   position: relative;
   z-index: 1;
+}
+
+@media (max-width: 600px) {
+  #root {
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

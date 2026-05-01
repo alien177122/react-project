@@ -13,6 +13,62 @@ API server only:
 JWT_SECRET='your-secret' npm run server
 ```
 
+`npm run dev` runs Vite on `http://127.0.0.1:5173` and proxies `/api/*` to whatever `VITE_API_PROXY_TARGET` (or `API_PROXY_TARGET`) points to — defaults to `http://127.0.0.1:3001`. Run `npm run server` in a separate terminal so the dev frontend has a real backend to talk to.
+
+## Build & preview
+
+```sh
+npm run typecheck   # tsc -b --noEmit, fast gate
+npm run build       # tsc -b && vite build → dist/
+npm run preview     # static server over dist/
+npm test            # node --test on the shared utils suite
+npm run lint        # eslint on src/, packages/, root config files
+```
+
+`build` and `lint` only cover the web/shared workspace. `training-app-mobile/` and `apps/macos` have their own toolchains and are ignored by the root ESLint config.
+
+## Vercel deploy
+
+The frontend is a static Vite build. The Express + SQLite backend (`server/index.js`) does **not** ship to Vercel — it lives on a separate host (Railway / Fly / your own VPS) and the deployed frontend reads its URL from `VITE_API_URL`.
+
+Vercel project settings:
+
+- **Framework**: Vite (auto-detected from `vercel.json`).
+- **Build Command**: `npm run build`.
+- **Output Directory**: `dist`.
+- **Install Command**: `npm ci`.
+- **Environment variables**:
+  - `VITE_API_URL=https://<your-api-host>/api` — required.
+    Vite inlines `import.meta.env.VITE_*` at build time; setting the variable **after** a build runs has zero effect on the deployed bundle. Re-deploy after editing.
+
+Without `VITE_API_URL`, the deployed frontend opens but every API call falls back to `/api`, which returns 404 on Vercel — auth, file workspace, and saved exercises will not work.
+
+The backend must allow CORS for the Vercel domain (`https://<project>.vercel.app` and any custom domain). Update its CORS allowlist before the first deploy or the browser will reject every request at the preflight stage.
+
+## iPhone usage (PWA)
+
+The build emits a Web App Manifest and iOS-friendly meta tags so the deployed site can be installed to the home screen as a chromeless app:
+
+1. Open `https://<vercel-domain>/` in Safari on iOS.
+2. Share → Add to Home Screen.
+3. The icon labeled **Периодизация** appears on the home screen.
+4. Tapping it launches the app in standalone mode (no Safari URL bar, dark status bar).
+
+The placeholder icon set lives in `public/icons/`. To regenerate after a brand change, edit `scripts/generate-pwa-icons.mjs` and run:
+
+```sh
+npm run icons:generate
+```
+
+Offline support / Service Worker is intentionally not included in this iteration. The app needs network connectivity to reach the backend; offline-first caching will be a separate change with explicit invalidation rules so it doesn't break auth tokens.
+
+## Roadmap
+
+1. Web deploy → PWA — current step.
+2. User testing on iOS via the home-screen install.
+3. Optional: Capacitor wrap → App Store, only if push / biometric / native FS access is required.
+4. `training-app-mobile/` — parallel React Native track for the same flows when nativeness is the goal rather than convenience.
+
 ## macOS desktop
 
 `training-app-mobile` остаётся Expo/iOS/Android контуром. Для macOS теперь используется desktop shell над текущим адаптивным веб-клиентом, потому что этот путь переиспользует готовый UI и backend без переписывания проекта под `react-native-macos`.
@@ -91,6 +147,8 @@ Notes:
 - if you use Ollama on your Mac, the default Docker env points to `http://host.docker.internal:11434`
 
 ## Public internet access
+
+> Tunnels here (`npm run public*`) are a temporary way to expose the **local** dev stack — they are not production hosting. For a stable public frontend use the Vercel deploy described above; this section is for sharing a work-in-progress backend or an unmodified local checkout.
 
 The project supports two public modes:
 

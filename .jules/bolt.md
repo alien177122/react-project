@@ -1,0 +1,3 @@
+## 2024-05-01 - Optimizing O(N*M) Array Lookups in React Render Cycles
+**Learning:** Using array methods like `.find()`, `.some()`, or `.filter()` inside loops or `.map()` calls within React renders creates an $O(N \times M)$ performance bottleneck. This is especially problematic in components that re-render frequently (like `ExerciseWheel` which updates state on hover) or when dealing with arrays that may grow in size.
+**Action:** Always extract the target collection into a `Set` (for existence checks) or `Map` (for data retrieval) using `useMemo` before iterating, reducing the time complexity to $O(N + M)$ and preventing redundant work during renders.

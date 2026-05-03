@@ -756,7 +756,8 @@ function VolumeDonut() {
     const catVols = CAT_ORDER.map(c => MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === c).reduce((s, m) => s + (vol[m] || 0), 0))
 
     return { vol, total, segs, catArcs, catVols }
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [EXERCISES, MUSCLE_CONTRIB, CAT_ORDER, MUSCLE_ORDER, MUSCLE_META, CAT_META])
 
   const cx = 120, cy = 120
   const RO_OUT = 108, RO_IN = 96 // outer ring = category

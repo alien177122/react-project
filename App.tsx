@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1582,13 +1582,24 @@ function App() {
     }
   }, [userName, token])
 
+  // ⚡ Bolt Optimization:
+  // 💡 What: Replaced O(N*M) nested `.some()` loops with an O(1) Set lookup inside useMemo.
+  // 🎯 Why: Calculating `allSaved` and `missingExercises` required checking every saved exercise against every possible exercise on every render.
+  // 📊 Impact: Reduces time complexity from O(N*M) to O(N+M) and prevents redundant recalculations of `missingExercises` array.
+  // 🔬 Measurement: Observe lower render time in React Profiler when typing in auth inputs or switching tabs with many saved exercises.
+  const savedExerciseKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
-  const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
-    .map(([, ex]) => ex.name)
+  const missingExercises = useMemo(() => {
+    return Object.entries(EXERCISES)
+      .filter(([k]) => !savedExerciseKeys.has(k))
+      .map(([, ex]) => ex.name)
+  }, [savedExerciseKeys])
 
   function handleLogout() {
     localStorage.removeItem('gym_token')

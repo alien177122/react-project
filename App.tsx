@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1582,13 +1582,22 @@ function App() {
     }
   }, [userName, token])
 
-  const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
-    : false
-
-  const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
-    .map(([, ex]) => ex.name)
+  // ⚡ Bolt Optimization:
+  // 💡 What: Replaced O(N×M) .some() lookups inside .every()/.filter() with an O(1) Set lookup, wrapped in useMemo.
+  // 🎯 Why: Re-calculating array intersections on every render blocks the main thread, causing frame drops during UI interactions.
+  // 📊 Impact: Reduces time complexity from O(N×M) to O(N + M) and avoids work when userData hasn't changed.
+  // 🔬 Measurement: Run React Profiler to verify zero computation time for these derivations across tab switches.
+  const { allSaved, missingExercises } = useMemo(() => {
+    if (!userData) return { allSaved: false, missingExercises: Object.values(EXERCISES).map(ex => ex.name) }
+    const savedKeys = new Set(userData.exercises.map(e => e.exerciseKey))
+    const missing: string[] = []
+    for (const [k, ex] of Object.entries(EXERCISES)) {
+      if (!savedKeys.has(k)) {
+        missing.push(ex.name)
+      }
+    }
+    return { allSaved: missing.length === 0, missingExercises: missing }
+  }, [userData])
 
   function handleLogout() {
     localStorage.removeItem('gym_token')

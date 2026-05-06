@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -726,22 +726,25 @@ function VolumeDonut() {
     muscle: string; value: number; pct: number
     startDeg: number; endDeg: number; catKey: string
   }
-  const segs: DonutSeg[] = []
-  let deg = -90
+  const segs = useMemo(() => {
+    const sgs: DonutSeg[] = []
+    let deg = -90
 
-  for (const catKey of CAT_ORDER) {
-    const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
-    const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
-    const catDegTotal = (catVol / total) * usable
-    const mUsable = catDegTotal - SEG_GAP * (muscles.length - 1)
-    for (let i = 0; i < muscles.length; i++) {
-      const m = muscles[i], mVol = vol[m] || 0
-      const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
-      segs.push({ muscle: m, value: mVol, pct: (mVol / total) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
-      deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
+    for (const catKey of CAT_ORDER) {
+      const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
+      const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
+      const catDegTotal = (catVol / total) * usable
+      const mUsable = catDegTotal - SEG_GAP * (muscles.length - 1)
+      for (let i = 0; i < muscles.length; i++) {
+        const m = muscles[i], mVol = vol[m] || 0
+        const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
+        sgs.push({ muscle: m, value: mVol, pct: (mVol / total) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
+        deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
+      }
+      deg += CAT_GAP
     }
-    deg += CAT_GAP
-  }
+    return sgs
+  }, [total, usable, vol])
 
   const cx = 120, cy = 120
   const RO_OUT = 108, RO_IN = 96 // outer ring = category
@@ -754,7 +757,18 @@ function VolumeDonut() {
   })
 
   const catVols = CAT_ORDER.map(c => MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === c).reduce((s, m) => s + (vol[m] || 0), 0))
-  const hovSeg = segs.find(s => s.muscle === hov)
+
+  // ⚡ Bolt: Optimize O(N) find operation on every hover state change
+  // 💡 What: Cached Map of segments keyed by muscle
+  // 🎯 Why: Extracts O(N) array search into O(1) Map lookup
+  // 📊 Impact: Prevents array scanning on high-frequency hover state changes
+  // 🔬 Measurement: Observe lower CPU usage during mouse interactions
+  const segsMap = useMemo(() => {
+    const map = new Map<string, DonutSeg>()
+    segs.forEach(s => map.set(s.muscle, s))
+    return map
+  }, [segs])
+  const hovSeg = hov ? segsMap.get(hov) : undefined
 
   return (
     <div className="donut-wrap">
@@ -1002,6 +1016,17 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const [open, setOpen] = useState(false)
   const [hov, setHov] = useState<string | null>(null)
 
+  // ⚡ Bolt: Optimize O(N*M) lookup during wheel render
+  // 💡 What: Cached Map of saved exercises keyed by exerciseKey
+  // 🎯 Why: Replaces `.find()` inside the map loop with O(1) Map lookups
+  // 📊 Impact: Prevents O(N*M) search complexity when rendering the wheel
+  // 🔬 Measurement: O(1) lookup speeds up modal open time and hover rendering
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    savedExercises.forEach(s => map.set(s.exerciseKey, s))
+    return map
+  }, [savedExercises])
+
   // Закрываем колесо по Escape
   useEffect(() => {
     if (!open) return
@@ -1076,7 +1101,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1458,10 +1483,21 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   const nextDayIdx     = nextSessions % 3
   const nextWeekIdx    = Math.floor(nextSessions / 3)
 
+  // ⚡ Bolt: Optimize O(N*M) lookup inside mapping
+  // 💡 What: Cached Map of saved exercises keyed by exerciseKey
+  // 🎯 Why: Replaces `.find()` inside `.map()` with O(1) Map lookups
+  // 📊 Impact: Prevents O(N*M) search complexity when generating training exercises
+  // 🔬 Measurement: O(1) lookup speeds up list generation on render
+  const savedExerciseMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    userData.exercises.forEach(e => map.set(e.exerciseKey, e))
+    return map
+  }, [userData])
+
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      const saved = savedExerciseMap.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1618,21 @@ function App() {
     }
   }, [userName, token])
 
+  // ⚡ Bolt: Optimize O(N*M) existence checks
+  // 💡 What: Cached Set of saved exercise keys
+  // 🎯 Why: Replaces `.some()` inside `.every()` and `.filter()` with O(1) lookups
+  // 📊 Impact: Prevents O(N*M) array iterations on every App render
+  // 🔬 Measurement: Observe lower CPU time during state updates
+  const savedExerciseKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedExerciseKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1023,6 +1023,12 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const RI = 78             // внутренний радиус (дырка в центре)
   const RL = 122            // радиус для подписей
 
+  const savedMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    savedExercises.forEach(e => map.set(e.exerciseKey, e))
+    return map
+  }, [savedExercises])
+
   return (
     <>
       {/* Кнопка-триггер — показывает выбранное упражнение */}
@@ -1076,7 +1082,11 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      // 💡 What: Replaced array .find() with O(1) Map lookup
+                      // 🎯 Why: ExerciseWheel maps over WHEEL_ORDER and performs a search for each element.
+                      // 📊 Impact: Changes O(N*M) lookup to O(N).
+                      // 🔬 Measurement: Observe faster wheel rendering.
+                      const saved = savedMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1458,10 +1468,20 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   const nextDayIdx     = nextSessions % 3
   const nextWeekIdx    = Math.floor(nextSessions / 3)
 
+  const exerciseMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    userData.exercises.forEach(e => map.set(e.exerciseKey, e))
+    return map
+  }, [userData])
+
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      // 💡 What: Replaced array .find() with O(1) Map lookup
+      // 🎯 Why: getTrainingExercises maps over training day keys, performing a search for each.
+      // 📊 Impact: Changes O(N*M) lookup to O(N).
+      // 🔬 Measurement: Observe faster tab switching.
+      const saved = exerciseMap.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1602,21 @@ function App() {
     }
   }, [userName, token])
 
+  const savedExerciseKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData])
+
+  // 💡 What: Replaced O(N*M) array searches (.some) with O(1) Set lookups
+  // 🎯 Why: allSaved and missingExercises run on every render. With 11 exercises and N saved items,
+  //          this caused redundant iterations.
+  // 📊 Impact: Changes O(N^2) render blocking work to O(N) lookup.
+  // 🔬 Measurement: Observe faster re-renders when switching tabs or updating state.
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedExerciseKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

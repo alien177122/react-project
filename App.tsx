@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1002,6 +1002,13 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const [open, setOpen] = useState(false)
   const [hov, setHov] = useState<string | null>(null)
 
+  // ⚡ Bolt: Use Map to cache O(1) lookups and prevent O(N * M) performance degradation during wheel render
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    savedExercises.forEach(s => map.set(s.exerciseKey, s))
+    return map
+  }, [savedExercises])
+
   // Закрываем колесо по Escape
   useEffect(() => {
     if (!open) return
@@ -1076,7 +1083,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14
@@ -1458,10 +1465,17 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   const nextDayIdx     = nextSessions % 3
   const nextWeekIdx    = Math.floor(nextSessions / 3)
 
+  // ⚡ Bolt: Cache saved exercises in a Map to reduce getTrainingExercises lookup complexity from O(N*M) to O(1)
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    userData.exercises.forEach(e => map.set(e.exerciseKey, e))
+    return map
+  }, [userData.exercises])
+
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      const saved = savedExercisesMap.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1596,15 @@ function App() {
     }
   }, [userName, token])
 
+  // ⚡ Bolt: Optimize top-level completion checks by caching keys in a Set for O(1) lookups instead of .some()
+  const savedExerciseKeys = useMemo(() => new Set(userData?.exercises.map(e => e.exerciseKey) || []), [userData?.exercises])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedExerciseKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

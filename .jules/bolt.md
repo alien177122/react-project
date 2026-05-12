@@ -1,0 +1,1 @@
+## 2024-05-24 - Optimize O(N*M) lookups in React\n**Learning:** When checking for existence in arrays inside React render loops (e.g., using `.some()` inside `.filter()` or `.every()`), it creates an (N \times M)$ complexity. \n**Action:** Use `useMemo` to build a `Set` of the lookup keys for (1)$ retrieval, reducing the overall complexity to (N + M)$.

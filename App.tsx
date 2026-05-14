@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1023,6 +1023,14 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
   const RI = 78             // внутренний радиус (дырка в центре)
   const RL = 122            // радиус для подписей
 
+
+  // ⚡ Bolt: Cache 1RM values in a Map to reduce O(N*M) lookup to O(1)
+  const savedExercisesMap = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    savedExercises.forEach(s => map.set(s.exerciseKey, s))
+    return map
+  }, [savedExercises])
+
   return (
     <>
       {/* Кнопка-триггер — показывает выбранное упражнение */}
@@ -1076,7 +1084,7 @@ function ExerciseWheel({ value, onChange, savedExercises = [] }: { value: string
                     >{SHORT_NAMES[key]}</text>
                     {/* Метка 1ПМ снаружи кольца — показывается если упражнение уже рассчитано */}
                     {(() => {
-                      const saved = savedExercises.find(s => s.exerciseKey === key)
+                      const saved = savedExercisesMap.get(key)
                       if (!saved) return null
                       // Радиус чуть больше RO — метка ложится прямо за цветным сектором
                       const RLO = RO + 14

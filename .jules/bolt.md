@@ -1,0 +1,3 @@
+## 2025-05-18 - Convert .some inside .every to Set+useMemo
+**Learning:** Found a specific O(N*M) existence check anti-pattern where `.some()` was being called inside `.every()` and `.filter()` during every React render to verify if all required exercises were saved.
+**Action:** When seeing this specific O(N*M) lookup pattern (`arrayA.every(a => arrayB.some(b => a.key === b.key))`), extract `arrayB` into a `Set` using `useMemo` so the check becomes O(N) by turning inner loops into O(1) lookups. Ensure the dependency array correctly points to the underlying data source (`userData` in this case).

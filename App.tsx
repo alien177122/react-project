@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1582,13 +1582,18 @@ function App() {
     }
   }, [userName, token])
 
-  const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
-    : false
-
-  const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
-    .map(([, ex]) => ex.name)
+  // ⚡ Bolt: Optimizing O(N*M) lookup inside render to O(N) by caching keys in a Set
+  const { allSaved, missingExercises } = useMemo(() => {
+    if (!userData) return { allSaved: false, missingExercises: Object.values(EXERCISES).map(e => e.name) }
+    const savedKeys = new Set(userData.exercises.map(e => e.exerciseKey))
+    const keys = Object.keys(EXERCISES)
+    return {
+      allSaved: keys.every(k => savedKeys.has(k)),
+      missingExercises: Object.entries(EXERCISES)
+        .filter(([k]) => !savedKeys.has(k))
+        .map(([, ex]) => ex.name)
+    }
+  }, [userData])
 
   function handleLogout() {
     localStorage.removeItem('gym_token')

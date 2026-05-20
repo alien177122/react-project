@@ -1,0 +1,3 @@
+## 2024-05-20 - Memoizing static maps and object references
+**Learning:** Using `useMemo` in React components like `App` with static dependencies (`[userData]`) to pre-compute structural arrays (e.g., missing exercises) and caching lookups using Sets reduces N*M complexity on every render and helps maintain reactivity. Also, caching complex SVG coordinate and path derivations from global structures (`EXERCISES`) like in `VolumeDonut` prevents heavy recomputation on state updates (like hovering over elements).
+**Action:** Always refactor `.some()` calls inside `.filter()` or `.map()` to O(1) `Set` lookups and extract derived array constructions into `useMemo` hooks to preserve referential equality and reduce CPU load.

@@ -1,0 +1,3 @@
+## 2025-02-18 - Replacing nested array searches with `useMemo` caching
+**Learning:** Found several components repeating $O(N \times M)$ search patterns: array iterators (like `.find()`, `.some()`) executing inside `.map()` and `.every()` loops during render. Even though array sizes might currently be bounded, this constitutes structural rendering inefficiency.
+**Action:** Extract inner iteration lookups by caching the referenced arrays into `Set` or `Map` data structures using `useMemo` hook with proper dependency tracking. This converts the repeated $O(M)$ lookups into $O(1)$ operations, achieving a flattened $O(N + M)$ performance profile.

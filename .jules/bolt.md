@@ -1,0 +1,3 @@
+## 2024-05-23 - Optimize O(N*M) lookups in React Components
+**Learning:** In App.tsx, there were multiple `O(N*M)` nested search operations during component rendering: `.find()` inside a `.map()` in `ExerciseWheel` and `getTrainingExercises`, and `.some()` inside `.every()` and `.filter()` in `App`. These repeated list scans can be inefficient when the component re-renders often.
+**Action:** Use `useMemo` to construct a lookup Map or Set (e.g., `savedExMap = new Map()`, `savedSet = new Set()`) from the source array. This transforms the `O(N*M)` list scans into `O(N) + O(M * 1)` operations. Be sure to use the correct dependencies arrays in `useMemo`.

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/memory-bank-session.mjs",
+        "timeout": 10
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/browser-preview-guard.mjs",
+        "matcher": "open\\s|xdg-open|start\\s+['\"]?https?",
+        "timeout": 5
+      }
+    ]
+  }
+}

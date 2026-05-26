@@ -1,0 +1,3 @@
+## 2024-05-24 - Optimization: Memoize VolumeDonut calculations
+**Learning:** In VolumeDonut, we compute volume over all exercises and muscles `computeMuscleVol()` and transform it into arcs on every render. Given `VolumeDonut` tracks its own `hov` hover state, hover events trigger a full re-calculation of the layout, causing micro-stutters.
+**Action:** Extract expensive data processing outside of render loop using `useMemo`. Since the inputs to `computeMuscleVol()` are actually static module-level constants (`EXERCISES`, `MUSCLE_CONTRIB`), it can be run once globally, or at least memoized with `useMemo([]).` Better yet, the whole arc generation can be memoized, preventing hover from recalculating it.

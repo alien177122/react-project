@@ -714,53 +714,63 @@ function donutArc(cx: number, cy: number, ro: number, ri: number, s: number, e: 
   return `M${ax},${ay} A${ro},${ro} 0 ${lg} 1 ${bx},${by} L${cx2},${cy2} A${ri},${ri} 0 ${lg} 0 ${dx},${dy}Z`
 }
 
-function VolumeDonut() {
-  const [hov, setHov] = useState<string | null>(null)
-  const vol = computeMuscleVol()
-  const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
+const SEG_GAP = 1.5, CAT_GAP = 5
+const VOL = computeMuscleVol()
+const TOTAL = MUSCLE_ORDER.reduce((s, m) => s + (VOL[m] || 0), 0)
 
-  const SEG_GAP = 1.5, CAT_GAP = 5
+const MUSCLES_BY_CAT = CAT_ORDER.reduce((acc, catKey) => {
+  acc[catKey] = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
+  return acc
+}, {} as Record<string, string[]>)
+
+interface DonutSeg {
+  muscle: string; value: number; pct: number
+  startDeg: number; endDeg: number; catKey: string
+}
+
+const SEGS = (() => {
+  const result: DonutSeg[] = []
   const usable = 360 - CAT_GAP * 3
-
-  interface DonutSeg {
-    muscle: string; value: number; pct: number
-    startDeg: number; endDeg: number; catKey: string
-  }
-  const segs: DonutSeg[] = []
   let deg = -90
-
   for (const catKey of CAT_ORDER) {
-    const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
-    const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
-    const catDegTotal = (catVol / total) * usable
+    const muscles = MUSCLES_BY_CAT[catKey]
+    const catVol = muscles.reduce((s, m) => s + (VOL[m] || 0), 0)
+    const catDegTotal = (catVol / TOTAL) * usable
     const mUsable = catDegTotal - SEG_GAP * (muscles.length - 1)
     for (let i = 0; i < muscles.length; i++) {
-      const m = muscles[i], mVol = vol[m] || 0
+      const m = muscles[i], mVol = VOL[m] || 0
       const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
-      segs.push({ muscle: m, value: mVol, pct: (mVol / total) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
+      result.push({ muscle: m, value: mVol, pct: (mVol / TOTAL) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
       deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
     }
     deg += CAT_GAP
   }
+  return result
+})()
+
+const SEGS_MAP = new Map(SEGS.map(s => [s.muscle, s]))
+
+const CAT_ARCS = CAT_ORDER.map(catKey => {
+  const cs = SEGS.filter(s => s.catKey === catKey)
+  if (!cs.length) return null
+  return { catKey, startDeg: cs[0].startDeg, endDeg: cs[cs.length - 1].endDeg, color: CAT_META[catKey].color }
+})
+
+const CAT_VOLS = CAT_ORDER.map(c => MUSCLES_BY_CAT[c].reduce((s, m) => s + (VOL[m] || 0), 0))
+
+function VolumeDonut() {
+  const [hov, setHov] = useState<string | null>(null)
+  const hovSeg = hov ? SEGS_MAP.get(hov) : null
 
   const cx = 120, cy = 120
   const RO_OUT = 108, RO_IN = 96 // outer ring = category
   const RI_OUT = 92,  RI_IN = 56 // inner ring = muscles
 
-  const catArcs = CAT_ORDER.map(catKey => {
-    const cs = segs.filter(s => s.catKey === catKey)
-    if (!cs.length) return null
-    return { catKey, startDeg: cs[0].startDeg, endDeg: cs[cs.length - 1].endDeg, color: CAT_META[catKey].color }
-  })
-
-  const catVols = CAT_ORDER.map(c => MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === c).reduce((s, m) => s + (vol[m] || 0), 0))
-  const hovSeg = segs.find(s => s.muscle === hov)
-
   return (
     <div className="donut-wrap">
       <svg width="240" height="240" viewBox="0 0 240 240">
         {/* Outer ring: categories */}
-        {catArcs.map(ca => ca && (
+        {CAT_ARCS.map(ca => ca && (
           <path key={ca.catKey}
             d={donutArc(cx, cy, RO_OUT, RO_IN, ca.startDeg, ca.endDeg)}
             fill={ca.color}
@@ -769,7 +779,7 @@ function VolumeDonut() {
           />
         ))}
         {/* Inner ring: muscles */}
-        {segs.map(seg => {
+        {SEGS.map(seg => {
           const isHov = seg.muscle === hov
           const ro = isHov ? RI_OUT + 5 : RI_OUT
           return (
@@ -792,7 +802,7 @@ function VolumeDonut() {
           <text x={cx} y={cy + 33} textAnchor="middle" fill="#555" fontFamily="Inter,sans-serif" fontSize="10">{hovSeg.pct.toFixed(0)}% объёма</text>
         </>) : (<>
           <text x={cx} y={cy - 6}  textAnchor="middle" fill="#555" fontFamily="Inter,sans-serif" fontSize="9" letterSpacing="2">ОБЪЁМ</text>
-          <text x={cx} y={cy + 10} textAnchor="middle" fill="#888" fontFamily="'Courier New',monospace" fontSize="12">{total.toFixed(0)} сет</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fill="#888" fontFamily="'Courier New',monospace" fontSize="12">{TOTAL.toFixed(0)} сет</text>
           <text x={cx} y={cy + 24} textAnchor="middle" fill="#555" fontFamily="Inter,sans-serif" fontSize="9">за цикл</text>
         </>)}
       </svg>
@@ -800,13 +810,13 @@ function VolumeDonut() {
       {/* Legend */}
       <div className="donut-legend">
         {CAT_ORDER.map((catKey, ci) => {
-          const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
-          const catVol = catVols[ci]
+          const muscles = MUSCLES_BY_CAT[catKey]
+          const catVol = CAT_VOLS[ci]
           return (
             <div key={catKey} className="donut-cat">
               <div className="donut-cat-hd" style={{ color: CAT_META[catKey].color }}>
                 {CAT_META[catKey].label}
-                <span className="donut-cat-pct">{((catVol / total) * 100).toFixed(0)}%</span>
+                <span className="donut-cat-pct">{((catVol / TOTAL) * 100).toFixed(0)}%</span>
               </div>
               {muscles.map(m => (
                 <div key={m}
@@ -817,7 +827,7 @@ function VolumeDonut() {
                 >
                   <span className="donut-dot" style={{ background: MUSCLE_META[m].color }} />
                   <span className="donut-name">{MUSCLE_META[m].label}</span>
-                  <span className="donut-val" style={{ color: MUSCLE_META[m].color }}>{(vol[m] || 0).toFixed(1)}</span>
+                  <span className="donut-val" style={{ color: MUSCLE_META[m].color }}>{(VOL[m] || 0).toFixed(1)}</span>
                 </div>
               ))}
             </div>

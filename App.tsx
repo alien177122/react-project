@@ -225,7 +225,7 @@ function jwtName(token: string): string | null {
 
 // Загружает данные пользователя (упражнения, прогресс) с сервера
 // При ошибке (нет сети, 401) возвращает пустой объект — не крашит приложение
-async function loadUser(name: string, token: string): Promise<UserData> {
+export async function loadUser(name: string, token: string): Promise<UserData> {
   try {
     const r = await fetch(`${API}/users/${encodeURIComponent(name)}`, {
       headers: { Authorization: `Bearer ${token}` },

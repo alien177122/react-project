@@ -5,7 +5,13 @@ import jwt from 'jsonwebtoken'
 import { userExists, getUserAuth, createUser, getUser, putUser, delUser } from './db.js'
 
 const app = express()
-const JWT_SECRET = process.env.JWT_SECRET || 'gym-secret-dev'
+
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL ERROR: JWT_SECRET is not defined.')
+  process.exit(1)
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
 
 app.use(cors())
 app.use(express.json())

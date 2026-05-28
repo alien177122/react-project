@@ -18,6 +18,18 @@ alwaysApply: true
 3. При технических решениях — `memory-bank/techContext.md`, `memory-bank/systemPatterns.md`
 4. Обновлять `tasks.md` и `progress.md` в фазах `/build`, `/reflect`, `/archive`
 
+### Design standards hook (обязательно для нового UI)
+
+Перед **созданием или существенной перестройкой** UI (секция, компонент, форма, чарт, список) в калькуляторе, тренировках, журнале или Theory shell агент **MUST**:
+
+1. Открыть **`memory-bank/reference/README.md`** (индекс эталонов)
+2. Для **вкладки «Калькулятор»** — **MUST** прочитать **`calculator-tab-standard.md`** (umbrella) + matching partial standard
+3. Прочитать **matching** reference doc из `memory-bank/reference/` (или `.cursor/rules/theory-design-reference.mdc` для `--ta-*`)
+4. Применить паттерны эталона: tokens, spacing, структура hook/parts/CSS, a11y — **не** legacy siblings и **не** ad hoc layout
+5. При утверждённом новом gold standard — добавить `*-standard.md` в `memory-bank/reference/` и обновить индекс + `systemPatterns.md`
+
+Без прохождения hook **запрещено** начинать `/build` новых UI-структур (багфиксы внутри существующего эталона — reference как контекст).
+
 ### Источник правды
 
 - **Канон:** `memory-bank/` + `.cursor/rules/` + `.cursor/commands/`
@@ -61,6 +73,8 @@ alwaysApply: true
 - Functional components, логика в hooks/utils, strict TypeScript
 - a11y: keyboard, focus-visible, prefers-reduced-motion
 - Ответы пользователю на **русском**; код/идентификаторы — English
+- **Design standards hook:** `memory-bank/reference/README.md` → matching `*-standard.md` перед любым новым UI
+- **Reference docs (канон UI):** `memory-bank/reference/` — **Calculator tab umbrella** (`calculator-tab-standard.md`), **секция 02 Прогрессия** (`calc-progression-result-standard.md`), **exercise picker** (`calc-exercise-select-standard.md`), **saved list sec 03** (`calc-saved-exercises-standard.md`), charts, calculator forms (см. индекс)
 
 ## Dev quick reference
 

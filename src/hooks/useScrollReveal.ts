@@ -42,13 +42,12 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>(
       return
     }
 
-    el.style.willChange = 'transform, opacity'
-    el.addEventListener('transitionend', handleTransitionEnd, { once: true })
-
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
         if (entry?.isIntersecting) {
+          el.style.willChange = 'transform, opacity'
+          el.addEventListener('transitionend', handleTransitionEnd, { once: true })
           setIsVisible(true)
           observer.unobserve(entry.target)
           observer.disconnect()
@@ -62,6 +61,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLElement>(
     return () => {
       observer.disconnect()
       el.removeEventListener('transitionend', handleTransitionEnd)
+      el.style.willChange = 'auto'
     }
   }, [threshold, rootMargin, disabled, reducedMotion, handleTransitionEnd])
 

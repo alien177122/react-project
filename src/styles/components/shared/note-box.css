@@ -1,0 +1,18 @@
+/* NOTE BOX */
+.note-box {
+  background: var(--insight-bg);
+  border: 1px solid var(--insight-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 12px;
+  color: var(--insight-muted);
+  line-height: 1.65;
+  margin-top: 14px;
+}
+.note-box strong { color: var(--accent); }
+
+/* Volume legend chips inside calculator note-box */
+.vol-legend--high { color: var(--accent-soft); font-weight: 600; }
+.vol-legend--mid  { color: var(--muted); }
+.vol-legend--low  { color: var(--red); font-weight: 600; }
+

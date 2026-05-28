@@ -1,0 +1,22 @@
+/* INSIGHT BOX */
+.insight {
+  background: var(--insight-bg);
+  border: 1px solid var(--insight-border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 12px;
+  color: var(--insight-text);
+  line-height: 1.75;
+  margin-bottom: 24px;
+}
+.insight strong { color: var(--accent); }
+.insight code {
+  font-family: 'Courier New', monospace;
+  background: var(--insight-code-bg);
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--insight-strong);
+}
+

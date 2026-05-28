@@ -148,7 +148,7 @@ export function StrengthFormulaSection() {
   return (
     <div className="ta-strength">
       <section className="ta-strength-hero" aria-labelledby="strength-system-heading">
-        <span className="ta-strength-eyebrow">30 секунд на суть</span>
+        <span className="ta-strength-eyebrow">Формула</span>
         <h3 id="strength-system-heading" className="ta-strength-title">
           Сила — это система
         </h3>
@@ -199,7 +199,7 @@ export function StrengthFormulaSection() {
         ))}
       </nav>
 
-      <StrengthBlock id="principles" eyebrow="1 минута" title="Что двигает силу первым">
+      <StrengthBlock id="principles" eyebrow="Приоритеты" title="Что двигает силу первым">
         <ol className="ta-strength-priority" role="list">
           {PRIORITY_FACTORS.map(tier => (
             <li
@@ -226,7 +226,7 @@ export function StrengthFormulaSection() {
         </ol>
       </StrengthBlock>
 
-      <StrengthBlock id="wave" eyebrow="2 минуты" title="8-недельная волна">
+      <StrengthBlock id="wave" eyebrow="Периодизация" title="8-недельная волна">
         <div className="ta-strength-wave">
           <div className="ta-strength-wave__rail" aria-hidden="true">
             <span />
@@ -257,7 +257,7 @@ export function StrengthFormulaSection() {
         </aside>
       </StrengthBlock>
 
-      <StrengthBlock id="warmup" eyebrow="1 минута" title="Разминка как лестница">
+      <StrengthBlock id="warmup" eyebrow="Подготовка" title="Разминка как лестница">
         <ul className="ta-strength-ladder" role="list">
           {STRENGTH_WARMUP_STACK.map(step => (
             <li
@@ -280,7 +280,7 @@ export function StrengthFormulaSection() {
         </p>
       </StrengthBlock>
 
-      <StrengthBlock id="autoreg" eyebrow="1 минута" title="Авторегуляция без героизма">
+      <StrengthBlock id="autoreg" eyebrow="Контроль нагрузки" title="Авторегуляция без героизма">
         <div className="ta-strength-autoreg">
           {AUTOREG_COLUMNS.map(column => (
             <section key={column.id} className="ta-strength-autoreg__column" aria-labelledby={`autoreg-${column.id}`}>
@@ -313,7 +313,7 @@ export function StrengthFormulaSection() {
         </div>
       </StrengthBlock>
 
-      <StrengthBlock id="science" eyebrow="По запросу" title="Научные карточки">
+      <StrengthBlock id="science" eyebrow="Доказательная база" title="Научные карточки">
         <div className="ta-strength-science">
           {SCIENCE_CARD_GROUPS.map(([group, cards], index) => (
             <ScienceDetailsGroup

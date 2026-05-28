@@ -1,26 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
-/**
- * Returns true when the user has requested reduced motion via
- * the OS/browser `prefers-reduced-motion: reduce` media query.
- *
- * Use this to skip or simplify animations for accessibility:
- *
- *   const reduced = useReducedMotion()
- *   <motion.div variants={reduced ? undefined : fadeInUp} />
- */
+const QUERY = '(prefers-reduced-motion: reduce)'
+
+function getSnapshot(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia(QUERY).matches
+}
+
+function getServerSnapshot(): boolean {
+  return false
+}
+
+function subscribe(onStoreChange: () => void): () => void {
+  if (typeof window === 'undefined') return () => {}
+  const mq = window.matchMedia(QUERY)
+  mq.addEventListener('change', onStoreChange)
+  return () => mq.removeEventListener('change', onStoreChange)
+}
+
 export function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  })
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-
-  return reduced
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }

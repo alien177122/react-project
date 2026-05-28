@@ -8,7 +8,7 @@ export const TRAINING_DAYS: TrainingDayDef[] = [
 
 export const EXERCISES: Record<string, ExerciseConfig> = {
   bench: {
-    name: 'Жим штанги лёжа', type: 'A', step: 2.5, warmupStep: 5,
+    name: 'Жим штанги лёжа', type: 'A', step: 2.5, warmupStep: 5, primaryMuscle: 'chest',
     percentages: [68, 73, 78, 83, 75, 79, 85, 90],
     weekSchemes: [
       { sets: 4, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -16,7 +16,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   squat: {
-    name: 'Приседания со штангой', type: 'A', step: 2.5, warmupStep: 5,
+    name: 'Приседания со штангой', type: 'A', step: 2.5, warmupStep: 5, primaryMuscle: 'legs',
     percentages: [68, 73, 78, 83, 75, 79, 85, 90],
     weekSchemes: [
       { sets: 4, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -24,7 +24,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   gluteBridge: {
-    name: 'Ягодичный мост', type: 'A', step: 2.5, warmupStep: 5,
+    name: 'Ягодичный мост', type: 'A', step: 2.5, warmupStep: 5, primaryMuscle: 'legs',
     percentages: [68, 73, 78, 83, 75, 79, 85, 90],
     weekSchemes: [
       { sets: 4, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -32,7 +32,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   legPress: {
-    name: 'Жим ногами', type: 'D', step: 3, warmupStep: 5,
+    name: 'Жим ногами', type: 'D', step: 3, warmupStep: 5, primaryMuscle: 'legs',
     percentages: [65, 68, 70, 76, 68, 73, 75, 80],
     weekSchemes: [
       { sets: 3, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -40,7 +40,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   row: {
-    name: 'Тяга штанги к поясу', type: 'A', step: 2.5, warmupStep: 5,
+    name: 'Тяга штанги к поясу', type: 'A', step: 2.5, warmupStep: 5, primaryMuscle: 'back',
     percentages: [68, 73, 78, 83, 75, 79, 85, 90],
     weekSchemes: [
       { sets: 4, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -48,7 +48,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   pullUp: {
-    name: 'Подтягивания', type: 'A', step: 2.5, warmupStep: 2.5,
+    name: 'Подтягивания', type: 'A', step: 2.5, warmupStep: 2.5, primaryMuscle: 'back',
     percentages: [65, 68, 70, 76, 68, 73, 75, 80],
     weekSchemes: [
       { sets: 3, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -57,7 +57,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     isPullup: true,
   },
   ohp: {
-    name: 'Жим штанги стоя', type: 'B', step: 2.5, warmupStep: 2.5,
+    name: 'Жим штанги стоя', type: 'B', step: 2.5, warmupStep: 2.5, primaryMuscle: 'shoulders',
     percentages: [68, 75, 79, 85, 71, 77, 83, 88],
     weekSchemes: [
       { sets: 4, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -65,7 +65,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   curl: {
-    name: 'Подъём штанги на бицепс', type: 'B', step: 2.5, warmupStep: 2.5,
+    name: 'Подъём штанги на бицепс', type: 'B', step: 2.5, warmupStep: 2.5, primaryMuscle: 'biceps',
     percentages: [68, 75, 79, 85, 71, 77, 83, 88],
     weekSchemes: [
       { sets: 3, reps: 8 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 }, { sets: 4, reps: 4 },
@@ -73,7 +73,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   dbPress: {
-    name: 'Жим гантелей лёжа', type: 'C', step: 2, warmupStep: 2,
+    name: 'Жим гантелей лёжа', type: 'C', step: 2, warmupStep: 2, primaryMuscle: 'chest',
     percentages: [65, 68, 72, 75, 69, 73, 77, 80],
     weekSchemes: [
       { sets: 3, reps: 10 }, { sets: 3, reps: 10 }, { sets: 3, reps: 8 }, { sets: 3, reps: 8 },
@@ -81,7 +81,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   lateralRaise: {
-    name: 'Махи с гантелями в стороны', type: 'C', step: 1, warmupStep: 1,
+    name: 'Махи с гантелями в стороны', type: 'C', step: 1, warmupStep: 1, primaryMuscle: 'shoulders',
     percentages: [65, 68, 72, 75, 69, 73, 77, 80],
     weekSchemes: [
       { sets: 3, reps: 10 }, { sets: 3, reps: 10 }, { sets: 3, reps: 8 }, { sets: 3, reps: 8 },
@@ -89,7 +89,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   legExt: {
-    name: 'Разгибания ног', type: 'D', step: 3, warmupStep: 3,
+    name: 'Разгибания ног', type: 'D', step: 3, warmupStep: 3, primaryMuscle: 'legs',
     percentages: [65, 68, 70, 76, 68, 73, 75, 80],
     weekSchemes: [
       { sets: 3, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },
@@ -97,7 +97,7 @@ export const EXERCISES: Record<string, ExerciseConfig> = {
     ],
   },
   legCurl: {
-    name: 'Сгибания ног', type: 'D', step: 3, warmupStep: 3,
+    name: 'Сгибания ног', type: 'D', step: 3, warmupStep: 3, primaryMuscle: 'legs',
     percentages: [65, 68, 70, 76, 68, 73, 75, 80],
     weekSchemes: [
       { sets: 3, reps: 8 }, { sets: 4, reps: 7 }, { sets: 4, reps: 6 }, { sets: 4, reps: 5 },

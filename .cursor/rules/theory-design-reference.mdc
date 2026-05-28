@@ -1,0 +1,112 @@
+---
+description: Canonical Theory tab (ta-*) design system
+globs: src/**/*.{tsx,ts,css}
+alwaysApply: false
+---
+
+# Theory Design System (`ta-*`)
+
+Эталон — вкладка **Theory** (не модифицировать её исходники). Новые UI в том же визуальном языке должны использовать CSS-переменные и паттерны ниже, а не raw hex в компонентах.
+
+## Эталонные файлы
+
+| Роль | Путь |
+|------|------|
+| CSS tokens + компоненты | `src/styles/components/theory-apple.css` |
+| Корневой shell | `src/components/TheoryTab.tsx` |
+| Accent inline pattern | `src/components/theory/TheoryChapterHub.tsx` |
+| JS tokens + helpers | `src/hooks/useTheoryDesign.ts` |
+
+## Shell
+
+- Корневой контейнер: класс `ta-shell` (константа `TA_CSS_VARS.shell`).
+- Shell задаёт все `--ta-*` переменные, фон, border-radius, overflow и базовый цвет текста.
+- Дочерние элементы **внутри** shell наследуют токены; вне shell — не полагаться на `--ta-*` без явного scope.
+- Подпространство калькулятора: `--ta-calc-*` (алиасы на Theory tokens, см. `theory-apple.css`).
+
+## Tokens (CSS custom properties)
+
+Использовать имена из `TA_CSS_VARS` и `TA_SECTION_ACCENTS` (`useTheoryDesign.ts`):
+
+```typescript
+import { TA_CSS_VARS, accentVars, taAccentStyle, useTheoryDesign } from '../hooks/useTheoryDesign'
+
+const { accentVar, tintVar } = accentVars(3)
+style={taAccentStyle(accentVar, tintVar)}
+// или в CSS: var(--ta-surface), var(--ta-text-muted), var(--ta-radius-card)
+```
+
+**Surfaces:** `--ta-bg`, `--ta-surface`, `--ta-surface-2`, `--ta-border`, `--ta-border-strong`  
+**Text:** `--ta-text`, `--ta-text-muted`, `--ta-text-dim`  
+**Section accents:** `--ta-sec-01` … `--ta-sec-10` + пары `-tint` (6% color-mix на `#0a0a0b`)  
+**Per-card override:** `--ta-card-accent`, `--ta-card-tint` (inline на элементе)  
+**Radius / shadow:** `--ta-radius-card`, `--ta-radius-pill`, `--ta-shadow-soft`, `--ta-shadow-hover`  
+**Motion:** `--ta-ease`, `--ta-ease-micro`, `--ta-duration-micro|component|section`  
+**Typography:** `--ta-display-font`
+
+## Typography
+
+Масштаб Theory (из hook / CSS):
+
+| Роль | size | weight | прочее |
+|------|------|--------|--------|
+| eyebrow / pill | 12 | 600 | `letter-spacing: 0.22em`, uppercase |
+| section title | 32 | 600 | `line-height: 1.05`, `--ta-display-font` |
+| card title | 20 | 600 | `line-height: 1.25` |
+| body / lede | 16 | 400 | `line-height: 1.65` |
+| muted | 14 | 400 | `line-height: 1.55`, `--ta-text-muted` |
+
+Классы-эталон: `.ta-section-pill`, `.ta-section-title`, `.ta-section-lede`, `.ta-chapter-card__title`.
+
+## Spacing & layout
+
+- Шкала (px): 8 / 12 / 16 / 24 / 32 / 48 / 96 — только кратные 4.
+- Секция: `padding: 96px 32px` (mobile ≤720px: `72px 18px`).
+- Content max-width: **1140px** (`.ta-section-inner`, `.ta-chapter-hub__inner`).
+- Lede max-width: **640px** (`.ta-section-lede`).
+- Gap в grid карточек: **16px**; section head gap: **12px**, margin-bottom: **48px**.
+
+## Components (паттерны, не копировать слепо)
+
+- **Section block:** `.ta-section` → `.ta-section-inner` → `.ta-section-head` (pill + title + lede).
+- **Chapter hub:** `.ta-chapter-hub` + grid `.ta-chapter-grid` (2 col) + `.ta-chapter-card`.
+- **Inline panel:** `.ta-chapter-panel` с `role="dialog"`, focus trap, Esc закрывает.
+- **Hero:** `.ta-hero` с glow/bg layers; CTA — `.ta-hero-cta`.
+- **Cards:** surface `--ta-surface`, border `--ta-border`, radius `--ta-radius-card`, accent через CSS vars на элементе.
+- BEM-префикс `ta-`; не смешивать с legacy `.theory-*` (используется в других табах).
+
+## Interactive states
+
+Каждый интерактивный элемент — полный набор состояний:
+
+1. **default** — baseline surface + border  
+2. **hover** — `@media (hover: hover)`: `--ta-border-strong`, layered shadow (не colored shadow)  
+3. **active / `.is-active`** — tint gradient, accent border, `--ta-card-accent` на num/badge  
+4. **focus-visible** — `outline: 2px solid var(--ta-card-accent); outline-offset: 2px`  
+5. **disabled** — `opacity: 0.5`, `pointer-events: none`, `cursor: wait`  
+6. **loading** — spinner внутри, без изменения размеров  
+
+Transitions: `transform`, `opacity`, `background-color`, `border-color`, `box-shadow` — **не** width/height/margin.  
+Durations: micro **200ms** (`--ta-ease-micro`), component **400ms**, section **500ms** (`--ta-ease`).
+
+## Motion & a11y
+
+```typescript
+const { motion } = useTheoryDesign()
+// motion.reduced — gate для framer-motion: initial={false}, whileHover={undefined}
+```
+
+- CSS: `@media (prefers-reduced-motion: reduce)` — отключить keyframes и transitions в Theory CSS.
+- Stagger: base **80ms** × index (TheoryChapterHub использует ~35ms для cards — допустимо локально).
+- Кнопки: `<button type="button">`, не `div` + onClick.
+- Панели: `aria-expanded`, `aria-controls`, `aria-labelledby`.
+- Иконки декоративные: `aria-hidden="true"` + текстовая метка рядом.
+- Keyboard: Tab order логичный; Esc закрывает panel/modal.
+
+## Правила для агентов
+
+- **MUST:** hex/rgba только в `theory-apple.css` (или новом scoped CSS), в TSX — `var(--ta-*)`.
+- **MUST:** accent per section через `accentVars()` / `taAccentStyle()` или data из `theoryChapters`.
+- **MUST NOT:** редактировать эталон Theory (`TheoryTab.tsx`, `theory-apple.css`, `src/components/theory/*`) без явной задачи на рефакторинг эталона.
+- **SHOULD:** `useTheoryDesign()` для spacing/typography/motion в новых Theory-aligned компонентах.
+- **SHOULD:** следовать общему `CLAUDE.md` / `memory-bank/style-guide.md`; Theory tokens — надстройка для dark editorial UI.

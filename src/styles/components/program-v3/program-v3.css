@@ -1,0 +1,192 @@
+.program-selector {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 0.45);
+}
+
+.program-selector__panel {
+  width: min(480px, 100%);
+  max-height: min(90dvh, 720px);
+  overflow: auto;
+  padding: 20px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border, #e5e5e5);
+  background: var(--surface, #fff);
+  animation: program-selector-reveal 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes program-selector-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .program-selector__panel {
+    animation: none;
+  }
+}
+
+.program-selector__title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.program-selector__lead {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary, #666);
+}
+
+.program-selector__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.program-selector__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border, #e5e5e5);
+  background: var(--surface-muted, #fafafa);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.program-selector__card--selected {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 1px var(--accent, #2563eb);
+}
+
+.program-selector__card:focus-visible {
+  outline: 2px solid var(--accent, #2563eb);
+  outline-offset: 2px;
+}
+
+.program-selector__badge {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent, #2563eb);
+}
+
+.program-selector__card-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.program-selector__card-stats {
+  font-size: 14px;
+  color: var(--text-secondary, #666);
+}
+
+.program-selector__card-desc {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.program-selector__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Program 3.0 calculator — chart overrides only (forms use calc-test-approach.css) */
+@layer components {
+  .program-v3-calculator .program-v3-progress.ta-period {
+    margin-bottom: 0;
+  }
+
+  /* Phase strip — match PeriodizationChart etalon (single border, tint fill) */
+  .program-v3-calculator .progression-preview .ta-period__phases {
+    gap: 4px;
+  }
+
+  .program-v3-calculator .progression-preview .ta-period__phase {
+    box-sizing: border-box;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .program-v3-progress__empty {
+    margin: 0;
+    font-size: var(--type-14, 0.875rem);
+    line-height: 1.5;
+    color: var(--ta-text-muted, #99a1ad);
+  }
+
+  .program-v3-calculator .progression-preview .ta-period__weeks--preview {
+    margin-top: var(--space-3, 12px);
+  }
+
+  .program-v3-calculator .progression-preview .ta-period-week {
+    grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
+  }
+
+  .program-v3-calculator .progression-preview .ta-period-week em {
+    color: var(--phase-color, var(--ta-text-dim));
+    font-size: 14px;
+    font-weight: 600;
+    justify-self: end;
+    white-space: nowrap;
+  }
+
+  .program-v3-calculator .progression-preview .ta-period-week.is-test strong {
+    color: var(--ta-calc-accent);
+  }
+
+  .program-v3-calculator .progression-preview__sr-only {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  @media (max-width: 600px) {
+    .program-v3-calculator .progression-preview .ta-period__weeks--preview {
+      -webkit-overflow-scrolling: touch;
+      overflow-x: auto;
+    }
+
+    .program-v3-calculator .progression-preview .ta-period-week {
+      grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
+      min-width: min(100%, 420px);
+    }
+
+    .program-v3-calculator .progression-preview .ta-period-week em {
+      justify-self: end;
+    }
+  }
+}
+
+.user-bar__program {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #666);
+  white-space: nowrap;
+}

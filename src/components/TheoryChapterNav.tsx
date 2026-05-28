@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { THEORY_CHAPTERS } from '../data/theoryChapters'
+import { addPassiveScroll } from '../lib/scroll'
 
 export function TheoryChapterNav() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -28,10 +29,10 @@ export function TheoryChapterNav() {
       raf = requestAnimationFrame(tick)
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true })
+    const removeScroll = addPassiveScroll(window, onScroll)
     tick()
     return () => {
-      window.removeEventListener('scroll', onScroll)
+      removeScroll()
       cancelAnimationFrame(raf)
     }
   }, [])

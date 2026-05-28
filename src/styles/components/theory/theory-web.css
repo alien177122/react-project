@@ -1,0 +1,438 @@
+/* THEORY WEB — macOS port */
+.theory-shell {
+  --theory-bg: #0a0c10;
+  --theory-surface: #151a22;
+  --theory-card: #1c222c;
+  --theory-border: #232934;
+  --theory-border-strong: #343c49;
+  --theory-text: #f3efe6;
+  --theory-muted: #99a1ad;
+  --theory-accent: #f07a43;
+  --theory-accent-soft: rgba(240, 122, 67, 0.1);
+  --theory-accent-border: rgba(240, 122, 67, 0.32);
+  /* Cascade cooler palette to legacy components rendered inside the shell */
+  --surface: #151a22;
+  --card: #1c222c;
+  --border: #232934;
+  --muted: #99a1ad;
+  background:
+    radial-gradient(ellipse 62% 48% at 5% 4%, rgba(240, 122, 67, 0.13), transparent 42%),
+    radial-gradient(ellipse 48% 38% at 96% 92%, rgba(240, 122, 67, 0.07), transparent 46%),
+    linear-gradient(180deg, rgba(10, 12, 16, 0.97) 0%, rgba(10, 12, 16, 0.92) 100%);
+  border: 1px solid rgba(52, 60, 73, 0.65);
+  border-radius: 16px;
+  color: var(--theory-text);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.theory-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(130deg, rgba(255, 255, 255, 0.04), transparent 24%),
+    linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02));
+  pointer-events: none;
+}
+
+.theory-stack,
+.theory-hero {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes sectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theory-stack > * {
+  animation: sectionIn var(--duration-medium) var(--ease-in-out) both;
+}
+.theory-stack > *:nth-child(1) {
+  animation-delay: 0.06s;
+}
+.theory-stack > *:nth-child(2) {
+  animation-delay: 0.14s;
+}
+.theory-stack > *:nth-child(3) {
+  animation-delay: 0.22s;
+}
+.theory-stack > *:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.theory-stack > *:nth-child(5) {
+  animation-delay: 0.38s;
+}
+.theory-stack > *:nth-child(6) {
+  animation-delay: 0.46s;
+}
+.theory-stack > *:nth-child(7) {
+  animation-delay: 0.54s;
+}
+.theory-stack > *:nth-child(8) {
+  animation-delay: 0.62s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theory-stack > * {
+    animation: none;
+  }
+}
+
+.theory-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.theory-hero {
+  border-bottom: 1px solid var(--theory-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 24px;
+}
+
+.theory-hero-label {
+  color: var(--theory-accent);
+  font-family: 'Avenir Next', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.theory-hero-title {
+  color: var(--theory-text);
+  font-family: 'Avenir Next', 'Inter', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.04;
+  max-width: 920px;
+}
+
+.theory-hero-subtitle {
+  color: var(--theory-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 760px;
+}
+
+.theory-hero-line {
+  background: linear-gradient(90deg, var(--theory-accent), transparent);
+  border-radius: 8px;
+  height: 2px;
+  margin-top: 4px;
+  width: 56px;
+}
+
+.theory-hero-title--interactive:focus-visible {
+  border-radius: 8px;
+  box-shadow: 0 0 0 3px rgba(240, 122, 67, 0.35);
+  outline: none;
+}
+
+.theory-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.theory-section-header {
+  align-items: center;
+  border-bottom: 1px solid var(--theory-border);
+  display: flex;
+  gap: 12px;
+  padding-bottom: 12px;
+}
+
+.theory-section-pill {
+  background: var(--theory-accent-soft);
+  border: 1px solid var(--theory-accent-border);
+  border-radius: 16px;
+  color: var(--theory-accent);
+  font-family: 'Avenir Next', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  padding: 5px 10px;
+}
+
+.theory-section-title {
+  color: var(--theory-text);
+  flex: 1;
+  font-family: 'Avenir Next', 'Inter', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.theory-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.theory-note-box {
+  background: var(--overlay-soft);
+  border: 1px solid var(--theory-border);
+  border-radius: 16px;
+  color: var(--theory-muted);
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 16px;
+}
+
+.theory-card-grid,
+.theory-tier-list {
+  display: grid;
+  gap: 16px;
+}
+
+.theory-card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.theory-card-grid-compact {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.theory-card,
+.theory-tier-row {
+  background: var(--theory-surface);
+  border: 1px solid var(--theory-border);
+  border-radius: 16px;
+  position: relative;
+}
+
+.theory-card {
+  padding: 16px;
+}
+
+.theory-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.theory-card-accent {
+  border-left: 3px solid var(--theory-accent);
+}
+
+.theory-card-title,
+.theory-top-name,
+.theory-tier-title {
+  color: var(--theory-text);
+  font-family: 'Avenir Next', 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.theory-card-title {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.theory-card-body,
+.theory-bullet-text {
+  color: var(--theory-muted);
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.theory-card-strong {
+  color: var(--theory-text);
+}
+
+.theory-bullet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.theory-bullet-row {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+}
+
+.theory-bullet-dot {
+  color: var(--theory-accent);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.theory-tier-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  padding: 16px;
+}
+
+.theory-tier-badge {
+  align-items: center;
+  border-radius: 16px;
+  display: flex;
+  font-size: 16px;
+  font-weight: 600;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.theory-tier-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.theory-tier-title,
+.theory-top-name {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.theory-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theory-chip {
+  background: var(--theory-card);
+  border: 1px solid var(--theory-border);
+  border-radius: 16px;
+  color: var(--theory-text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+}
+
+.theory-top-card {
+  border-top: 3px solid var(--theory-border-strong);
+}
+
+.theory-top-num {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.theory-top-dose {
+  color: var(--accent-soft);
+  font-family: 'SFMono-Regular', 'Menlo', monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.theory-table-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.theory-table-shell {
+  background: var(--theory-surface);
+  border: 1px solid var(--theory-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.theory-table-caption {
+  border-bottom: 1px solid var(--theory-border);
+  color: var(--theory-text);
+  font-family: 'Avenir Next', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 16px;
+}
+
+.theory-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.theory-table thead th {
+  background: var(--overlay-soft);
+  color: var(--theory-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 10px 16px;
+  text-align: left;
+}
+
+.theory-table tbody td {
+  border-top: 1px solid var(--theory-border);
+  color: var(--theory-text);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 12px 16px;
+  vertical-align: top;
+}
+
+@media (max-width: 960px) {
+  .theory-card-grid,
+  .theory-card-grid-compact,
+  .theory-table-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .theory-shell {
+    border-radius: 16px;
+    padding: 22px 18px;
+  }
+
+  .theory-hero-subtitle {
+    font-size: 14px;
+  }
+
+  .theory-tier-row {
+    grid-template-columns: 1fr;
+  }
+
+  .theory-tier-badge {
+    width: fit-content;
+  }
+}
+
+@media (max-width: 560px) {
+  .theory-shell {
+    padding: 18px 14px;
+  }
+
+  .theory-card,
+  .theory-tier-row {
+    padding: 14px;
+  }
+
+  .theory-section-title {
+    text-wrap: balance;
+  }
+
+  .theory-table thead th,
+  .theory-table tbody td {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}

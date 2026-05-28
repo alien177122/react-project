@@ -18,7 +18,7 @@
 }
 .section-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 30px;
+  font-size: 32px;
   letter-spacing: 0.05em;
   color: #fff;
 }
@@ -27,24 +27,67 @@
 .user-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2);
   margin-bottom: 48px;
   padding: 16px 20px;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 8px;
+}
+.user-bar-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.user-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  margin-left: auto;
 }
 .user-bar-label {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .user-bar-name {
   font-size: 14px;
   font-weight: 600;
   color: #fff;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.user-bar .btn-sm {
+  letter-spacing: 0;
+  min-height: 44px;
+  min-width: 76px;
+  padding: 0 16px;
+  text-transform: none;
+}
+.user-bar .btn-ghost {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-soft);
+}
+@media (max-width: 672px) {
+  .user-bar-actions {
+    margin-left: 0;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .user-bar .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
 }
 
 /* INPUTS LAYOUT */
@@ -72,52 +115,114 @@
 /* TABLE SCROLL */
 .table-scroll {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollable-container {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-snap {
+  overflow-x: auto;
+  overscroll-behavior-x: none;
+  scroll-snap-type: x mandatory;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-item {
+  flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 /* ===== TAB BAR ===== */
 .tab-bar.ta-mode-nav {
   background: var(--ta-surface, var(--card));
   border: 1px solid var(--ta-border, var(--border));
-  border-radius: 20px;
-  box-shadow:
-    0 12px 36px color-mix(in srgb, var(--ta-bg, var(--bg)) 56%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--ta-text, var(--text)) 4%, transparent);
-  display: grid;
-  gap: 4px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-layered);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-1);
   isolation: isolate;
-  margin: 0 auto 40px;
-  max-width: 720px;
-  overflow: visible;
-  padding: 6px;
+  margin: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  padding: var(--space-1);
   position: relative;
   width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
 }
+
+.tab-bar.ta-mode-nav::-webkit-scrollbar {
+  display: none;
+}
+
 .tab-btn {
   align-items: center;
   background: transparent;
   border: none;
-  border-radius: 12px;
-  color: var(--ta-text-dim, var(--muted));
-  column-gap: 8px;
+  border-radius: var(--radius-md);
+  color: var(--ta-text-dim, var(--text-secondary));
   cursor: pointer;
-  display: inline-flex;
-  font-family: var(--ta-display-font, -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Display', 'Inter', system-ui, sans-serif);
-  font-size: 16px;
+  display: flex;
+  flex: 1 1 auto;
+  font-family: var(--font-system);
+  font-size: var(--type-12);
   font-weight: 600;
   justify-content: center;
   letter-spacing: 0;
+  line-height: var(--type-line-12);
   min-height: 52px;
-  min-width: 0;
-  overflow: hidden;
-  padding: 12px 18px;
+  min-width: max(4.75rem, min-content);
+  overflow: visible;
+  padding: var(--space-2) var(--space-2);
   position: relative;
+  scroll-snap-align: center;
   text-align: center;
   touch-action: manipulation;
   transition:
-    color var(--ta-duration-micro, var(--duration-micro)) var(--ta-ease-micro, var(--ease-micro)),
-    opacity var(--ta-duration-micro, var(--duration-micro)) var(--ta-ease-micro, var(--ease-micro)),
-    transform var(--ta-duration-micro, var(--duration-micro)) var(--ta-ease-micro, var(--ease-micro));
+    color var(--duration-micro) var(--ease-in-out),
+    opacity var(--duration-micro) var(--ease-in-out),
+    transform var(--duration-micro) var(--ease-out);
+}
+
+.tab-btn-stack {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  justify-content: center;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.tab-btn-label {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .tab-btn::before {
   background: var(--ta-surface-2, var(--surface-raised));
@@ -141,22 +246,47 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 24%, transparent);
 }
 .tab-btn-label,
-.tab-btn-meta {
+.tab-btn-meta,
+.tab-btn-stack {
   position: relative;
   z-index: 1;
 }
+
+.tab-btn:has(.tab-btn-meta) {
+  min-width: 5.5rem;
+}
+
 .tab-btn-meta {
   align-items: center;
-  background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 10%, transparent);
-  border: 1px solid var(--ta-border, var(--border));
-  border-radius: var(--ta-radius-pill, var(--radius-pill));
-  color: var(--ta-text-dim, var(--muted));
+  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
   display: inline-flex;
-  font-size: 11px;
+  flex-shrink: 0;
+  font-size: var(--type-12);
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  line-height: 1;
-  padding: 4px 7px;
+  font-weight: 600;
+  line-height: var(--type-line-12);
+  padding: var(--space-1) var(--space-2);
+}
+
+@media (min-width: 900px) {
+  .tab-bar.ta-mode-nav {
+    display: grid;
+    gap: var(--space-1);
+    grid-template-columns: repeat(5, minmax(5.5rem, 1fr));
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+
+  .tab-btn {
+    flex: initial;
+    font-size: var(--type-14);
+    line-height: var(--type-line-14);
+    min-width: 0;
+    padding: var(--space-2) var(--space-3);
+  }
 }
 @media (hover: hover) {
   .tab-btn:hover {
@@ -207,7 +337,7 @@
 .training-progress-label {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -217,20 +347,20 @@
   height: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 8px;
   overflow: hidden;
 }
 .training-progress-fill {
   height: 100%;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: 8px;
   transition: width var(--duration-medium) var(--ease-out);
   min-width: 0;
 }
 
 /* Next day label */
 .next-day-label {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted);
@@ -249,13 +379,13 @@
 }
 .locked-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   letter-spacing: 0.05em;
   color: #fff;
   margin-bottom: 8px;
 }
 .locked-desc {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
   max-width: 420px;
   margin: 0 auto 24px;
@@ -280,15 +410,15 @@
   padding: 48px 20px;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 8px;
 }
 .program-complete-icon {
-  font-size: 56px;
+  font-size: 48px;
   margin-bottom: 16px;
 }
 .program-complete-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
+  font-size: 32px;
   letter-spacing: 0.05em;
   color: var(--accent);
   margin-bottom: 10px;
@@ -300,71 +430,67 @@
   margin-bottom: 16px;
 }
 .program-complete-desc {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
   max-width: 440px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
-@media (max-width: 600px) {
-  .user-bar {
-    flex-wrap: wrap;
-    row-gap: 10px;
-  }
-  .tab-bar.ta-mode-nav {
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    align-items: stretch;
-    border-radius: 20px;
-    margin-bottom: 28px;
-  }
-  .tab-btn {
-    min-width: 0;
-    min-height: 48px;
-    padding: 10px 8px;
-  }
-}
-
 /* ===== iPhone / mobile touch improvements ===== */
 @media (max-width: 430px) {
   /* Layout */
-  #root { padding: 32px 14px; }
+  #root {
+    padding-top: max(32px, calc(var(--sat) + 16px));
+    padding-right: max(14px, var(--sar));
+    padding-bottom: max(32px, var(--sab));
+    padding-left: max(14px, var(--sal));
+  }
 
   /* Hero — заголовок не обрезается */
-  .hero { margin-bottom: 28px; padding-left: 16px; }
+  .hero {
+    margin-bottom: 28px;
+    padding-left: 16px;
+  }
   .hero h1 {
-    font-size: clamp(28px, 7.8vw, 42px);
+    font-size: 32px;
     letter-spacing: 0;
     line-height: 1.1;
     text-wrap: balance;
   }
   .hero-label {
-    font-size: 9px;
+    font-size: 12px;
     letter-spacing: 0.25em;
     margin-bottom: 8px;
   }
-  .hero p { font-size: 12px; line-height: 1.5; max-width: 100%; }
+  .hero p {
+    font-size: 12px;
+    line-height: 1.5;
+    max-width: 100%;
+  }
 
   /* Auth */
   .auth-card {
     padding: 24px 18px;
     max-width: 100%;
-    border-radius: 10px;
+    border-radius: 8px;
   }
-  .auth-tabs { margin-bottom: 22px; }
+  .auth-tabs {
+    margin-bottom: 22px;
+  }
   .auth-tab {
     font-size: 16px;
-    padding: 8px 16px 10px;
+    padding: 10px 16px;
   }
 
   /* Inputs — 16px prevents iOS zoom */
   .input-field {
     padding: 14px;
     font-size: 16px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   .input-label {
-    font-size: 9px;
+    font-size: 12px;
     letter-spacing: 0.15em;
   }
   .input-grid {
@@ -375,35 +501,18 @@
   /* Buttons */
   .btn {
     padding: 14px 24px;
-    font-size: 13px;
-    border-radius: 6px;
+    font-size: 12px;
+    border-radius: 8px;
+    min-height: 44px;
   }
   .btn-sm {
     padding: 8px 14px;
-    font-size: 11px;
+    font-size: 12px;
   }
   .btn-complete {
     padding: 16px 24px;
     font-size: 20px;
     border-radius: 8px;
-  }
-
-  /* Tab bar — 4 вкладки в ряд */
-  .tab-bar.ta-mode-nav {
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    margin-bottom: 24px;
-  }
-  .tab-btn {
-    column-gap: 4px;
-    flex-direction: column;
-    font-size: 12px;
-    min-height: 44px;
-    row-gap: 3px;
-    padding: 8px 5px;
-  }
-  .tab-btn-meta {
-    font-size: 9px;
-    padding: 2px 5px;
   }
 
   /* User bar */
@@ -412,15 +521,79 @@
     margin-bottom: 28px;
     border-radius: 8px;
   }
-  .user-bar-name { font-size: 13px; }
+  .user-bar-label {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+  }
+  .user-bar-name {
+    font-size: 12px;
+  }
+  .user-bar .btn-sm {
+    min-height: 44px;
+    min-width: 68px;
+    padding: 0 12px;
+  }
 
   /* Sections */
-  .section { margin-bottom: 36px; }
+  .section {
+    margin-bottom: 36px;
+  }
   .section-header {
     gap: 10px;
     margin-bottom: 18px;
     padding-bottom: 10px;
   }
-  .section-num { font-size: 11px; }
-  .section-title { font-size: 22px; }
+  .section-num {
+    font-size: 12px;
+  }
+  .section-title {
+    font-size: 20px;
+  }
+}
+
+/* iPhone SE / 8 / mini. */
+@media (max-width: 375px) {
+  #root {
+    padding-top: max(40px, calc(var(--sat) + 16px));
+  }
+
+  .hero h1 {
+    font-size: 40px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+}
+
+/* Current standard-width iPhones. Keep a fixed size instead of viewport-scaled type. */
+@media (min-width: 390px) and (max-width: 429px) {
+  .hero h1 {
+    font-size: 48px;
+  }
+}
+
+/* iPad portrait. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #root {
+    max-width: 720px;
+  }
+
+  .theory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (orientation: landscape) and (max-width: 932px) {
+  #root {
+    padding-left: max(24px, calc(var(--sal) + 16px));
+    padding-right: max(24px, calc(var(--sar) + 16px));
+  }
+}
+
+@media (min-width: 768px) and (pointer: coarse) {
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+  }
 }

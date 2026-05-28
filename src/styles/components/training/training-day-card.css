@@ -1,0 +1,505 @@
+/* ===== TRAINING DAY CARD ===== */
+.training-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.training-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border);
+}
+.training-card-day {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  color: var(--text-strong);
+}
+.training-card-name {
+  font-size: 12px;
+  color: var(--muted);
+  flex: 1;
+}
+.training-card-week {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Preview (next day) */
+.training-card-preview {
+  opacity: 0.55;
+  border-color: #1e1e1e;
+}
+.training-card-preview:hover {
+  opacity: 0.75;
+}
+
+/* Deload week accent */
+.training-card-deload {
+  border-color: var(--deload-border);
+  border-left: 3px solid var(--green);
+}
+.training-card-deload .training-card-head {
+  background: var(--deload-bg);
+}
+.training-card-deload .training-card-week {
+  color: var(--green);
+}
+
+.training-row.is-expanded td {
+  background: var(--ta-surface, var(--surface));
+}
+
+.training-exercise-cell {
+  padding: 0 !important;
+  text-align: left;
+}
+
+.training-exercise-trigger {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--ta-text, var(--text));
+  cursor: pointer;
+  display: flex;
+  font-family: var(
+    --ta-display-font,
+    -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Display',
+    'Inter Display',
+    'Inter',
+    system-ui,
+    sans-serif
+  );
+  font-size: 12px;
+  font-weight: 600;
+  justify-content: space-between;
+  line-height: 1.3;
+  min-height: 44px;
+  padding: 6px 10px;
+  text-align: left;
+  touch-action: manipulation;
+  transition:
+    background var(--ta-duration-micro, var(--duration-micro))
+      var(--ta-ease-micro, var(--ease-micro)),
+    color var(--ta-duration-micro, var(--duration-micro)) var(--ta-ease-micro, var(--ease-micro));
+  width: 100%;
+}
+
+@media (hover: hover) {
+  .training-exercise-trigger:hover {
+    background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 9%, transparent);
+  }
+}
+
+.training-exercise-trigger:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px
+    color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 24%, transparent);
+}
+
+.training-exercise-trigger[aria-expanded='true'] {
+  color: var(--ta-text, var(--text));
+}
+
+.training-exercise-trigger__hint {
+  border: 1px solid var(--ta-border, var(--border));
+  border-radius: var(--ta-radius-pill, var(--radius-pill));
+  color: var(--ta-text-dim, var(--muted));
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-left: 12px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.training-load-row > td {
+  background: var(--ta-bg, var(--bg));
+  border-bottom: 1px solid var(--ta-border, var(--border));
+  padding: 0 10px 12px;
+  text-align: left;
+}
+
+.training-load-menu.ta-shell {
+  animation: trainingMenuIn var(--ta-duration-component, 400ms) var(--ta-ease, var(--ease-out)) both;
+  background: var(--ta-surface, var(--surface));
+  border: 1px solid var(--ta-border, var(--border));
+  border-radius: 16px;
+  box-shadow:
+    0 18px 44px color-mix(in srgb, var(--ta-bg, var(--bg)) 52%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--ta-text, var(--text)) 4%, transparent);
+  color: var(--ta-text, var(--text));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 12px 0 4px;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.training-load-menu__head {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.training-load-menu__eyebrow {
+  color: var(--ta-calc-accent, var(--accent));
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.training-load-menu__title {
+  color: var(--ta-text, var(--text));
+  font-family: var(
+    --ta-display-font,
+    -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Display',
+    'Inter Display',
+    'Inter',
+    system-ui,
+    sans-serif
+  );
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin-top: 6px;
+}
+
+.training-load-menu__work {
+  align-items: flex-end;
+  border: 1px solid color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 26%, transparent);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 2px;
+  min-width: 112px;
+  padding: 10px 12px;
+}
+
+.training-load-menu__work span {
+  color: var(--ta-text, var(--text));
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.training-load-menu__work small {
+  color: var(--ta-text-muted, var(--muted));
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.training-load-menu .ta-calc-plates {
+  margin: 0;
+}
+
+.training-load-menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Pyramid — full-width rows; descending load shown in weight/reps, not row width */
+.training-working-sets--pyramid {
+  align-items: stretch;
+  gap: var(--space-1);
+  max-width: 100%;
+  padding: var(--space-1) 0 var(--space-2);
+  width: 100%;
+}
+
+.training-working-sets--pyramid .training-working-sets__item {
+  background: var(--overlay-soft, color-mix(in srgb, var(--ta-text, var(--text)) 4%, transparent));
+  border: 1px solid var(--border-subtle, var(--ta-border, var(--border)));
+  border-radius: var(--radius-sm, 8px);
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.training-working-sets--pyramid .training-working-sets__item:first-child {
+  background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 8%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--ta-calc-accent, var(--accent)) 22%,
+    var(--ta-border, var(--border))
+  );
+}
+
+.training-working-sets--pyramid .training-working-sets__set {
+  color: var(--ta-text-dim, var(--text-secondary, var(--muted)));
+}
+
+.training-working-sets--pyramid .training-working-sets__weight {
+  color: var(--ta-text, var(--text));
+  font-weight: 600;
+}
+
+.training-working-sets--pyramid .training-working-sets__reps {
+  color: var(--ta-text-muted, var(--text-secondary, var(--muted)));
+}
+
+.training-load-menu__note {
+  background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 7%, transparent);
+  border: 1px solid var(--ta-border, var(--border));
+  border-radius: 12px;
+  color: var(--ta-text-muted, var(--muted));
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 12px;
+}
+
+.training-warmups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.training-warmups__item {
+  align-items: center;
+  background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 6%, transparent);
+  border: 1px solid var(--ta-border, var(--border));
+  border-radius: 12px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 64px 76px 72px 72px minmax(0, 1fr);
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.training-warmups__label,
+.training-warmups__weight,
+.training-warmups__reps,
+.training-warmups__rest {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.training-warmups__label {
+  color: var(--ta-text-dim, var(--muted));
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.training-warmups__weight {
+  color: var(--ta-text, var(--text));
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.training-warmups__reps,
+.training-warmups__rest,
+.training-warmups__purpose {
+  color: var(--ta-text-muted, var(--muted));
+  font-size: 12px;
+}
+
+@keyframes trainingMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .training-card {
+    overflow: visible;
+  }
+
+  .training-card table.pt,
+  .training-card table.pt tbody,
+  .training-card table.pt tr,
+  .training-card table.pt td {
+    display: block;
+    width: 100%;
+  }
+
+  .training-card table.pt thead {
+    display: none;
+  }
+
+  .training-card table.pt tbody {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .training-card table.pt tr:hover td {
+    background: transparent;
+  }
+
+  .training-card .training-row {
+    border-bottom: 1px solid var(--ta-border, var(--border));
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 8px 10px 10px;
+  }
+
+  .training-card .training-row.is-expanded {
+    background: var(--ta-surface, var(--surface));
+    border-bottom-color: transparent;
+  }
+
+  .training-card .training-row td {
+    border-bottom: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  .training-card .training-row .training-exercise-cell {
+    grid-column: 1 / -1;
+  }
+
+  .training-card .training-row .w-kg,
+  .training-card .training-row .w-sr,
+  .training-card .training-row td:last-child {
+    align-items: baseline;
+    background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 6%, transparent);
+    border: 1px solid var(--ta-border, var(--border));
+    border-radius: 12px;
+    color: var(--ta-text-muted, var(--muted));
+    display: inline-flex;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    gap: 6px;
+    min-height: 36px;
+    padding: 8px 10px;
+  }
+
+  .training-card .training-row .w-kg::before,
+  .training-card .training-row .w-sr::before,
+  .training-card .training-row td:last-child::before {
+    color: var(--ta-text-dim, var(--muted));
+    font-family: var(
+      --ta-display-font,
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      'Inter Display',
+      'Inter',
+      system-ui,
+      sans-serif
+    );
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .training-card .training-row .w-kg::before {
+    content: 'Вес';
+  }
+
+  .training-card .training-row .w-sr::before {
+    content: 'Схема';
+  }
+
+  .training-card .training-row td:last-child::before {
+    content: 'Повт';
+  }
+
+  .training-load-row {
+    border-bottom: 1px solid var(--ta-border, var(--border));
+  }
+
+  .training-load-row > td {
+    border-bottom: 0;
+    padding: 0 10px 14px;
+    width: 100%;
+  }
+
+  .training-load-menu.ta-shell {
+    margin: 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .training-load-menu__head {
+    flex-direction: column;
+  }
+
+  .training-load-menu__work {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .training-warmups__item {
+    grid-template-columns: 64px minmax(0, 1fr) 64px;
+  }
+
+  .training-warmups__rest,
+  .training-warmups__purpose {
+    grid-column: 2 / -1;
+  }
+
+  .training-load-menu .ta-calc-plates__formula {
+    display: flex;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .training-working-sets--pyramid {
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-1) var(--space-2);
+    width: 100%;
+  }
+
+  .training-working-sets--pyramid .training-working-sets__item {
+    border-radius: var(--radius-sm, 8px);
+    gap: var(--space-2);
+    grid-template-columns: 40px minmax(0, 1fr) 68px;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .training-working-sets--pyramid .training-working-sets__reps {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .training-load-menu.ta-shell {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .training-exercise-trigger,
+  .training-exercise-trigger:hover {
+    transition: none !important;
+  }
+}

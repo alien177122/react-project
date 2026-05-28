@@ -1,10 +1,56 @@
 @import './base/variables.css';
 @import './base/reset.css';
+@import './base/ios-adaptation.css';
 @import './layouts/app-layout.css';
-@import './components/app-components.css';
+@import './components/app/app-hero.css';
+@import './components/app/tab-shell.css';
+
+/* ── Modular component styles ─────────────────────────── */
+/* Shared / generic */
+@import './components/shared/hero.css';
+@import './components/shared/inputs.css';
+@import './components/shared/buttons.css';
+@import './components/shared/files.css';
+@import './components/shared/insight.css';
+@import './components/shared/note-box.css';
+@import './components/shared/premium-input.css';
+@import './components/shared/stepper.css';
+@import './components/shared/motion-focus.css';
+
+/* Calculator */
+@import './components/calculator/calc-test-approach.css';
+@import './components/calculator/progression-table.css';
+@import './components/calculator/volume-colors.css';
+@import './components/calculator/exercise-select.css';
+@import './components/calculator/volume-breakdown.css';
+
+/* Training */
+@import './components/training/complete-button.css';
+@import './components/training/training-day-card.css';
+@import './components/training/progression-controls.css';
+@import './components/training/rest-card.css';
+
+/* Auth */
+@import './components/auth/auth.css';
+
+/* SEO / share */
+@import './components/seo/seo.css';
+
+/* Theory */
+@import './components/theory/theory-web.css';
+
+/* Journal */
+@import './components/journal/journal.css';
+
+/* Program v3 */
+@import './components/program-v3/program-v3.css';
+
+/* Split constructor */
+@import './components/split/split-constructor.css';
+
+/* ── Theory Apple theme ───────────────────────────────── */
 @import './components/theory-apple.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-

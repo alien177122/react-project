@@ -1,82 +1,102 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
 
-/**
- * Lightweight URL query-string state, router-free.
- *
- * The project does not use react-router-dom — tab routing is internal
- * React state. This hook lets Calculator persist `?ex=…&w=…&r=…` into
- * the address bar using the History API directly, so:
- *   — refreshing the page restores the form state
- *   — copy/paste of a URL reproduces the same calculation
- *   — the browser Back button steps through parameter changes
- *
- * Write semantics:
- *   — `setValue` mutates the URL via `history.replaceState`, not
- *     `pushState`, so incremental edits (typing into a number field)
- *     do not flood browser history. Callers wanting a back-navigation
- *     checkpoint (e.g. after pressing "Calculate") can call
- *     `commitHistory()` explicitly.
- *
- * Read semantics:
- *   — Cross-hook synchronization uses the `popstate` event (fires on
- *     Back/Forward) plus a custom `urlstatechange` event dispatched
- *     on every in-app write. Without the custom event, two instances
- *     of the hook on the same page would fall out of sync.
- */
 const URL_STATE_EVENT = 'urlstatechange'
+const HISTORY_WRITE_INTERVAL_MS = 150
 
-function readParam(key: string): string | null {
-  if (typeof window === 'undefined') return null
-  return new URLSearchParams(window.location.search).get(key)
+let replaceTimer: number | undefined
+let lastReplaceAt = -HISTORY_WRITE_INTERVAL_MS
+
+function getSearchSnapshot(): string {
+  if (typeof window === 'undefined') return ''
+  return window.location.search
+}
+
+function getServerSnapshot(): string {
+  return ''
+}
+
+function subscribe(onStoreChange: () => void): () => void {
+  if (typeof window === 'undefined') return () => {}
+  window.addEventListener('popstate', onStoreChange)
+  window.addEventListener(URL_STATE_EVENT, onStoreChange)
+  return () => {
+    window.removeEventListener('popstate', onStoreChange)
+    window.removeEventListener(URL_STATE_EVENT, onStoreChange)
+  }
+}
+
+function readParam<T extends string>(search: string, key: string): T | null {
+  return new URLSearchParams(search).get(key) as T | null
+}
+
+function dispatchURLStateChange(): void {
+  window.dispatchEvent(new Event(URL_STATE_EVENT))
+}
+
+function replaceStateThrottled(next: string): void {
+  const now = performance.now()
+  const delay = Math.max(0, HISTORY_WRITE_INTERVAL_MS - (now - lastReplaceAt))
+
+  window.clearTimeout(replaceTimer)
+
+  const write = () => {
+    replaceTimer = undefined
+    lastReplaceAt = performance.now()
+    window.history.replaceState(null, '', next)
+    dispatchURLStateChange()
+  }
+
+  if (delay === 0) {
+    write()
+    return
+  }
+
+  replaceTimer = window.setTimeout(write, delay)
 }
 
 function writeParam(key: string, value: string | null, push: boolean): void {
   if (typeof window === 'undefined') return
+
   const params = new URLSearchParams(window.location.search)
   if (value === null || value === '') {
     params.delete(key)
   } else {
     params.set(key, value)
   }
+
   const query = params.toString()
   const next = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`
-  const method = push ? 'pushState' : 'replaceState'
-  window.history[method](null, '', next)
-  window.dispatchEvent(new Event(URL_STATE_EVENT))
+
+  if (push) {
+    window.clearTimeout(replaceTimer)
+    replaceTimer = undefined
+    window.history.pushState(null, '', next)
+    dispatchURLStateChange()
+    return
+  }
+
+  replaceStateThrottled(next)
 }
 
 export interface URLStateAPI<T extends string> {
   value: T | null
-  /** Replace the param without adding a history entry. */
   setValue: (next: T | null) => void
-  /** Push a history entry with the current URL (use sparingly). */
   commitHistory: () => void
 }
 
 export function useURLState<T extends string = string>(key: string): URLStateAPI<T> {
-  const [value, setLocal] = useState<T | null>(() => readParam(key) as T | null)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const sync = () => setLocal(readParam(key) as T | null)
-    window.addEventListener('popstate', sync)
-    window.addEventListener(URL_STATE_EVENT, sync)
-    return () => {
-      window.removeEventListener('popstate', sync)
-      window.removeEventListener(URL_STATE_EVENT, sync)
-    }
-  }, [key])
+  const search = useSyncExternalStore(subscribe, getSearchSnapshot, getServerSnapshot)
+  const value = readParam<T>(search, key)
 
   const setValue = useCallback(
-    (next: T | null) => {
-      writeParam(key, next, false)
-    },
+    (next: T | null) => writeParam(key, next, false),
     [key],
   )
 
   const commitHistory = useCallback(() => {
     if (typeof window === 'undefined') return
     window.history.pushState(null, '', window.location.href)
+    dispatchURLStateChange()
   }, [])
 
   return { value, setValue, commitHistory }

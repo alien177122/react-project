@@ -1,5 +1,6 @@
 import { memo, useEffect, useId, useRef } from 'react'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
+import { addPassiveScroll } from '../../lib/scroll'
 
 export interface SceneHeroProps {
   /** Small label above the title (e.g. "Calculator", "Theory · 8 глав"). */
@@ -60,6 +61,7 @@ export const SceneHero = memo(function SceneHero({
 
     let rafId = 0
     let active = false
+    let removeScroll: (() => void) | null = null
 
     const tick = () => {
       rafId = 0
@@ -76,11 +78,12 @@ export const SceneHero = memo(function SceneHero({
       ([entry]) => {
         if (entry.isIntersecting && !active) {
           active = true
-          window.addEventListener('scroll', onScroll, { passive: true })
+          removeScroll = addPassiveScroll(window, onScroll)
           tick()
         } else if (!entry.isIntersecting && active) {
           active = false
-          window.removeEventListener('scroll', onScroll)
+          removeScroll?.()
+          removeScroll = null
           if (rafId) cancelAnimationFrame(rafId)
           rafId = 0
         }
@@ -91,7 +94,7 @@ export const SceneHero = memo(function SceneHero({
     io.observe(el)
     return () => {
       io.disconnect()
-      if (active) window.removeEventListener('scroll', onScroll)
+      if (active) removeScroll?.()
       if (rafId) cancelAnimationFrame(rafId)
     }
   }, [reduced])

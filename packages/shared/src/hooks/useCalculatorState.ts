@@ -8,7 +8,7 @@ export interface UseCalculatorStateOptions {
   userName: string
   userData: UserData | null
   setUserData: (value: UserData | null) => void
-  saveUser: (data: UserData, token: string) => Promise<void> | void
+  saveUser: (data: UserData, token: string) => Promise<{ ok: boolean } | void> | void
 }
 
 export function useCalculatorState({

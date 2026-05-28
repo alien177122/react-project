@@ -1,0 +1,99 @@
+/* iOS Safari / iPhone layout and typography baseline */
+
+:root {
+  --font-system:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+  --type-12: 12px;
+  --type-14: 14px;
+  --type-16: 16px;
+  --type-20: 20px;
+  --type-24: 24px;
+  --type-32: 32px;
+  --type-48: 48px;
+  --app-min-height: 100vh;
+  --keyboard-inset: 0px;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-min-height: 100dvh;
+  }
+}
+
+@supports (height: 100svh) {
+  :root {
+    --app-min-height: 100svh;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none; /* iOS-SAFARI: reduce rubber-band conflicts with sticky chrome */
+}
+
+body {
+  font-family: var(--font-system);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: var(--app-min-height);
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  #root {
+    padding-top: max(56px, calc(env(safe-area-inset-top) + 24px));
+    padding-right: max(24px, env(safe-area-inset-right));
+    padding-bottom: max(56px, calc(env(safe-area-inset-bottom) + var(--keyboard-inset)));
+    padding-left: max(24px, env(safe-area-inset-left));
+  }
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: calc(var(--app-min-height) - var(--keyboard-inset));
+  position: relative;
+  z-index: 1;
+}
+
+.app-shell__nav {
+  position: sticky;
+  top: max(var(--space-2), var(--sat));
+  z-index: 30;
+  transform: translateZ(0);
+  overscroll-behavior: contain;
+  width: 100%;
+}
+
+.app-toast {
+  position: sticky;
+  bottom: max(16px, calc(var(--sab) + 8px));
+  z-index: 40;
+  align-self: flex-end;
+  margin: 0;
+  margin-top: auto;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  border: 1px solid var(--red);
+  color: #ffdede;
+  font-size: var(--type-14);
+  font-weight: 500;
+  line-height: 20px;
+  box-shadow: var(--shadow-layered);
+  max-width: min(100%, 360px);
+}
+
+@media (max-width: 600px) {
+  #root {
+    padding-top: max(24px, calc(var(--sat) + 16px));
+    padding-bottom: max(24px, calc(var(--sab) + var(--keyboard-inset)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

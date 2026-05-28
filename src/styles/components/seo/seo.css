@@ -1,0 +1,55 @@
+.ta-share-btn {
+  align-items: center;
+  background: var(--theory-card);
+  border: 1px solid var(--theory-border);
+  border-radius: var(--radius-sm);
+  color: var(--theory-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 500;
+  gap: var(--space-2);
+  letter-spacing: 0.02em;
+  padding: var(--space-2) var(--space-3);
+  transition:
+    border-color var(--duration-micro) var(--ease-micro),
+    background var(--duration-micro) var(--ease-micro);
+}
+
+.ta-share-btn:hover {
+  background: var(--theory-surface);
+  border-color: var(--theory-border-strong);
+}
+
+.ta-share-btn:focus-visible {
+  outline: 2px solid var(--theory-accent);
+  outline-offset: 2px;
+}
+
+.ta-share-btn.is-copied {
+  border-color: var(--ta-meter-strong);
+  color: var(--ta-meter-strong);
+}
+
+.ta-share-btn__icon {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ta-share-btn:hover .ta-share-btn__icon {
+  transform: rotate(-15deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ta-share-btn:hover .ta-share-btn__icon {
+    transform: none;
+  }
+}
+
+.ta-chapter-panel__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

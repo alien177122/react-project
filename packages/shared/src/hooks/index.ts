@@ -1,3 +1,4 @@
-export * from './useCalculatorState.ts'
-export * from './useTrainingProgram.ts'
-export * from './useAuthSession.ts'
+export * from './useCalculatorState.ts';
+export * from './useTrainingProgram.ts';
+export * from './useTrainingProgramV3.ts';
+export * from './useAuthSession.ts';

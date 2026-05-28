@@ -1,0 +1,542 @@
+.progression-controls {
+  background: var(--card);
+  border: 1px solid var(--border-subtle, var(--border));
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+}
+
+.progression-controls__row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  min-height: 36px;
+}
+
+.progression-controls__label {
+  color: var(--text-secondary);
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.progression-controls__actions {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.progression-controls__segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.progression-controls__option {
+  appearance: none;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  min-height: 32px;
+  padding: var(--space-2) var(--space-3);
+  transition:
+    background var(--duration-micro) var(--ease-micro),
+    border-color var(--duration-micro) var(--ease-micro),
+    color var(--duration-micro) var(--ease-micro);
+}
+
+@media (hover: hover) {
+  .progression-controls__option:hover {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  }
+}
+
+.progression-controls__option:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.progression-controls__option.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-raised));
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  color: var(--text-strong);
+}
+
+.progression-pyramid-help {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  gap: var(--space-2);
+  min-height: 32px;
+  padding: var(--space-2) var(--space-3);
+  transition:
+    border-color var(--duration-micro) var(--ease-micro),
+    color var(--duration-micro) var(--ease-micro);
+}
+
+@media (hover: hover) {
+  .progression-pyramid-help:hover {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    color: var(--text);
+  }
+}
+
+.progression-pyramid-help:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.progression-pyramid-help__icon {
+  color: var(--accent);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.progression-dialog-backdrop {
+  align-items: flex-end;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-4);
+  position: fixed;
+  z-index: 1000;
+}
+
+.progression-dialog {
+  animation: progressionDialogIn 280ms var(--ease-out) both;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+  max-height: min(88vh, 640px);
+  max-width: 480px;
+  overflow: auto;
+  padding: var(--space-5);
+  width: 100%;
+}
+
+.progression-dialog__head {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.progression-dialog__eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.progression-dialog__title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: var(--space-1);
+}
+
+.progression-dialog__close {
+  appearance: none;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 36px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.progression-dialog__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.progression-dialog__step {
+  align-items: flex-start;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.progression-dialog__step-num {
+  align-items: center;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.progression-dialog__step h3 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.progression-dialog__step p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: var(--space-1);
+}
+
+.progression-dialog__note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: var(--space-4);
+}
+
+.training-working-sets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.training-working-sets__item {
+  align-items: center;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  border-radius: var(--radius-md);
+  display: grid;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  gap: var(--space-2);
+  grid-template-columns: 48px 1fr 72px;
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.training-working-sets__set {
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.training-working-sets__weight {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.training-working-sets__reps {
+  color: var(--muted);
+  text-align: right;
+}
+
+.training-scheme-pyramid {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+@keyframes progressionDialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Calculator tab preset picker — Theory/calc tokens (see calc-test-approach-standard) */
+.ta-shell--calc-settings .progression-controls.program-settings {
+  --text-primary: var(--ta-text, #f3efe6);
+  --text-secondary: var(--ta-text-muted, #99a1ad);
+  --color-accent: var(--ta-calc-accent, var(--ta-sec-01));
+  --surface-elevated: var(--ta-surface-2, #1c222c);
+  --border-subtle: var(--ta-calc-border, var(--ta-border, #232934));
+  --shadow-elevated:
+    0 1px 0 color-mix(in srgb, #fff 4%, transparent) inset,
+    0 8px 24px -12px color-mix(in srgb, #000 48%, transparent);
+
+  background: var(--ta-calc-surface, var(--ta-surface-1));
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  margin-bottom: var(--space-4);
+  padding: clamp(1rem, 3vw, 1.25rem) clamp(1rem, 3vw, 1.5rem);
+}
+
+.ta-shell--calc-settings .program-settings__label,
+.ta-shell--calc-settings .progression-controls__label {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.ta-shell--calc-settings .progression-controls__option {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: var(--shadow-elevated);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  transition:
+    background 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ta-shell--calc-settings .progression-controls__option:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 35%, var(--border-subtle));
+  }
+}
+
+.ta-shell--calc-settings .progression-controls__option:active {
+  opacity: 0.88;
+  transform: scale(0.99);
+}
+
+.ta-shell--calc-settings .progression-controls__option:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--ta-bg, #0a0a0b),
+    0 0 0 4px color-mix(in srgb, var(--color-accent) 72%, transparent);
+  outline: none;
+}
+
+.ta-shell--calc-settings .progression-controls__option.is-active {
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--surface-elevated));
+  border-color: color-mix(in srgb, var(--color-accent) 50%, var(--border-subtle));
+  color: var(--text-primary);
+}
+
+.ta-shell--calc-settings .program-settings__hint {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Calculator preset picker — aligned label/control columns */
+.program-settings__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.program-settings__field {
+  align-items: start;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(108px, 132px) minmax(0, 1fr);
+}
+
+.program-settings__label {
+  padding-top: var(--space-2);
+}
+
+.program-settings__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.program-settings .progression-controls__actions {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.program-settings__hint {
+  color: var(--text-secondary, var(--muted));
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 52ch;
+}
+
+@media (max-width: 480px) {
+  .progression-controls__row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .progression-controls__actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .program-settings__field {
+    gap: var(--space-2);
+    grid-template-columns: 1fr;
+  }
+
+  .program-settings__label {
+    padding-top: 0;
+  }
+
+  .program-settings__hint {
+    max-width: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .progression-dialog-backdrop {
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progression-dialog {
+    animation: none !important;
+  }
+
+  .ta-shell--calc-settings .progression-controls__option:active {
+    transform: none;
+  }
+}
+
+/* Inline progression preview below preset picker — horizontal sibling of .ta-period etalon */
+.ta-shell--calc-settings .progression-controls.program-settings .progression-preview {
+  background: var(--ta-calc-surface, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--ta-calc-border, var(--ta-border));
+  border-radius: 16px;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-4);
+}
+
+.ta-shell--calc-settings .progression-preview.ta-period {
+  margin-bottom: 0;
+}
+
+.ta-shell--calc-settings .progression-preview .ta-period__bar.is-deload {
+  opacity: 0.55;
+}
+
+.ta-shell--calc-settings .progression-preview .ta-period-week.is-deload {
+  border-left-color: var(--ta-sec-03);
+}
+
+.ta-shell--calc-settings .progression-preview .ta-period-week.is-deload em {
+  color: var(--ta-sec-03);
+}
+
+/* Week listbox: нед / кг / схема / повт / фаза (справа, цвет фазы) */
+.ta-shell--calc-settings .progression-preview .ta-period__weeks--preview {
+  margin-top: var(--space-3);
+}
+
+.ta-shell--calc-settings .progression-preview .ta-period-week {
+  grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
+}
+
+.ta-shell--calc-settings .progression-preview .ta-period-week em {
+  color: var(--phase-color, var(--ta-text-dim));
+  font-size: 14px;
+  font-weight: 600;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .ta-shell--calc-settings .progression-preview .ta-period__weeks--preview {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+
+  .ta-shell--calc-settings .progression-preview .ta-period-week {
+    grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
+    min-width: min(100%, 420px);
+  }
+
+  .ta-shell--calc-settings .progression-preview .ta-period-week em {
+    justify-self: end;
+  }
+}
+
+.ta-shell--calc-settings .progression-preview__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.ta-shell--calc-settings .progression-preview__title {
+  color: var(--ta-text, #f3efe6);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.ta-shell--calc-settings .progression-preview__meta {
+  color: var(--ta-text-muted, #99a1ad);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ta-shell--calc-settings .progression-preview__note {
+  color: var(--ta-text-muted, #99a1ad);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: var(--space-1) 0 0;
+  max-width: 56ch;
+}
+
+.ta-shell--calc-settings .progression-preview__sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

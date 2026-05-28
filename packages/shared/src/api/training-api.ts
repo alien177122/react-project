@@ -1,11 +1,13 @@
-import { EXERCISES } from '../data/exercises.ts'
 import type { FileWorkspaceResponse, UserData } from '../types/index.ts'
+import { normalizeLoadedUser } from '../utils/api.ts'
 import {
   ApiNetworkError,
   ApiTimeoutError,
   ApiUnauthorizedError,
   type ApiClient,
 } from './client.ts'
+
+export { normalizeLoadedUser }
 
 export interface AuthRequestBody {
   name: string
@@ -16,75 +18,6 @@ export interface AuthResponse {
   token?: string
   name?: string
   error?: string
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-}
-
-function positiveNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
-}
-
-function positiveInteger(value: unknown): number | null {
-  return Number.isInteger(value) && Number(value) > 0 ? Number(value) : null
-}
-
-function nonNegativeInteger(value: unknown): number | null {
-  return Number.isInteger(value) && Number(value) >= 0 ? Number(value) : null
-}
-
-function isKnownExerciseKey(exerciseKey: string): boolean {
-  return Object.prototype.hasOwnProperty.call(EXERCISES, exerciseKey)
-}
-
-export function normalizeLoadedUser(input: unknown, fallbackName: string): UserData {
-  if (!isRecord(input)) return { name: fallbackName, exercises: [] }
-
-  const name = typeof input.name === 'string' && input.name.trim()
-    ? input.name.trim()
-    : fallbackName
-
-  const exercises = Array.isArray(input.exercises)
-    ? input.exercises.flatMap(exercise => {
-      if (!isRecord(exercise)) return []
-
-      const exerciseKey = typeof exercise.exerciseKey === 'string' ? exercise.exerciseKey.trim() : ''
-      const date = typeof exercise.date === 'string' ? exercise.date.trim() : ''
-      if (!exerciseKey || !date || !isKnownExerciseKey(exerciseKey)) return []
-
-      const testWeight = positiveNumber(exercise.testWeight)
-      const testReps = positiveInteger(exercise.testReps)
-      const oneRM = positiveNumber(exercise.oneRM)
-
-      if (testWeight === null || testReps === null || oneRM === null) return []
-
-      return [{
-        exerciseKey,
-        testWeight,
-        testReps,
-        oneRM,
-        date,
-        ...(positiveNumber(exercise.bodyWeight) !== null
-          ? { bodyWeight: positiveNumber(exercise.bodyWeight)! }
-          : {}),
-      }]
-    })
-    : []
-
-  const completedSessions = isRecord(input.trainingProgress)
-    ? nonNegativeInteger(input.trainingProgress.completedSessions)
-    : null
-
-  if (completedSessions !== null) {
-    return {
-      name,
-      exercises,
-      trainingProgress: { completedSessions },
-    }
-  }
-
-  return { name, exercises }
 }
 
 function normalizeProtectedApiError(error: unknown): Error {

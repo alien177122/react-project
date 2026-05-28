@@ -210,7 +210,7 @@ test('normalizeLoadedUser keeps only valid exercises and progress payloads', () 
   })
 })
 
-test('shared session loadUser returns fallback data on backend and network failures', async t => {
+test('shared session loadUser does not replace saved data with empty fallback on backend and network failures', async t => {
   const originalFetch = globalThis.fetch
   t.after(() => {
     globalThis.fetch = originalFetch
@@ -223,19 +223,13 @@ test('shared session loadUser returns fallback data on backend and network failu
     headers: { 'Content-Type': 'text/plain' },
   })) as typeof fetch
 
-  assert.deepEqual(await sessionClient.loadUser('Steve', 'token'), {
-    name: 'Steve',
-    exercises: [],
-  })
+  await assert.rejects(() => sessionClient.loadUser('Steve', 'token'), /Не удалось загрузить данные пользователя|broken/)
 
   globalThis.fetch = (async () => {
     throw new Error('Network error')
   }) as typeof fetch
 
-  assert.deepEqual(await sessionClient.loadUser('Steve', 'token'), {
-    name: 'Steve',
-    exercises: [],
-  })
+  await assert.rejects(() => sessionClient.loadUser('Steve', 'token'), /Network error/)
 })
 
 test('shared session loadUser returns null when auth is expired', async t => {

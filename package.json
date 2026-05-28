@@ -15,6 +15,7 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b --noEmit",
     "icons:generate": "node scripts/generate-pwa-icons.mjs",
+    "og:generate": "node scripts/generate-og-images.mjs",
     "desktop": "node scripts/desktop-dev.mjs",
     "desktop:dir": "node scripts/desktop-build.mjs --dir",
     "desktop:pack": "node scripts/desktop-build.mjs",
@@ -39,7 +40,8 @@
     "files:analyze": "node scripts/files-analyze.mjs",
     "files:watch": "node scripts/files-watch.mjs",
     "ollama:pull-glm-ocr": "ollama pull glm-ocr",
-    "test": "node --test --experimental-strip-types tests/**/*.test.ts"
+    "test": "node --test --experimental-strip-types tests/**/*.test.ts",
+    "seed:journal-demo": "node scripts/seed-journal-demo.mjs"
   },
   "dependencies": {
     "@training/shared": "0.1.0",
@@ -55,6 +57,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.59.1",
     "@types/cors": "^2",
     "@types/express": "^5",
     "@types/jsonwebtoken": "^9",

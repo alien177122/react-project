@@ -1,0 +1,31 @@
+/* PROGRESSION TABLE */
+table.pt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+table.pt th {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+  padding: 6px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+table.pt th:first-child { text-align: left; }
+table.pt td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #1c1c1c;
+  text-align: center;
+}
+table.pt tr:last-child td { border-bottom: none; }
+@media (hover: hover) and (pointer: fine) {
+  table.pt tr:hover td { background: #1e1e1e; }
+}
+.w-label { color: var(--muted); font-size: 12px; }
+.w-kg { font-family: 'Courier New', monospace; font-weight: 600; color: var(--text-strong); }
+.w-sr { font-family: 'Courier New', monospace; color: #999; }
+.w-sr b { color: var(--text-strong); }
+

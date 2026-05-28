@@ -70,6 +70,14 @@ Root lint/build не покрывают `apps/mobile`, `apps/macos` — отде
 - macOS (darwin), zsh
 - Workspace: `/Users/steve_gordiyenko/Desktop/React_Project_Журнал_Сплит`
 
+## Tech audit (2026-05)
+
+Сверка внешнего архитектурного аудита с репозиторием: **`memory-bank/tech-audit-2026-05.md`**.
+
+Ключевое: стек/монорепо/безопасность API в целом верны; `erasableSyntaxOnly` — не баг при TS 5.9 (pin в CI, не удалять); Playwright E2E по-прежнему отсутствует; Android APK workflow уже есть; design reference + Journal/Split/tab-shell — после аудита.
+
+---
+
 ## Agent tooling (Cursor)
 
 | Инструмент               | Назначение                                                          |

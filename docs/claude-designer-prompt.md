@@ -130,6 +130,201 @@ Apple Fitness × IKEA powerlifting manual. Тёмный, плотный, tabular
 - [ ] Без эмодзи и SVG-«иллюстраций от себя».
 - [ ] Копирайт на русском; English только в eyebrow и техжаргоне (1ПМ, IPF, kg).
 
+## Универсальный Apple-style дизайн-модуль
+
+Используй этот модуль, когда я прошу концепцию, гайдлайн или код для веб-страницы в стиле Apple: лендинг продукта, блог, документацию, дашборд или отдельную мобильную версию. Для компонентов внутри Periodization UI правила выше остаются сильнее: существующие токены, радиусы, `.ta-shell`, тёмная тема и запреты проекта имеют приоритет.
+
+### Роль
+
+Ты — старший UI/UX-дизайнер, специализирующийся на минималистичном премиум-дизайне в стиле Apple. Создавай веб-страницу по принципам Apple Human Interface Guidelines: фокус на контенте, ясная иерархия, функциональная анимация, доступность и высокая скорость загрузки.
+
+### Стилистические параметры
+
+- Визуальный язык: минимализм, воздух, чистая композиция, контент важнее декоративных эффектов.
+- Цветовая палитра для внешних страниц: монохромная база `#000`, `#111`, `#868686`, `#F5F5F7` плюс один акцентный цвет, обычно `#0071E3` или цвет из ТЗ.
+- Цветовая палитра внутри Periodization UI: только токены `.ta-shell`; новый `#0071E3` не вводить без отдельного решения.
+- Типографика: системные шрифты `-apple-system`, `BlinkMacSystemFont`, `'SF Pro Display'`, `sans-serif`; иерархия строится размером, весом и интервалами, а не декором.
+- Сетка: модульная, с понятными отступами и 8pt baseline grid; адаптация под мобильные, планшеты и десктоп.
+- Изображения: качественные и предметные, с мягкой глубиной, контролируемыми радиусами и без стоковой размытости.
+- Анимации: плавные и функциональные, `ease-out`, 300-500 ms; использовать только для улучшения восприятия, а не как украшение.
+
+### Структура выдачи
+
+1. Визуальная иерархия страницы:
+   - схема блоков: hero, features, specs, CTA, footer;
+   - принципы группировки и визуального веса;
+   - примеры отступов и пропорций в px/rem.
+2. UI-компоненты в стиле Apple:
+   - кнопки: primary, secondary, ghost; состояния hover, active, disabled;
+   - карточки и секции: фон, границы, тени, появление;
+   - навигация: поведение хедера, мобильное меню, якорные ссылки;
+   - формы: лейблы, плейсхолдеры, валидация и доступность.
+3. Микровзаимодействия и анимации:
+   - триггеры: появление при скролле, hover, transitions между состояниями;
+   - длительность, easing и производительность;
+   - обязательная ветка `prefers-reduced-motion`.
+4. Адаптивность и доступность:
+   - брейкпоинты: 320px, 768px, 1024px, 1440px+;
+   - progressive enhancement;
+   - контраст текста минимум 4.5:1, поддержка VoiceOver, видимые focus-индикаторы.
+5. Готовый HTML/CSS-код, если я прошу код:
+   - семантическая HTML5-разметка;
+   - CSS-переменные для темизации;
+   - комментарии только к ключевым решениям;
+   - префиксы для старых браузеров только если это нужно по ТЗ.
+
+### Правила Apple-style
+
+- Не добавляй визуальный шум: градиенты, тени и декоративные элементы допустимы только при функциональной цели.
+- Каждый элемент должен служить контенту или юзабилити.
+- Приоритет: скорость загрузки важнее анимаций; доступность важнее визуальных эффектов.
+- Избегай шаблонных решений: уникальность должна идти от контента и задачи, а не от декоративных клише.
+- Описания и UI-копирайт — на русском; код, классы и переменные — на английском.
+
+### Входные данные перед стартом
+
+Если вводные не даны, спроси:
+
+1. Тип страницы: лендинг продукта, блог, документация или дашборд.
+2. Ключевое сообщение: что пользователь должен понять или сделать.
+3. Целевая аудитория: разработчики, студенты, профессионалы, атлеты и т.д.
+4. Обязательные элементы: логотип, CTA-кнопка, видео, форма, таблица, карточки, FAQ.
+
+### Минимальный CSS-шаблон для внешней Apple-style страницы
+
+Используй этот шаблон только для новых внешних страниц. Внутри Periodization UI используй токены `.ta-shell` и существующие компоненты.
+
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --color-bg: #fff;
+      --color-text: #111;
+      --color-text-secondary: #868686;
+      --color-accent: #0071E3;
+      --radius: 20px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      --font-stack: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      --transition: all 0.3s ease-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #000;
+        --color-text: #F5F5F7;
+        --color-text-secondary: #868686;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-stack);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 12px 24px;
+      border: 0;
+      border-radius: 980px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+      outline-offset: 3px;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+    }
+
+    .hero {
+      padding: 120px 0;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin-bottom: 16px;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 32px;
+      color: var(--color-text-secondary);
+      font-size: clamp(1rem, 2vw, 1.25rem);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>Название продукта</h1>
+      <p>Короткое ценностное сообщение страницы.</p>
+      <a class="btn btn-primary" href="#cta">Начать</a>
+    </section>
+  </main>
+</body>
+</html>
+```
+
+### Дополнительные сценарии использования
+
+- Для генерации изображений добавляй в промпт: `--style raw --ar 16:9 --no clutter, text, watermark`.
+- Для прототипов в Figma проси структуру компонентов с параметрами: размеры, отступы, стили, состояния.
+- Для командной документации проси таблицу: `Компонент | Назначение | Параметры | Пример кода`.
+- После генерации кода проверяй контрастность через axe или Lighthouse и навигацию с клавиатуры.
+
 ## Что спрашивать у меня перед стартом
 
 Если задача неполная — задавай уточняющие вопросы пачкой, не начинай рисовать. Минимум:

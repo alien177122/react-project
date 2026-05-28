@@ -1,7 +1,7 @@
 :root {
   /* Base palette (dark default) */
-  --bg: #0d0d0d;
-  --surface: #141414;
+  --bg: #0a0a0b;
+  --surface: #141415;
   --surface-raised: #1d1d1d;
   --card: #1a1a1a;
   --border: #252525;
@@ -15,7 +15,8 @@
   --orange: #ff9f40;
 
   /* Text */
-  --text: #e0e0d8;
+  --text: #e8e8e9;
+  --text-secondary: #9a9a9c;
   --text-strong: #ffffff;
   --text-soft: #cccccc;
   --text-placeholder: #555555;
@@ -71,6 +72,12 @@
   --duration-medium: 400ms;
   --duration-long: 600ms;
 
+  /* iOS Safari safe-area insets. Requires viewport-fit=cover. */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+
   /* Shadows (3-layer Apple-style) */
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.12);
   --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.18);
@@ -88,4 +95,13 @@
   --theory-accent: #f07a43;
   --theory-accent-soft: rgba(240, 122, 67, 0.1);
   --theory-accent-border: rgba(240, 122, 67, 0.32);
+
+  /* Password strength meter */
+  --ta-meter-weak: #ef4444;
+  --ta-meter-fair: #f59e0b;
+  --ta-meter-good: #3b82f6;
+  --ta-meter-strong: #22c55e;
+  --ta-focus-glow: rgba(59, 130, 246, 0.2);
+  --ta-error: #ef4444;
+  --ta-text-muted: var(--theory-muted);
 }

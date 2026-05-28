@@ -1,0 +1,27 @@
+/* HERO */
+.hero {
+  border-left: 3px solid var(--accent);
+  padding: 0 0 0 28px;
+  margin-bottom: 48px;
+}
+.hero-label {
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--text-strong);
+}
+.hero p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  max-width: 520px;
+}
+

@@ -68,7 +68,13 @@ export default function PeriodizationChart({
       </div>
 
       <div className="ta-period__scroll">
-        <svg className="ta-period__svg" viewBox={viewBox} role="img" aria-labelledby="period-title period-desc">
+        <svg
+          className="ta-period__svg"
+          viewBox={viewBox}
+          preserveAspectRatio="none"
+          role="img"
+          aria-labelledby="period-title period-desc"
+        >
           <title id="period-title">График периодизации</title>
           <desc id="period-desc">
             8 недель: интенсивность в процентах и объём в повторениях. Неделя 5 — разгрузка.

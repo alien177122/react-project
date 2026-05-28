@@ -1,6 +1,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
+* { -webkit-tap-highlight-color: transparent; }
 
 html, body, #root { min-height: 100%; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: max(80px, calc(var(--sat) + 64px));
+  scroll-padding-bottom: max(40px, var(--sab));
+}
 
 body {
   background: var(--bg);
@@ -9,15 +17,66 @@ body {
   font-weight: 300;
   line-height: 1.6;
   min-height: 100vh;
+  min-height: 100svh;
   /* iPhone Safari base hygiene: avoid horizontal scroll from edge glows
      and prevent text size from auto-bumping in landscape. */
   overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
 }
 
 /* Form controls inherit font so iOS Safari doesn't fall back to a
    different system font on inputs/buttons. */
 input, textarea, button, select { font: inherit; }
+
+input:not([type='checkbox']):not([type='radio']),
+textarea,
+select {
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'] {
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+}
+
+a,
+button,
+[role='button'],
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+button,
+[role='button'] {
+  -webkit-touch-callout: none;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  button:focus,
+  [role='button']:focus {
+    outline: none;
+  }
+
+  button:focus-visible,
+  [role='button']:focus-visible {
+    outline: 2px solid var(--accent);
+  }
+}
 
 /* ── Ambient glow orbs ───────────────────────────────── */
 body::before,
@@ -27,7 +86,6 @@ body::after {
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  will-change: transform, opacity;
 }
 
 /* Orb 1 — top-right warm orange, slow drift */
@@ -85,24 +143,31 @@ body::after {
 #root {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 56px 24px;
-  /* Honour iPhone notch / home-indicator safe areas without changing
-     desktop layout. `viewport-fit=cover` in <meta name="viewport"> is
-     required for these env() values to be non-zero. */
-  padding-left: max(24px, env(safe-area-inset-left));
-  padding-right: max(24px, env(safe-area-inset-right));
+  padding-top: max(56px, calc(var(--sat) + 24px));
+  padding-right: max(24px, var(--sar));
+  padding-bottom: max(56px, var(--sab));
+  padding-left: max(24px, var(--sal));
   position: relative;
   z-index: 1;
 }
 
 @media (max-width: 600px) {
   #root {
-    padding-top: max(24px, env(safe-area-inset-top));
-    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    padding-top: max(24px, calc(var(--sat) + 16px));
+    padding-bottom: max(24px, var(--sab));
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
   body::before,
   body::after {
     animation: none;

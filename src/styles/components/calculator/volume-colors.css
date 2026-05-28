@@ -1,0 +1,10 @@
+/* Volume colour coding */
+.v-hi { color: var(--orange); font-weight: 600; }
+.v-md { color: #aaa; }
+.v-lo { color: var(--red); font-weight: 600; }
+
+/* Deload row */
+.rr td { background: var(--deload-bg) !important; }
+.rr td:first-child { border-left: 2px solid var(--green); padding-left: 8px; }
+.rr .w-label { color: var(--green); }
+

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useReducedMotion } from '../hooks/useReducedMotion'
+import { addPassiveScroll } from '../lib/scroll'
 
 interface TheoryHeroProps {
   onCTAClick?: (target: 'basics' | 'tiers') => void
@@ -23,10 +24,10 @@ export function TheoryHero({ onCTAClick }: TheoryHeroProps) {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(tick)
     }
-    window.addEventListener('scroll', onScroll, { passive: true })
+    const removeScroll = addPassiveScroll(window, onScroll)
     tick()
     return () => {
-      window.removeEventListener('scroll', onScroll)
+      removeScroll()
       cancelAnimationFrame(raf)
     }
   }, [reduced])
@@ -37,7 +38,7 @@ export function TheoryHero({ onCTAClick }: TheoryHeroProps) {
       <div className="ta-hero-glow" aria-hidden="true" />
 
       <div className="ta-hero-content">
-        <span className="ta-hero-eyebrow">Theory · 8 глав</span>
+        <span className="ta-hero-eyebrow">Theory · 10 глав</span>
         <h1 id="ta-hero-title" className="ta-hero-title">
           Теория
           <br />
@@ -45,7 +46,7 @@ export function TheoryHero({ onCTAClick }: TheoryHeroProps) {
         </h1>
         <p className="ta-hero-sub">
           Прогрессия, mTOR, tier-лист добавок и ключевые ориентиры — в одном
-          справочном разделе. Восемь коротких глав, каждая со своим акцентом.
+          справочном разделе. Десять коротких глав, каждая со своим акцентом.
         </p>
 
         <div className="ta-hero-cta">

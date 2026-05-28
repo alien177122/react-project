@@ -1,6 +1,7 @@
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { tokens } from '@/theme/tokens';
 
@@ -26,16 +27,18 @@ const navigationTheme = {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider value={navigationTheme}>
-      <StatusBar style="light" backgroundColor={tokens.colors.bg} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: tokens.colors.bg },
-        }}
-      >
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={navigationTheme}>
+        <StatusBar style="light" backgroundColor={tokens.colors.bg} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: tokens.colors.bg },
+          }}
+        >
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:release": "scripts/android-release.sh",
     "dev": "node ./scripts/dev.mjs",
     "ios": "react-native run-ios",
     "lint": "ESLINT_USE_FLAT_CONFIG=false ./node_modules/.bin/eslint --ext .js,.ts,.tsx .",
@@ -13,6 +14,9 @@
     "start:macos": "react-native start",
     "typecheck": "tsc --noEmit",
     "test": "jest"
+  },
+  "android": {
+    "versionCode": 1
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.0.2",

@@ -57,7 +57,10 @@ export default function LoginScreen() {
           style={styles.keyboard}
         >
           <ScrollView
-            contentContainerStyle={styles.content}
+            contentContainerStyle={[
+              styles.content,
+              Platform.OS === 'web' && styles.contentWeb,
+            ]}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
@@ -153,15 +156,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    alignItems: 'center',
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 32,
     rowGap: 28,
+    width: '100%',
+  },
+  contentWeb: {
+    justifyContent: 'flex-start',
+    paddingBottom: 96,
+    paddingTop: 160,
   },
 
   // Large Title hero
   hero: {
     rowGap: 6,
+    width: '100%',
+    maxWidth: 520,
   },
   heroEyebrow: {
     color: theme.colors.orange,
@@ -188,9 +201,13 @@ const styles = StyleSheet.create({
   formCard: {
     backgroundColor: '#1C1C1E',
     borderRadius: 16,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
     overflow: 'hidden',
     padding: 20,
     rowGap: 20,
+    width: '100%',
+    maxWidth: 520,
   },
 
   // iOS Segmented Control

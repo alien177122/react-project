@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1450,6 +1450,13 @@ interface TrainingTabProps {
 }
 
 function TrainingTab({ userData, token, setUserData, allSaved, missingExercises, setActiveTab }: TrainingTabProps) {
+  // ⚡ Bolt: Reduced O(N*M) lookups to O(1) by indexing exercises by key
+  const exercisesByKey = useMemo(() => {
+    const map = new Map<string, SavedExercise>()
+    for (const ex of userData.exercises) map.set(ex.exerciseKey, ex)
+    return map
+  }, [userData])
+
   const completedSessions = userData.trainingProgress?.completedSessions ?? 0
   const currentDayIdx  = completedSessions % 3
   const currentWeekIdx = Math.floor(completedSessions / 3)
@@ -1461,7 +1468,7 @@ function TrainingTab({ userData, token, setUserData, allSaved, missingExercises,
   function getTrainingExercises(dayIdx: number, weekIdx: number) {
     return TRAINING_DAYS[dayIdx].exerciseKeys.map(key => {
       const cfg = EXERCISES[key]
-      const saved = userData.exercises.find(e => e.exerciseKey === key)
+      const saved = exercisesByKey.get(key)
       if (!saved) return null
       const totalWeight = calcWorkingWeight(saved.oneRM, cfg.percentages[weekIdx], cfg)
       const scheme = cfg.weekSchemes[weekIdx]
@@ -1582,12 +1589,17 @@ function App() {
     }
   }, [userName, token])
 
+  // ⚡ Bolt: Reduced O(N*M) lookups to O(1) by caching user exercise keys in a Set
+  const savedExerciseKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedExerciseKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

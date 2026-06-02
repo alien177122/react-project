@@ -1,0 +1,3 @@
+## 2026-06-02 - Eliminate O(N*M) lookups in React loops
+**Learning:** Found instances where arrays were being traversed via `.some()`, `.every()`, or `.find()` directly inside of other iterations like `.filter()` or `.map()` (e.g. `App.tsx` and `ExerciseWheel.tsx`). In React component renders, this leads to an O(N*M) runtime complexity which can compound if the loops trigger frequently on state updates or prop changes.
+**Action:** When performing existence checks or mapping data against an array within a loop, use `useMemo` to extract the inner array into a `Set` or `Map` to perform $O(1)$ lookups instead, effectively turning the runtime complexity into O(N).

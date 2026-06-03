@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1582,12 +1582,17 @@ function App() {
     }
   }, [userName, token])
 
-  const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+  // ⚡ Bolt: Reduced O(N*M) existence check inside render by pre-computing a Set of saved exercise keys for O(1) lookups
+  const savedExerciseKeys = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData])
+
+  const allSaved = userData != null
+    ? Object.keys(EXERCISES).every(k => savedExerciseKeys.has(k))
     : false
 
   const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
+    .filter(([k]) => !savedExerciseKeys.has(k))
     .map(([, ex]) => ex.name)
 
   function handleLogout() {

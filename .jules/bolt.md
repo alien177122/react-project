@@ -1,0 +1,3 @@
+## 2024-05-24 - React O(N*M) Array Lookups Optimization
+**Learning:** In React components (like `App`, `ExerciseWheel`, `TrainingTab`), mapping over arrays and using `.find()` or `.some()` inside the map or loop callback leads to $O(N \times M)$ time complexity, which causes performance issues especially on every re-render when $N$ and $M$ grow.
+**Action:** Always use `useMemo` to pre-process the array being searched into a `Map` or `Set` (using the lookup keys) before the render loop. This reduces the complexity to $O(N + M)$ and subsequent lookups to $O(1)$, maintaining React's reactivity guarantees. Ensure `useMemo` uses correct dependency arrays.

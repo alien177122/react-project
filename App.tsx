@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -1582,13 +1582,20 @@ function App() {
     }
   }, [userName, token])
 
+  // ⚡ Bolt: Reduce O(N*M) existence checks to O(1) by caching saved exercise keys in a Set
+  const savedKeysSet = useMemo(() => {
+    return new Set(userData?.exercises.map(e => e.exerciseKey) || [])
+  }, [userData])
+
   const allSaved = userData
-    ? Object.keys(EXERCISES).every(k => userData.exercises.some(e => e.exerciseKey === k))
+    ? Object.keys(EXERCISES).every(k => savedKeysSet.has(k))
     : false
 
-  const missingExercises = Object.entries(EXERCISES)
-    .filter(([k]) => !userData?.exercises.some(e => e.exerciseKey === k))
-    .map(([, ex]) => ex.name)
+  const missingExercises = useMemo(() => {
+    return Object.entries(EXERCISES)
+      .filter(([k]) => !savedKeysSet.has(k))
+      .map(([, ex]) => ex.name)
+  }, [savedKeysSet])
 
   function handleLogout() {
     localStorage.removeItem('gym_token')

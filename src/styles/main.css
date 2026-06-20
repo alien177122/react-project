@@ -1,4 +1,5 @@
 @import './base/variables.css';
+@import './base/light-theme.css';
 @import './base/reset.css';
 @import './base/ios-adaptation.css';
 @import './layouts/app-layout.css';
@@ -16,6 +17,7 @@
 @import './components/shared/premium-input.css';
 @import './components/shared/stepper.css';
 @import './components/shared/motion-focus.css';
+@import './components/shared/theme-toggle.css';
 
 /* Calculator */
 @import './components/calculator/calc-test-approach.css';

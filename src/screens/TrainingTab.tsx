@@ -52,7 +52,7 @@ export default function TrainingTab(props: TrainingTabProps) {
       <HeroSection
         label="Training"
         title="Программа тренировок"
-        subtitle={props.programSubtitle ?? '8 недель · 3 дня в неделю · волновая прогрессия'}
+        subtitle={props.programSubtitle ?? '8 недель · 2 дня в неделю · волновая прогрессия'}
       />
       <div className="theory-stack">
         <TrainingStateRouter

@@ -1,7 +1,17 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-* { -webkit-tap-highlight-color: transparent; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
 
-html, body, #root { min-height: 100%; }
+html,
+body,
+#root {
+  min-height: 100%;
+}
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -25,7 +35,12 @@ body {
 
 /* Form controls inherit font so iOS Safari doesn't fall back to a
    different system font on inputs/buttons. */
-input, textarea, button, select { font: inherit; }
+input,
+textarea,
+button,
+select {
+  font: inherit;
+}
 
 input:not([type='checkbox']):not([type='radio']),
 textarea,
@@ -99,7 +114,7 @@ body::before {
   background: radial-gradient(
     circle at center,
     rgba(240, 122, 67, 0.22) 0%,
-    rgba(240, 122, 67, 0.10) 38%,
+    rgba(240, 122, 67, 0.1) 38%,
     transparent 68%
   );
   filter: blur(55px);
@@ -125,24 +140,55 @@ body::after {
 }
 
 @keyframes orbDrift1 {
-  0%   { transform: translate(0,      0)     scale(1);    opacity: 0.82; }
-  20%  { transform: translate(-4vw,   3vh)   scale(1.07); opacity: 1;    }
-  45%  { transform: translate( 3vw,  -5vh)   scale(0.95); opacity: 0.88; }
-  70%  { transform: translate(-2vw,   7vh)   scale(1.04); opacity: 0.94; }
-  100% { transform: translate( 5vw,  -2vh)   scale(1.06); opacity: 0.86; }
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.82;
+  }
+  20% {
+    transform: translate(-4vw, 3vh) scale(1.07);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(3vw, -5vh) scale(0.95);
+    opacity: 0.88;
+  }
+  70% {
+    transform: translate(-2vw, 7vh) scale(1.04);
+    opacity: 0.94;
+  }
+  100% {
+    transform: translate(5vw, -2vh) scale(1.06);
+    opacity: 0.86;
+  }
 }
 
 @keyframes orbDrift2 {
-  0%   { transform: translate(0,      0)     scale(1);    opacity: 0.72; }
-  25%  { transform: translate( 5vw,  -4vh)   scale(1.09); opacity: 0.92; }
-  55%  { transform: translate(-3vw,   5vh)   scale(0.93); opacity: 0.78; }
-  80%  { transform: translate( 4vw,  -6vh)   scale(1.05); opacity: 0.88; }
-  100% { transform: translate(-5vw,   2vh)   scale(1.03); opacity: 0.82; }
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.72;
+  }
+  25% {
+    transform: translate(5vw, -4vh) scale(1.09);
+    opacity: 0.92;
+  }
+  55% {
+    transform: translate(-3vw, 5vh) scale(0.93);
+    opacity: 0.78;
+  }
+  80% {
+    transform: translate(4vw, -6vh) scale(1.05);
+    opacity: 0.88;
+  }
+  100% {
+    transform: translate(-5vw, 2vh) scale(1.03);
+    opacity: 0.82;
+  }
 }
 
 #root {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding-top: max(56px, calc(var(--sat) + 24px));
   padding-right: max(24px, var(--sar));
   padding-bottom: max(56px, var(--sab));

@@ -17,9 +17,11 @@ dist-ssr
 .env.docker
 docker-data/
 gym.db
+gym.db.*
 *.sqlite
 .blackbox/
 workspace-files/
+.skillspector-reports/
 
 # Local personal notes / scratch briefs
 TODO.md
@@ -39,3 +41,9 @@ CLAUDE.md
 *.njsproj
 *.sln
 *.sw?&#10;# VS Code settings excludes&#10;**/ios/Pods&#10;**/ios/build&#10;**/android/build&#10;**/android/.gradle&#10;**/.expo
+
+# Local dev caches and credentials (never commit)
+.sofa/
+.vite/
+.playwright-mcp/
+scripts/__pycache__/

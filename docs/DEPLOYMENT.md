@@ -1,0 +1,130 @@
+# Deployment
+
+How to run Training Calculator outside local development.
+
+## Quick local run
+
+```bash
+bun install
+bun run dev
+```
+
+- Frontend: http://localhost:5173
+- API: http://localhost:3002
+
+## Environment variables
+
+Copy examples and fill secrets locally (never commit real `.env` files):
+
+| File                                  | Purpose                        |
+| ------------------------------------- | ------------------------------ |
+| `.env.docker.example` → `.env.docker` | Docker Compose stack           |
+| `.env.public.example` → `.env.public` | Cloudflare tunnel / public dev |
+| `.env.production.example`             | Production API reference       |
+
+### Required for production API
+
+| Variable            | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `JWT_SECRET`        | Long random string for signing JWTs                   |
+| `PORT` / `APP_PORT` | API listen port (default 3001 or 3002 in dev scripts) |
+| `DB_PATH`           | Optional path to SQLite file                          |
+
+### Required for production frontend build
+
+| Variable       | Description                                           |
+| -------------- | ----------------------------------------------------- |
+| `VITE_API_URL` | Full API base URL, e.g. `https://api.example.com/api` |
+
+Vite inlines `VITE_*` at **build time**. Rebuild and redeploy after changing `VITE_API_URL`.
+
+## Docker (full stack)
+
+```bash
+cp .env.docker.example .env.docker
+# Edit JWT_SECRET in .env.docker
+
+bun run docker:up
+```
+
+App: http://127.0.0.1:3001 (or `APP_PORT` from `.env.docker`)
+
+Persistence:
+
+- `./docker-data/gym.db` — database
+- `./workspace-files/` — uploaded files
+
+```bash
+bun run docker:status
+bun run docker:logs
+bun run docker:down
+```
+
+## Vercel (frontend only)
+
+The Express + SQLite backend **does not** run on Vercel.
+
+1. Deploy API separately (VPS, Railway, Fly.io, Docker host).
+2. Configure CORS on the API for your Vercel domain.
+3. Set `VITE_API_URL=https://<api-host>/api` in Vercel project settings.
+4. Build command: `bun run build`
+5. Output directory: `dist`
+
+Without `VITE_API_URL`, the deployed site loads but API calls fail (404 on `/api`).
+
+## Production API + static frontend
+
+Serve `dist/` from Express when built:
+
+```bash
+bun run build
+PORT=3001 JWT_SECRET=<secret> node server/index.js
+```
+
+The server serves static files from `dist/` when present (`server/app.js`).
+
+## iPhone PWA
+
+1. Deploy frontend over HTTPS.
+2. Open in Safari → Share → Add to Home Screen.
+3. Icons and manifest: `public/manifest.webmanifest`, `public/icons/`.
+
+Offline service worker is not enabled yet; network is required for API calls.
+
+## Desktop (macOS)
+
+```bash
+bun run desktop
+bun run desktop:pack
+```
+
+Packaged data paths:
+
+- `~/Library/Application Support/Training Calculator/data/gym.db`
+- `~/Library/Application Support/Training Calculator/workspace-files`
+
+## Public tunnel (development only)
+
+Temporary internet access for local stack — **not** production hosting:
+
+```bash
+cp .env.public.example .env.public
+bun run public:stable
+```
+
+See root [README.md](../README.md) for Cloudflare tunnel setup.
+
+## Health check
+
+```bash
+curl http://127.0.0.1:3002/api/health
+# {"ok":true}
+```
+
+## Security checklist
+
+- [ ] Strong `JWT_SECRET` in production
+- [ ] CORS limited to known origins
+- [ ] HTTPS everywhere
+- [ ] `gym.db` backups on server, not in git
+- [ ] Rate limits enabled (default in `server/app.js`)

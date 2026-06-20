@@ -95,7 +95,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 8%, transparent);
 }
 
 /* === Hover micro-interactions === */
@@ -109,7 +109,7 @@
   transform: translate3d(0, -4px, 0);
   box-shadow:
     0 12px 24px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 0 0 1px color-mix(in srgb, var(--text) 5%, transparent);
 }
 
 /* === Reduced motion === */

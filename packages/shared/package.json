@@ -46,6 +46,10 @@
     "./data/split-muscles": "./src/data/split-muscles.ts",
     "./data/split-exercises": "./src/data/split-exercises.ts",
     "./types/security": "./src/types/security.ts",
-    "./utils/passwordValidation": "./src/utils/passwordValidation.ts"
+    "./utils/passwordValidation": "./src/utils/passwordValidation.ts",
+    "./data/exercise-slots": "./src/data/exercise-slots.ts",
+    "./hooks/useJournalProgressChart": "./src/hooks/useJournalProgressChart.ts",
+    "./utils/journalSession": "./src/utils/journalSession.ts",
+    "./utils/optimisticSave": "./src/utils/optimisticSave.ts"
   }
 }

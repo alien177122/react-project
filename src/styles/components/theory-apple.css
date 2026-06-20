@@ -7,28 +7,28 @@
 .ta-shell {
   /* Section accents */
   --ta-sec-01: #ff9f40;
-  --ta-sec-01-tint: color-mix(in srgb, var(--ta-sec-01) 6%, #0a0a0b);
+  --ta-sec-01-tint: color-mix(in srgb, var(--ta-sec-01) 6%, var(--ta-bg));
   --ta-sec-02: #5ba4ff;
-  --ta-sec-02-tint: color-mix(in srgb, var(--ta-sec-02) 6%, #0a0a0b);
+  --ta-sec-02-tint: color-mix(in srgb, var(--ta-sec-02) 6%, var(--ta-bg));
   --ta-sec-03: #3affb8;
-  --ta-sec-03-tint: color-mix(in srgb, var(--ta-sec-03) 6%, #0a0a0b);
+  --ta-sec-03-tint: color-mix(in srgb, var(--ta-sec-03) 6%, var(--ta-bg));
   --ta-sec-04: #d946ef;
-  --ta-sec-04-tint: color-mix(in srgb, var(--ta-sec-04) 6%, #0a0a0b);
+  --ta-sec-04-tint: color-mix(in srgb, var(--ta-sec-04) 6%, var(--ta-bg));
   --ta-sec-05: #94a3b8;
-  --ta-sec-05-tint: color-mix(in srgb, var(--ta-sec-05) 6%, #0a0a0b);
+  --ta-sec-05-tint: color-mix(in srgb, var(--ta-sec-05) 6%, var(--ta-bg));
   --ta-sec-06: #ff6b6b;
-  --ta-sec-06-tint: color-mix(in srgb, var(--ta-sec-06) 6%, #0a0a0b);
+  --ta-sec-06-tint: color-mix(in srgb, var(--ta-sec-06) 6%, var(--ta-bg));
   --ta-sec-07: #2dd4bf;
-  --ta-sec-07-tint: color-mix(in srgb, var(--ta-sec-07) 6%, #0a0a0b);
+  --ta-sec-07-tint: color-mix(in srgb, var(--ta-sec-07) 6%, var(--ta-bg));
   --ta-sec-08: #a78bfa;
-  --ta-sec-08-tint: color-mix(in srgb, var(--ta-sec-08) 6%, #0a0a0b);
+  --ta-sec-08-tint: color-mix(in srgb, var(--ta-sec-08) 6%, var(--ta-bg));
   --ta-sec-09: #fbbf24;
-  --ta-sec-09-tint: color-mix(in srgb, var(--ta-sec-09) 6%, #0a0a0b);
+  --ta-sec-09-tint: color-mix(in srgb, var(--ta-sec-09) 6%, var(--ta-bg));
   --ta-sec-10: #6366f1;
-  --ta-sec-10-tint: color-mix(in srgb, var(--ta-sec-10) 6%, #0a0a0b);
+  --ta-sec-10-tint: color-mix(in srgb, var(--ta-sec-10) 6%, var(--ta-bg));
 
   /* Surfaces */
-  --ta-bg: #0a0c10;
+  --ta-bg: var(--ta-bg);
   --ta-surface: #151a22;
   --ta-surface-2: #1c222c;
   --ta-border: rgba(148, 163, 184, 0.14);
@@ -78,14 +78,14 @@
   background:
     radial-gradient(ellipse 60% 40% at 8% 0%, rgba(255, 159, 64, 0.1), transparent 50%),
     radial-gradient(ellipse 50% 35% at 95% 100%, rgba(167, 139, 250, 0.08), transparent 55%),
-    linear-gradient(180deg, var(--ta-bg) 0%, #0c0f15 100%);
+    linear-gradient(180deg, var(--ta-bg) 0%, var(--ta-surface) 100%);
   border-radius: var(--ta-radius-outer);
   border: 1px solid var(--ta-border);
   color: var(--ta-text);
   overflow: hidden;
   box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 28px 70px color-mix(in srgb, var(--ta-text) 32%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--ta-text) 3%, transparent);
   font-feature-settings: 'tnum';
 }
 
@@ -102,7 +102,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(10, 12, 16, 0.78);
+  background: color-mix(in srgb, var(--ta-bg) 78%, transparent);
   border-bottom: 1px solid var(--ta-border);
   padding: 14px 24px 12px;
 }
@@ -113,7 +113,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: rgba(148, 163, 184, 0.15);
+  background: color-mix(in srgb, var(--ta-text-muted) 15%, transparent);
   overflow: hidden;
 }
 .ta-nav-progress-fill {
@@ -137,7 +137,7 @@
   height: 36px;
   border-radius: var(--ta-radius-pill);
   border: 1.5px solid transparent;
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--ta-text) 5%, transparent);
   color: var(--ta-text-muted);
   font-size: 12px;
   font-weight: 600;
@@ -155,7 +155,7 @@
   padding: 0;
 }
 .ta-nav-dot:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--ta-text) 10%, transparent);
   color: var(--ta-text);
 }
 .ta-nav-dot:focus-visible {
@@ -165,7 +165,7 @@
 .ta-nav-dot.is-active {
   background: var(--ta-dot-accent, var(--ta-sec-01));
   border-color: var(--ta-dot-accent, var(--ta-sec-01));
-  color: #0a0c10;
+  color: var(--ta-bg);
   transform: scale(1.08);
 }
 
@@ -325,12 +325,12 @@
   box-shadow: 0 0 0 3px rgba(255, 159, 64, 0.4);
 }
 .ta-btn-glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--ta-text) 10%, transparent);
   color: var(--ta-text);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: color-mix(in srgb, var(--ta-text) 15%, transparent);
 }
 .ta-btn-glass:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--ta-text) 16%, transparent);
   transform: translateY(-2px);
 }
 .ta-btn-outline {
@@ -493,7 +493,7 @@
 
 .ta-chapter-card__num {
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--ta-text) 5%, transparent);
   border: 1px solid var(--ta-border);
   border-radius: 16px;
   color: var(--ta-text-muted);
@@ -511,7 +511,7 @@
   animation: ta-chapter-num-pulse 720ms var(--ta-ease) both;
   background: var(--ta-card-accent);
   border-color: var(--ta-card-accent);
-  color: #0a0c10;
+  color: var(--ta-bg);
 }
 
 @keyframes ta-chapter-num-pulse {
@@ -591,7 +591,7 @@
 
 .ta-chapter-panel__head {
   align-items: flex-start;
-  background: linear-gradient(180deg, var(--ta-panel-tint), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(180deg, var(--ta-panel-tint), color-mix(in srgb, var(--ta-text) 2%, transparent));
   border-bottom: 1px solid var(--ta-border);
   display: flex;
   gap: 24px;
@@ -611,7 +611,7 @@
 }
 
 .ta-chapter-panel__close {
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--ta-text) 6%, transparent);
   border: 1px solid var(--ta-border);
   border-radius: var(--ta-radius-pill);
   color: var(--ta-text);
@@ -631,7 +631,7 @@
 }
 
 .ta-chapter-panel__close:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--ta-text) 12%, transparent);
   border-color: var(--ta-panel-accent);
   color: var(--ta-panel-accent);
   transform: translateY(-1px);
@@ -833,7 +833,7 @@
   height: 38px;
   border-radius: 12px;
   background: var(--ta-sec, var(--ta-sec-01));
-  color: #0a0c10;
+  color: var(--ta-bg);
   font-weight: 600;
   font-size: 16px;
   font-feature-settings: 'tnum';
@@ -870,7 +870,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ta-sec, var(--ta-sec-01));
-  background: rgba(0, 0, 0, 0.32);
+  background: color-mix(in srgb, var(--ta-text) 32%, transparent);
   padding: 4px 10px;
   border-radius: var(--ta-radius-pill);
   z-index: 1;
@@ -1151,9 +1151,9 @@
   font-size: 24px;
   font-weight: 600;
   background: var(--ta-tier-color, var(--ta-sec-03));
-  color: #0a0c10;
+  color: var(--ta-bg);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 1px 0 color-mix(in srgb, var(--ta-text) 25%, transparent),
     0 6px 16px rgba(0, 0, 0, 0.35);
   position: relative;
   z-index: 1;
@@ -1180,7 +1180,7 @@
   gap: 6px;
 }
 .ta-tier-chip {
-  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--ta-text) 4%, transparent);
   border: 1px solid var(--ta-border);
   border-radius: var(--ta-radius-pill);
   color: var(--ta-text);
@@ -1396,7 +1396,7 @@
   gap: 12px;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid color-mix(in srgb, var(--ta-text) 4%, transparent);
 }
 .ta-bar-row:last-child {
   border-bottom: none;
@@ -1458,14 +1458,14 @@
   gap: 14px;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid color-mix(in srgb, var(--ta-text) 4%, transparent);
   transition: background 0.2s var(--ta-ease-micro);
 }
 .ta-rpe-row:last-child {
   border-bottom: none;
 }
 .ta-rpe-row:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--ta-text) 2%, transparent);
 }
 .ta-rpe-num {
   font-family: var(--ta-display-font);
@@ -1479,7 +1479,7 @@
   font-size: 12px;
   color: var(--ta-text-muted);
   text-align: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--ta-text) 4%, transparent);
   padding: 4px 8px;
   border-radius: var(--ta-radius-pill);
 }
@@ -1798,7 +1798,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--ta-radius-pill);
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--ta-text) 6%, transparent);
   border: 1px solid var(--ta-border);
   color: var(--ta-text);
   font-size: 16px;
@@ -1813,7 +1813,7 @@
   padding: 0;
 }
 .ta-carousel-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--ta-text) 12%, transparent);
   border-color: var(--ta-sec, var(--ta-sec-08));
   color: var(--ta-sec, var(--ta-sec-08));
 }
@@ -3337,7 +3337,7 @@
 
 .ta-shell .ta-calc-plates__plate {
   fill: var(--plate-color);
-  stroke: rgba(10, 12, 16, 0.5);
+  stroke: color-mix(in srgb, var(--ta-bg) 50%, transparent);
   stroke-width: 1;
   transform-box: fill-box;
   transform-origin: center;
@@ -3377,7 +3377,7 @@
 
 .ta-shell .ta-calc-plates__legend-item {
   align-items: center;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--ta-text) 2%, transparent);
   border: 1px solid var(--ta-calc-border);
   border-radius: 8px;
   color: var(--ta-text-muted);
@@ -3389,7 +3389,7 @@
 
 .ta-shell .ta-calc-plates__legend-swatch {
   background: var(--plate-color, var(--ta-calc-accent));
-  border: 1px solid rgba(10, 12, 16, 0.5);
+  border: 1px solid color-mix(in srgb, var(--ta-bg) 50%, transparent);
   border-radius: 8px;
   display: inline-block;
   flex-shrink: 0;
@@ -3476,7 +3476,7 @@
 }
 
 .ta-shell .ta-period__grid {
-  stroke: rgba(255, 255, 255, 0.05);
+  stroke: color-mix(in srgb, var(--ta-text) 5%, transparent);
   stroke-width: 1;
 }
 
@@ -3861,7 +3861,7 @@
   padding: 14px 18px;
   border: 1px solid var(--ta-border);
   border-radius: var(--ta-radius-card);
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--ta-text) 2%, transparent);
   font-size: 12px;
   color: var(--ta-text-muted);
 }
@@ -3886,7 +3886,7 @@
     color 0.2s var(--ta-ease-micro);
 }
 .ta-shell .ta-see-also-link:hover {
-  background: var(--ta-sec-tint, rgba(255, 255, 255, 0.06));
+  background: var(--ta-sec-tint, color-mix(in srgb, var(--ta-text) 6%, transparent));
   border-color: var(--ta-sec, var(--ta-border-strong));
   color: var(--ta-text);
 }

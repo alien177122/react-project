@@ -1,11 +1,10 @@
 import type {ProgressionPreset, TestResult, TestWeekNumber} from '../../types/index.ts';
 import {calc1RM, ceilToStep} from '../../utils/calc.ts';
 import {getPhaseDisplayLabel} from '../progressionPreview.ts';
-import {getWeekScheduleV3} from '../progressionPresets.ts';
+import {getWeekScheduleV3, type WeekLoadKind} from './weekSchedule.ts';
 import {EXERCISES_V3} from './exercises.ts';
 import {calcWorkingWeightV3, getPrescription, type PrescriptionStatus} from './prescription.ts';
 import {getTestAnchorWeek, getTestResultForExercise} from './testWeeks.ts';
-import {type WeekLoadKind} from './weekSchedule.ts';
 
 export interface ProgramV3DraftInput {
   weight: number;
@@ -59,7 +58,7 @@ function getSimulatedAnchorTest(
     return {weight: draft.weight, reps: draft.reps};
   }
 
-  const row = getWeekScheduleV3('strength').find(r => r.week === anchorWeek);
+  const row = getWeekScheduleV3().find(r => r.week === anchorWeek);
   if (row?.loadKind === 'test' && row.percent != null && draftOneRM != null) {
     return {
       weight: calcTestWeekPreviewWeight(draftOneRM, row.percent, step),
@@ -102,9 +101,9 @@ export interface BuildProgramV3ChartRowsOptions {
 export function buildProgramV3ChartRows(
   options: BuildProgramV3ChartRowsOptions,
 ): ProgramV3ChartRow[] {
-  const {exerciseKey, testResults, draft, progressionPreset = 'strength'} = options;
+  const {exerciseKey, testResults, draft, progressionPreset = 'general'} = options;
   const config = EXERCISES_V3[exerciseKey];
-  const schedule = getWeekScheduleV3(progressionPreset);
+  const schedule = getWeekScheduleV3();
 
   const draftOneRM =
     draft && draft.weight > 0 && draft.reps >= 1
@@ -226,7 +225,7 @@ export function buildProgramV3ChartRows(
       isTestWeek: false,
       weightDisplay,
       isPreviewWeight,
-      phaseLabel: getPhaseDisplayLabel(previewWeek, 'strength'),
+      phaseLabel: getPhaseDisplayLabel(previewWeek, 'general'),
     };
   });
 }

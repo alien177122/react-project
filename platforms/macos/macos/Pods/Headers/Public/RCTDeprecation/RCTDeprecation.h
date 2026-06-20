@@ -1,0 +1,1 @@
+../../../../../node_modules/react-native-macos/ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported/RCTDeprecation.h

@@ -11,8 +11,8 @@ import {resolveProgramSettings} from '../resolveProgramSettings.ts';
 import {EXERCISES_V3, TRAINING_DAYS_V3} from './exercises.ts';
 import {getPrescription} from './prescription.ts';
 
-export function getTrainingDaysV3(daysPerWeek: 3 | 4 = 4) {
-  return TRAINING_DAYS_V3.slice(0, daysPerWeek);
+export function getTrainingDaysV3(daysPerWeek: number = 4) {
+  return TRAINING_DAYS_V3.slice(0, Math.min(daysPerWeek, TRAINING_DAYS_V3.length));
 }
 
 export function getTrainingExercisesV3(

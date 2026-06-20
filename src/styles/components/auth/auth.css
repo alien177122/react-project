@@ -56,8 +56,8 @@
 }
 
 .auth-motion__bar {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
   border-radius: 8px;
   height: 32px;
   max-width: 28px;
@@ -171,7 +171,7 @@
 }
 
 .auth-card {
-  background: #1c1c1e;
+  background: var(--card);
   border: none;
   border-radius: 16px;
   padding: 24px;
@@ -179,7 +179,7 @@
 }
 .auth-tabs {
   display: flex;
-  background: rgba(118, 118, 128, 0.24);
+  background: var(--surface-raised);
   border-bottom: none;
   border-radius: 8px;
   gap: 0;
@@ -190,7 +190,7 @@
   background: none;
   border: none;
   border-radius: 8px;
-  color: #8e8e93;
+  color: var(--muted);
   cursor: pointer;
   flex: 1;
   font-family: 'Inter', sans-serif;
@@ -210,7 +210,7 @@
   }
 }
 .auth-tab-active {
-  background: #3a3a3c;
+  background: var(--surface-raised);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   color: var(--text-strong);
 }
@@ -223,7 +223,7 @@
   background: none;
   border: none;
   border-radius: 0;
-  color: #ff453a;
+  color: var(--red);
   font-size: 12px;
   padding: 0;
 }
@@ -252,7 +252,7 @@
 }
 
 .ta-password-input {
-  background: rgba(118, 118, 128, 0.18);
+  background: var(--surface-raised);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   color: var(--text-strong);
@@ -347,7 +347,7 @@
 }
 
 .ta-password-meter__segment {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--text) 8%, transparent);
   border-radius: 999px;
   height: 4px;
 }

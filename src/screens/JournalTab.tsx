@@ -30,7 +30,7 @@ export function JournalTab({userData, setUserData, token, onSaveError}: JournalT
   });
 
   const activeExercise = EXERCISES[exerciseKey];
-  const historyWithoutToday = journal.history.filter(session => session.date !== journal.today);
+  const history = journal.history;
 
   return (
     <main className="app-tab-shell app-tab-shell--journal" aria-labelledby="journal-page-title">
@@ -89,12 +89,12 @@ export function JournalTab({userData, setUserData, token, onSaveError}: JournalT
           <h2 id="journal-history-title" className="app-tab-section__title">
             История
           </h2>
-          {historyWithoutToday.length > 0 ? (
-            <span className="app-tab-section__meta">{historyWithoutToday.length} записей</span>
+          {history.length > 0 ? (
+            <span className="app-tab-section__meta">{history.length} записей</span>
           ) : null}
         </div>
         <JournalSessionList
-          sessions={historyWithoutToday}
+          sessions={history}
           onEdit={journal.loadSessionIntoDraft}
           onDelete={id => void journal.deleteSession(id)}
         />

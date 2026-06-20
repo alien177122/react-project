@@ -1,0 +1,81 @@
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.theme-toggle__track {
+  display: flex;
+  align-items: center;
+  width: 56px;
+  height: 32px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  transition: background var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out);
+}
+
+.theme-toggle__thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--text-strong);
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: transform var(--duration-short) var(--ease-out),
+    background var(--duration-micro) var(--ease-out);
+}
+
+.theme-toggle__thumb.is-light {
+  transform: translateX(0);
+}
+
+.theme-toggle__thumb.is-dark {
+  transform: translateX(24px);
+}
+
+.theme-toggle:hover .theme-toggle__track {
+  border-color: var(--accent);
+}
+
+.theme-toggle:active .theme-toggle__thumb {
+  transform: scale(0.92);
+}
+
+.theme-toggle:active .theme-toggle__thumb.is-dark {
+  transform: translateX(24px) scale(0.92);
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+}
+
+.theme-toggle:focus-visible .theme-toggle__track {
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle__track,
+  .theme-toggle__thumb {
+    transition: none !important;
+  }
+}
+
+/* Auth stage theme positioning (legacy, now unused but kept for reference) */
+.auth-stage__theme {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: auto;
+}

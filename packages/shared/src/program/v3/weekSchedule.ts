@@ -49,6 +49,10 @@ export function getWeekScheduleRow(programWeek: number): WeekScheduleRow | undef
   return WEEK_SCHEDULE_V3.find(row => row.week === programWeek);
 }
 
+export function getWeekScheduleV3(): WeekScheduleRow[] {
+  return WEEK_SCHEDULE_V3;
+}
+
 /** Human-readable sets×reps; test weeks after W4 are one set to failure (1×?). */
 export function formatWeekScheme(
   row: Pick<WeekScheduleRow, 'loadKind' | 'week' | 'sets' | 'reps'>,

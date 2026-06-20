@@ -21,6 +21,7 @@
   --text-soft: #cccccc;
   --text-placeholder: #555555;
   --muted: #666;
+  --text-inverse: #ffffff;
 
   /* Insight / note box (warm tint) */
   --insight-bg: #1a100b;

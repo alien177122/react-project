@@ -20,7 +20,7 @@
   font-family: 'Bebas Neue', sans-serif;
   font-size: 32px;
   letter-spacing: 0.05em;
-  color: #fff;
+  color: var(--text-strong);
 }
 
 /* USER BAR */
@@ -59,7 +59,7 @@
 .user-bar-name {
   font-size: 14px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-strong);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -73,8 +73,8 @@
   text-transform: none;
 }
 .user-bar .btn-ghost {
-  background: rgba(255, 255, 255, 0.035);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-subtle);
+  border-color: var(--border-subtle);
   color: var(--text-soft);
 }
 @media (max-width: 672px) {
@@ -84,9 +84,9 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .user-bar .btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.14);
-    color: #fff;
+    background: var(--overlay-soft);
+    border-color: var(--border);
+    color: var(--text-strong);
   }
 }
 
@@ -381,7 +381,7 @@
   font-family: 'Bebas Neue', sans-serif;
   font-size: 24px;
   letter-spacing: 0.05em;
-  color: #fff;
+  color: var(--text-strong);
   margin-bottom: 8px;
 }
 .locked-desc {
@@ -400,7 +400,7 @@
 }
 .locked-missing-item {
   font-size: 12px;
-  color: #ff4d4d;
+  color: var(--red);
   font-weight: 400;
 }
 
@@ -575,10 +575,6 @@
 
 /* iPad portrait. */
 @media (min-width: 768px) and (max-width: 1024px) {
-  #root {
-    max-width: 720px;
-  }
-
   .theory-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

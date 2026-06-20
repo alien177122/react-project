@@ -16,6 +16,7 @@ import type {AuthResult} from '../types/auth.ts';
 import {JOURNAL_LIMITS} from './journalLimits.ts';
 
 const AUTH_EXPIRED = 'AUTH_EXPIRED';
+const API_UNAVAILABLE = 'API_UNAVAILABLE';
 const LOAD_USER_FAILED = 'Не удалось загрузить данные пользователя';
 
 function decodeBase64Url(value: string): string {
@@ -365,6 +366,11 @@ export function createApiClient(baseUrl: string) {
       }
 
       if (!response.ok) throw new Error(LOAD_USER_FAILED);
+
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(API_UNAVAILABLE);
+      }
 
       return normalizeLoadedUser(await response.json(), name);
     } catch (error) {

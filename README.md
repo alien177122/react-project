@@ -13,7 +13,7 @@ API server only:
 JWT_SECRET='your-secret' npm run server
 ```
 
-`npm run dev` runs Vite on `http://127.0.0.1:5173` and proxies `/api/*` to whatever `VITE_API_PROXY_TARGET` (or `API_PROXY_TARGET`) points to — defaults to `http://127.0.0.1:3001`. Run `npm run server` in a separate terminal so the dev frontend has a real backend to talk to.
+`npm run dev` starts the gym API (default `:3002`) and Vite on `http://127.0.0.1:5173`, proxying `/api/*` to `VITE_API_PROXY_TARGET` / `API_PROXY_TARGET` (default `http://127.0.0.1:3002`). Port `3001` is often taken by Uptime Kuma on this machine — use `npm run server` with `PORT=3002` if you start the API separately.
 
 ## Build & preview
 
@@ -245,5 +245,5 @@ curl https://your-hostname.example.com/api/health
 Both should return:
 
 ```json
-{"ok":true}
+{"ok": true}
 ```

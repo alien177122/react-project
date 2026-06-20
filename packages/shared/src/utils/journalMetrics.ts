@@ -49,3 +49,11 @@ export function deltaLastWeeks(points: ChartPoint[], weeks = 4): number | null {
   if (earlier == null) return null;
   return Math.round((latest - earlier) * 10) / 10;
 }
+
+export function sessionHasWeights(session: {sets: JournalSet[]}): boolean {
+  return session.sets.some(set => set.weight > 0 && set.reps > 0);
+}
+
+export function sessionTotalReps(sets: JournalSet[]): number {
+  return sets.reduce((sum, set) => sum + set.reps, 0);
+}

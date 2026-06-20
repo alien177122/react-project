@@ -59,35 +59,13 @@ export const HeroSection = memo(function HeroSection({
   const headerClass = `theory-hero${className ? ` ${className}` : ''}`;
 
   if (isAppHero) {
-    if (reduced) {
-      return (
-        <header className={`${headerClass} app-hero--live`} role="region">
-          <AppHeroBody
-            label={label}
-            title={title}
-            subtitle={subtitle}
-            onTitleClick={onTitleClick}
-          />
-        </header>
-      );
-    }
-
     return (
-      <motion.header
-        className={`${headerClass} app-hero--live`}
+      <header
+        className={`${headerClass}${reduced ? '' : ' app-hero--live'}`}
         role="region"
-        initial={{opacity: 0}}
-        animate={{opacity: 1}}
-        transition={{duration: 0.45, ease: appleEase}}>
-        <AppHeroBody
-          label={label}
-          title={title}
-          subtitle={subtitle}
-          onTitleClick={onTitleClick}
-          animated
-          titleWhileTap={isInteractive ? {scale: 0.98, transition: tapSpring} : undefined}
-        />
-      </motion.header>
+        aria-labelledby="app-hero-title">
+        <AppHeroBody label={label} title={title} subtitle={subtitle} onTitleClick={onTitleClick} />
+      </header>
     );
   }
 

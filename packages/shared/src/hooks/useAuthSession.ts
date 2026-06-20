@@ -90,9 +90,14 @@ export function useAuthSession({storage, apiBaseUrl}: AuthSessionOptions) {
         setUserName('');
         setUserData(null);
       })
-      .catch(() => {
+      .catch(error => {
         if (cancelled) return;
-        setSessionError('Не удалось загрузить данные. Проверь, что API-сервер запущен.');
+        const isApiUnavailable = error instanceof Error && error.message === 'API_UNAVAILABLE';
+        setSessionError(
+          isApiUnavailable
+            ? 'API недоступен. Запусти npm run dev — поднимет сервер на :3002 (порт 3001 часто занят).'
+            : 'Не удалось загрузить данные. Проверь, что API-сервер запущен.',
+        );
       });
 
     return () => {

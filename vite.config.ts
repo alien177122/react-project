@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { fileURLToPath, URL } from 'node:url'
+import {defineConfig} from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import {fileURLToPath, URL} from 'node:url';
 
 const apiProxyTarget =
   process.env.VITE_API_PROXY_TARGET?.trim() ||
   process.env.API_PROXY_TARGET?.trim() ||
-  'http://127.0.0.1:3001'
+  'http://127.0.0.1:3002';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -32,4 +32,4 @@ export default defineConfig({
   build: {
     target: 'safari15',
   },
-})
+});

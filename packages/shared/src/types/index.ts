@@ -78,17 +78,19 @@ export interface TestResult {
   date: string;
 }
 
-/** Two Excel tracks: Program 2.0 (general) vs Program 3.0 (strength). */
-export type ProgressionPreset = 'general' | 'strength';
+/** Single calculator track: optimal wave progression (Program 2.0). */
+export type ProgressionPreset = 'general';
+
+export const PROGRAM_DAYS_PER_WEEK = 2 as const;
 
 export interface ProgramSettings {
   progressionPreset: ProgressionPreset;
-  daysPerWeek: 3 | 4;
+  daysPerWeek: typeof PROGRAM_DAYS_PER_WEEK;
 }
 
 export const DEFAULT_PROGRAM_SETTINGS: ProgramSettings = {
   progressionPreset: 'general',
-  daysPerWeek: 3,
+  daysPerWeek: PROGRAM_DAYS_PER_WEEK,
 };
 
 export type ProgressionMode = 'linear' | 'pyramid';

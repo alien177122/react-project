@@ -1,6 +1,6 @@
 import type {TestResult, ProgressionPreset} from '../../types/index.ts';
 import {calc1RM, ceilToStep} from '../../utils/calc.ts';
-import {getWeekScheduleV3} from '../progressionPresets.ts';
+import {getWeekScheduleV3} from './weekSchedule.ts';
 import {EXERCISES_V3} from './exercises.ts';
 import {getTestAnchorWeek, getTestResultForExercise} from './testWeeks.ts';
 import {type WeekLoadKind, formatWeekScheme} from './weekSchedule.ts';
@@ -51,8 +51,7 @@ export function getPrescription(
   ctx: PrescriptionContext = {},
 ): Prescription {
   const config = EXERCISES_V3[exerciseKey];
-  const preset = ctx.progressionPreset ?? 'strength';
-  const weekRow = getWeekScheduleV3(preset).find(row => row.week === programWeek);
+  const weekRow = getWeekScheduleV3().find(row => row.week === programWeek);
 
   if (!config || !weekRow) {
     return {weight: null, sets: 0, reps: 0, status: 'manual'};

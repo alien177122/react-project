@@ -1,14 +1,5 @@
 import {AnimatePresence, motion, useReducedMotion} from 'framer-motion';
-import type {
-  ActiveProgram,
-  ProgramSettings,
-  SavedExercise,
-  TrainingDayDef,
-  TrainingPreferences,
-  UserData,
-} from '../../types';
-import CalculatorTabV3 from '../../screens/CalculatorTabV3';
-import type {TrainingExerciseRow} from '../../utils/training';
+import type {ProgramSettings, SavedExercise, TrainingPreferences, UserData} from '../../types';
 import CalculatorTab from '../../screens/CalculatorTab';
 import {JournalTab} from '../../screens/JournalTab';
 import {SplitConstructorTab} from '../../screens/SplitConstructorTab';
@@ -16,10 +7,10 @@ import TrainingTab from '../../screens/TrainingTab';
 import TheoryTab from '../TheoryTab';
 import ProgressionPresetPicker from '../calculator/ProgressionPresetPicker';
 import type {AppTab} from './tabs';
+import type {TrainingExerciseRow} from '../../utils/training';
 
 interface TabPanelProps {
   activeTab: AppTab;
-  activeProgram: ActiveProgram;
   userData: UserData;
   programSettings: ProgramSettings;
   onProgramSettingsChange: (patch: Partial<ProgramSettings>) => void;
@@ -70,14 +61,12 @@ interface TabPanelProps {
     trainingPreferences: TrainingPreferences;
     updateTrainingPreferences: (patch: Partial<TrainingPreferences>) => void;
     totalSessions?: number;
-    trainingDays?: TrainingDayDef[];
     programSubtitle?: string;
   };
 }
 
 export function TabPanel({
   activeTab,
-  activeProgram,
   userData,
   programSettings,
   onProgramSettingsChange,
@@ -87,7 +76,6 @@ export function TabPanel({
   split,
 }: TabPanelProps) {
   const reduceMotion = useReducedMotion();
-  const calculatorBodyKey = `calculator-body-${activeProgram}`;
   const panelKey = activeTab;
 
   return (
@@ -99,28 +87,20 @@ export function TabPanel({
       ) : null}
       <AnimatePresence initial={false} mode="wait">
         <motion.div
-          key={activeTab === 'calculator' ? calculatorBodyKey : panelKey}
+          key={panelKey}
           initial={reduceMotion ? false : {opacity: 0, y: 8}}
           animate={{opacity: 1, y: 0}}
           exit={reduceMotion ? undefined : {opacity: 0, y: -4}}
           transition={reduceMotion ? {duration: 0} : {duration: 0.2, ease: [0.4, 0, 0.2, 1]}}>
-          {activeTab === 'calculator' &&
-            (activeProgram === '3.0' ? (
-              <CalculatorTabV3 userData={userData} programSettings={programSettings} />
-            ) : (
-              <CalculatorTab
-                userData={userData}
-                programSettings={programSettings}
-                {...calculator}
-              />
-            ))}
+          {activeTab === 'calculator' && (
+            <CalculatorTab userData={userData} programSettings={programSettings} {...calculator} />
+          )}
           {activeTab === 'theory' && <TheoryTab />}
           {activeTab === 'training' && (
             <TrainingTab
               userData={userData}
               {...training}
-              totalSessions={training.totalSessions ?? 24}
-              trainingDays={training.trainingDays}
+              totalSessions={training.totalSessions ?? 16}
               programSubtitle={training.programSubtitle}
             />
           )}

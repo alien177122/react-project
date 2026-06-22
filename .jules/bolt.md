@@ -1,0 +1,3 @@
+## 2025-02-18 - Optimize allSaved and missingExercises lookups
+**Learning:** Found an $O(N \times M)$ existence check in React rendering logic (`.some()` inside `.every()` and `.filter()`) causing redundant checks on every component update. While generic React performance tips exist, optimizing operations derived from constant module data requires ensuring edge cases are properly handled without losing reactivity on user data changes.
+**Action:** Use `useMemo` combined with an internal `Set` cache to reduce lookup complexity to $O(1)$. Ensure proper null/undefined handling to prevent regressions. Always include a comment prefix `⚡ Bolt:` for specific algorithms choices.

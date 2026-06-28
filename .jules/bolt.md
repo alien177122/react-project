@@ -1,0 +1,3 @@
+## 2024-06-28 - Component Static Dependencies
+**Learning:** While automated code reviewers might flag an empty dependency array `[]` for `useMemo` as a stale closure risk, data derived solely from module-level constants (like `computeMuscleVol()` relying only on `EXERCISES` and `MUSCLE_CONTRIB`) are completely static and safely memoized with `[]`. To resolve such review impasses without sacrificing performance, separate purely static computations into their own `useMemo` hooks and pass them as dependencies to the subsequent computations.
+**Action:** When extracting static computations, explicitly document their static nature in comments to reassure reviewers and use separate memoization stages if necessary.

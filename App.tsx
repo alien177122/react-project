@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './src/App.css'
 import { calc1RM } from './src/utils/calculations'
 
@@ -716,44 +716,59 @@ function donutArc(cx: number, cy: number, ro: number, ri: number, s: number, e: 
 
 function VolumeDonut() {
   const [hov, setHov] = useState<string | null>(null)
-  const vol = computeMuscleVol()
-  const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
-
-  const SEG_GAP = 1.5, CAT_GAP = 5
-  const usable = 360 - CAT_GAP * 3
 
   interface DonutSeg {
     muscle: string; value: number; pct: number
     startDeg: number; endDeg: number; catKey: string
   }
-  const segs: DonutSeg[] = []
-  let deg = -90
 
-  for (const catKey of CAT_ORDER) {
-    const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
-    const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
-    const catDegTotal = (catVol / total) * usable
-    const mUsable = catDegTotal - SEG_GAP * (muscles.length - 1)
-    for (let i = 0; i < muscles.length; i++) {
-      const m = muscles[i], mVol = vol[m] || 0
-      const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
-      segs.push({ muscle: m, value: mVol, pct: (mVol / total) * 100, startDeg: deg, endDeg: deg + mDeg, catKey })
-      deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
+  // ⚡ Bolt: Memoize purely static volume computations.
+  const vol = useMemo(() => computeMuscleVol(), [])
+
+  // ⚡ Bolt: Memoize volume calculations and consolidate multiple mapping/filtering passes over muscles/categories into a single loop to avoid O(N) recalculations on high-frequency hover interactions.
+  const { total, segs, catArcs, catVols } = useMemo(() => {
+    const total = MUSCLE_ORDER.reduce((s, m) => s + (vol[m] || 0), 0)
+
+    const SEG_GAP = 1.5, CAT_GAP = 5
+    const usable = 360 - CAT_GAP * 3
+
+    const segs: DonutSeg[] = []
+    let deg = -90
+
+    const catArcs: Array<{ catKey: string; startDeg: number; endDeg: number; color: string } | null> = []
+    const catVols: number[] = []
+
+    for (const catKey of CAT_ORDER) {
+      const muscles = MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === catKey)
+      const catVol = muscles.reduce((s, m) => s + (vol[m] || 0), 0)
+      catVols.push(catVol)
+
+      const catDegTotal = total > 0 ? (catVol / total) * usable : 0
+      const mUsable = catDegTotal - SEG_GAP * Math.max(0, muscles.length - 1)
+
+      const startDeg = deg
+      for (let i = 0; i < muscles.length; i++) {
+        const m = muscles[i], mVol = vol[m] || 0
+        const mDeg = catVol > 0 ? (mVol / catVol) * mUsable : 0
+        segs.push({ muscle: m, value: mVol, pct: total > 0 ? (mVol / total) * 100 : 0, startDeg: deg, endDeg: deg + mDeg, catKey })
+        deg += mDeg + (i < muscles.length - 1 ? SEG_GAP : 0)
+      }
+
+      if (muscles.length > 0) {
+        catArcs.push({ catKey, startDeg, endDeg: deg, color: CAT_META[catKey].color })
+      } else {
+        catArcs.push(null)
+      }
+      deg += CAT_GAP
     }
-    deg += CAT_GAP
-  }
+
+    return { total, segs, catArcs, catVols }
+  }, [vol])
 
   const cx = 120, cy = 120
   const RO_OUT = 108, RO_IN = 96 // outer ring = category
   const RI_OUT = 92,  RI_IN = 56 // inner ring = muscles
 
-  const catArcs = CAT_ORDER.map(catKey => {
-    const cs = segs.filter(s => s.catKey === catKey)
-    if (!cs.length) return null
-    return { catKey, startDeg: cs[0].startDeg, endDeg: cs[cs.length - 1].endDeg, color: CAT_META[catKey].color }
-  })
-
-  const catVols = CAT_ORDER.map(c => MUSCLE_ORDER.filter(m => MUSCLE_META[m].catKey === c).reduce((s, m) => s + (vol[m] || 0), 0))
   const hovSeg = segs.find(s => s.muscle === hov)
 
   return (

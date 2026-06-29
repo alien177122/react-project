@@ -1,0 +1,3 @@
+## 2026-06-29 - Optimization of VolumeDonut Render Loop
+**Learning:** React state interactions, like hover states `hov`, trigger re-renders that recalculate non-dependent O(N*M) derived arrays like donut SVG arcs. While `computeMuscleVol()` output is completely static, computing the display segment slices across categorized muscles on every frame is wasteful.
+**Action:** Extract expensive derivations like segment array mappings, category totals, and layout arcs out of the main render loop and consolidate them into a single `useMemo` block keyed on the static volume base array (memoized with `[]`). This ensures hover states can update purely UI layers without recomputing the math logic.

@@ -1,0 +1,3 @@
+## 2024-05-19 - O(N*M) derived state calculation inside React Component render
+**Learning:** Found an $O(N \times M)$ operation inside the App component's render loop where `userData.exercises.some()` is called inside `Object.keys(EXERCISES).every()` and `Object.entries(EXERCISES).filter()`. Every time App renders, it iterates through EXERCISES (N=22) and for each one iterates through userData.exercises (M=up to 22) doing linear scans to check for existence.
+**Action:** When calculating existence checks across two collections inside a render function, always use `useMemo` to build a `Set` of the smaller/dynamic collection's keys, reducing the lookup complexity from $O(N \times M)$ to $O(N)$.

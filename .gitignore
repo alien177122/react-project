@@ -40,10 +40,33 @@ CLAUDE.md
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?&#10;# VS Code settings excludes&#10;**/ios/Pods&#10;**/ios/build&#10;**/android/build&#10;**/android/.gradle&#10;**/.expo
+*.sw?
+
+# Capacitor native build artifacts (commit ios/ + android/ project sources)
+ios/App/Pods/
+ios/App/build/
+ios/DerivedData/
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
 
 # Local dev caches and credentials (never commit)
 .sofa/
 .vite/
 .playwright-mcp/
 scripts/__pycache__/
+*.keystore
+*.jks
+*.p12
+debug.keystore
+
+# Dev screenshots and artifacts (not for repo)
+iphone-*.png
+preview-*.png
+split-stepper-*.png
+olx_*.png
+
+# Dev helper scripts (local-only)
+scripts/dev-set-password.mjs
+

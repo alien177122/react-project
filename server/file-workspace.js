@@ -252,7 +252,11 @@ export function createFileWorkspace({ rootDir = projectRoot, env = process.env, 
 
   async function analyzeFile(fileName) {
     await ensureWorkspace()
-    const filePath = join(inboxDir, fileName)
+    const resolvedInboxDir = resolve(inboxDir)
+    const filePath = resolve(inboxDir, fileName)
+    if (dirname(filePath) !== resolvedInboxDir) {
+      throw new Error('Access denied: directory traversal detected')
+    }
     const fileStat = await stat(filePath)
     const kind = detectKind(fileName)
     let analysis

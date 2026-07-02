@@ -22,8 +22,10 @@ function normalizedName(req) {
 }
 
 function requestIp(req) {
-  const cfIp = req.headers['cf-connecting-ip'];
-  if (typeof cfIp === 'string' && cfIp.trim()) return cfIp.trim();
+  if (req.app && req.app.get('trust proxy')) {
+    const cfIp = req.headers['cf-connecting-ip'];
+    if (typeof cfIp === 'string' && cfIp.trim()) return cfIp.trim();
+  }
   return req.ip || req.socket.remoteAddress || '127.0.0.1';
 }
 
@@ -79,6 +81,11 @@ export function createApp({
 } = {}) {
   const config = getServerConfig(env);
   const app = express();
+
+  if (env.TRUST_PROXY === '1' || env.TRUST_PROXY === 'true') {
+    app.set('trust proxy', true);
+  }
+
   const fileWorkspace = createFileWorkspace({env});
 
   if (env.SEED_TEST_NAME && env.SEED_TEST_HASH) {
@@ -183,8 +190,16 @@ export function createApp({
   });
 
   app.post('/api/files/workspace/analyze/:name', authAny, async (req, res) => {
-    await fileWorkspace.analyzeFile(req.params.name);
-    res.json(await fileWorkspace.listFiles());
+    try {
+      await fileWorkspace.analyzeFile(req.params.name);
+      res.json(await fileWorkspace.listFiles());
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('Access denied')) {
+        res.status(400).json({error: err.message});
+      } else {
+        res.status(500).json({error: 'Ошибка при анализе файла'});
+      }
+    }
   });
 
   if (enableStatic) {

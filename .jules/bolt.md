@@ -1,0 +1,4 @@
+
+## 2024-07-03 - [Optimized VolumeDonut Render Performance]
+**Learning:** React components containing statically derived data (like computing muscle volumes from `EXERCISES` and `MUSCLE_CONTRIB` constants in `VolumeDonut`) can cause severe O(N*M) performance bottlenecks if recalculated on every render (e.g., during high-frequency hover states). Although linters might flag empty dependency arrays `[]` in `useMemo` as potential stale closures, data derived purely from module-level static constants is completely safe to memoize once.
+**Action:** Extract expensive derivations based purely on module-level constants into a `useMemo` hook with an empty dependency array `[]`. Ensure any dynamic component state (like hover interactions) is separated and not included in the static computation block to maintain reactivity while achieving O(1) retrieval.

@@ -1,0 +1,3 @@
+## 2025-02-23 - Dynamic state dependencies in static useMemo
+**Learning:** When using `useMemo` with an empty dependency array `[]` to optimize pure data derivations (e.g., SVG chart coordinates) based on module-level constants, wrapping logic that calls another function (like `computeMuscleVol()`) will cause static linting errors (`exhaustive-deps`) and potential state staleness if that function ever becomes state-dependent, even if it is currently static.
+**Action:** Extract pure data fetching/computation outside the `useMemo` block, and use a primitive representation (e.g., `JSON.stringify(data)`) as the dependency array to safely satisfy React's Rules of Hooks while preventing unnecessary deep object recalculations.

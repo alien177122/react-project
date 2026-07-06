@@ -1,0 +1,3 @@
+## 2025-02-18 - React useMemo Dependencies and Module-Level Constants
+**Learning:** While linters might flag `[]` (empty dependency array) as a stale closure risk in `useMemo`, if the derivations rely *entirely* on module-level constants (e.g., `computeMuscleVol()` relying on static configs outside the component), `[]` is actually completely safe and correct. Adding them as dependencies or moving them unnecessarily pollutes the component scope and defeats optimization.
+**Action:** When extracting pure static derivations, safely use `[]` for memoization. If lint complains, consider separating purely static computations into their own `useMemo` hooks to satisfy the linter while preserving the performance guarantee before feeding them into dynamic derivations.

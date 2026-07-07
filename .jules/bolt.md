@@ -1,0 +1,3 @@
+## 2024-05-18 - VolumeDonut Reactivity Optimization
+**Learning:** In `App.tsx`, the `VolumeDonut` component recalculates complex geometry (svg paths, segments, arrays) on every `hov` state change (hover over segments). Because `hov` changes rapidly during user interaction, O(N*M) iterations over arrays and object derivations block the main thread and can make interaction feel sluggish.
+**Action:** Extract expensive segment derivations into a `useMemo` block with an empty dependency array `[]`. Ensure that properties derived from `hov` (like `opacity`, `ro` for hover state) are handled outside `useMemo` to maintain UI reactivity without running the full O(N*M) calculation cycle.

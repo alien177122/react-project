@@ -5,9 +5,9 @@ import {
   CATEGORY_COLORS_V3,
   CATEGORY_LABELS_V3,
   buildProgramV3ChartRows,
-} from '@shared/program/v3';
+} from '@training/shared/program/v3';
 import {ExercisePicker} from '../components/calculator/ExercisePicker';
-import {PROGRESSION_PRESET_META} from '@shared/program/progressionPresets';
+import {PROGRESSION_PRESET_META} from '@training/shared/program/progressionPresets';
 import type {ProgramSettings, UserData} from '../types';
 import {calc1RM} from '../utils/calc';
 import ProgramV3ProgressChart from '../components/calculator/ProgramV3ProgressChart';

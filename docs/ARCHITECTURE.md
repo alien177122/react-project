@@ -8,8 +8,9 @@ Training Calculator (Periodizatsiya) is a **web-first monorepo**: React PWA fron
 flowchart TB
   subgraph client [Client]
     PWA[src/ Vite React PWA]
-    Desktop[platforms/desktop Electron]
-    Mobile[platforms/mobile Expo]
+    Desktop[desktop/ Electron]
+    Mobile[apps/mobile Expo]
+    Cap[Capacitor ios/android]
   end
 
   subgraph shared [packages/shared]
@@ -27,6 +28,7 @@ flowchart TB
 
   PWA --> API
   Desktop --> PWA
+  Cap --> PWA
   Mobile --> API
   PWA --> Hooks
   API --> Express
@@ -38,14 +40,15 @@ flowchart TB
 
 ## Packages
 
-| Path                 | Role                                                                   |
-| -------------------- | ---------------------------------------------------------------------- |
-| `src/`               | Primary UI: calculator, journal, training, theory screens              |
-| `server/`            | Auth, user data persistence, journal API, static `dist/` in production |
-| `packages/shared/`   | Shared types, calculations, API client — imported by web and platforms |
-| `platforms/desktop/` | Electron wrapper around dev/prod web URL                               |
-| `platforms/mobile/`  | Expo Router mobile client                                              |
-| `platforms/macos/`   | React Native Android / macOS release track                             |
+| Path               | Role                                                                   |
+| ------------------ | ---------------------------------------------------------------------- |
+| `src/`             | Primary UI: calculator, journal, training, theory screens              |
+| `server/`          | Auth, user data persistence, journal API, static `dist/` in production |
+| `packages/shared/` | Shared types, calculations, API client — web + native                  |
+| `desktop/`         | Electron wrapper around dev/prod web URL                               |
+| `apps/mobile/`     | Expo Router mobile client                                              |
+| `apps/macos/`      | Expo / RN macOS–Android release track                                  |
+| `ios/`, `android/` | Capacitor native shells over Vite `dist/`                              |
 
 ## Authentication
 

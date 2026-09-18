@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import type {JournalSession, JournalSet, UserData} from '../types/index.ts';
 import {JOURNAL_LIMITS, todayLocalDate} from '../utils/journalLimits.ts';
 import {buildPeakSeries, sessionPeak} from '../utils/journalMetrics.ts';
@@ -7,19 +7,22 @@ export interface UseJournalOptions {
   userData: UserData;
   exerciseKey: string;
   setUserData: (value: UserData) => void;
-  saveUser: (data: UserData, token: string) => Promise<{ok: boolean} | void>;
+  saveUser: (data: UserData, token: string) => Promise<{ok: boolean; error?: string} | void>;
   token: string;
   onSaveError?: (message: string) => void;
 }
 
 export interface DraftSet {
+  id: string;
   weight: string;
   reps: string;
   rpe: string;
   note: string;
 }
 
-const emptyDraft = (): DraftSet => ({weight: '', reps: '', rpe: '', note: ''});
+const generateId = () => Math.random().toString(36).substring(2, 9);
+
+const emptyDraft = (): DraftSet => ({id: generateId(), weight: '', reps: '', rpe: '', note: ''});
 
 export function useJournal({
   userData,
@@ -60,6 +63,7 @@ export function useJournal({
   const toDraftSets = useCallback(
     (sets: JournalSet[]): DraftSet[] =>
       sets.map(set => ({
+        id: generateId(),
         weight: String(set.weight),
         reps: String(set.reps),
         rpe: set.rpe != null ? String(set.rpe) : '',
@@ -78,10 +82,18 @@ export function useJournal({
     setSessionNote('');
   }, [todaySession, toDraftSets]);
 
-  useEffect(() => {
+  const [prevExerciseKey, setPrevExerciseKey] = useState(exerciseKey);
+  if (exerciseKey !== prevExerciseKey) {
+    setPrevExerciseKey(exerciseKey);
     setEditingSessionId(null);
-    loadTodayIntoDraft();
-  }, [exerciseKey, loadTodayIntoDraft]);
+    if (todaySession) {
+      setDraftSets(toDraftSets(todaySession.sets));
+      setSessionNote(todaySession.sessionNote ?? '');
+    } else {
+      setDraftSets([]);
+      setSessionNote('');
+    }
+  }
 
   const copyLastSession = useCallback(() => {
     const last = history.find(session => session.date !== today) ?? history[0];
@@ -130,10 +142,23 @@ export function useJournal({
       try {
         const result = await saveUser(updated, token);
         if (result && 'ok' in result && !result.ok) {
-          throw new Error('Failed to save');
+      const errMsg = 'error' in result && typeof result.error === 'string' ? result.error : 'Failed to save';
+          throw new Error(errMsg);
         }
-      } catch {
-        onSaveError?.('Не удалось сохранить журнал');
+      } catch (e) {
+        console.error('persistJournal error:', e);
+        const isNetworkError = e instanceof Error && (
+          e.message.toLowerCase().includes('fetch') ||
+          e.message.toLowerCase().includes('network') ||
+          e.message.toLowerCase().includes('load') ||
+          e.message.toLowerCase().includes('http') ||
+          e.message.toLowerCase().includes('status')
+        );
+        if (!isNetworkError) {
+          onSaveError?.('Не удалось сохранить журнал');
+        } else {
+          console.warn('Network error when saving journal (saved locally):', e);
+        }
       } finally {
         setSaving(false);
       }

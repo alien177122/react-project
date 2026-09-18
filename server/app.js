@@ -13,6 +13,14 @@ import {normalizeStoredUserData, normalizeUserData} from './schema.js';
 import {passwordPolicyError} from './passwordPolicy.js';
 import {securityHeaders} from './security.js';
 import {applyJournalDemoSeed} from './journalDemoSeed.js';
+import {computeOneRm, mapHistoryRow, validateCalculationBody} from './calculations.js';
+import {
+  applyWebhookToDb,
+  createInternalPaymentId,
+  createPlategaCheckout,
+  parsePlategaWebhookBody,
+  verifyPlategaWebhookHeaders,
+} from './billing.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = join(__dirname, '..', 'dist');
@@ -74,12 +82,61 @@ function resetLimiters(req, scope, ipLimiter, nameLimiter) {
   nameLimiter.resetKey(`${scope}:name:${normalizedName(req) || ipKeyGenerator(requestIp(req))}`);
 }
 
+function createCorsMiddleware(config) {
+  const allowlist = config.corsOrigins;
+
+  // Development without CORS_ORIGINS: reflect request origin (local Vite / Capacitor).
+  // Non-development without allowlist: same-origin only (no Access-Control-Allow-Origin).
+  if (allowlist.length === 0) {
+    if (config.isDevelopment) {
+      return cors({origin: true});
+    }
+    return cors({origin: false});
+  }
+
+  return cors({
+    origin(origin, callback) {
+      // Non-browser / same-origin requests often omit Origin.
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      if (allowlist.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+  });
+}
+
 export function createApp({
   env = process.env,
   db = createDb({env}),
   enableStatic = existsSync(distDir),
 } = {}) {
   const config = getServerConfig(env);
+  // #region agent log
+  fetch('http://127.0.0.1:7373/ingest/c92f3132-d363-48dd-83d0-fea11bddc1f0', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': '8ed724'},
+    body: JSON.stringify({
+      sessionId: '8ed724',
+      runId: 'initial',
+      hypothesisId: 'H2,H4',
+      location: 'server/app.js:113',
+      message: 'server security configuration',
+      data: {
+        isDevelopment: config.isDevelopment,
+        hasExplicitJwtSecret: Boolean(env.JWT_SECRET?.trim()),
+        corsOriginsCount: config.corsOrigins.length,
+        fileWorkspaceEnabled: config.enableFileWorkspace,
+        trustProxyConfigured: env.TRUST_PROXY === '1' || env.TRUST_PROXY === 'true',
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
   const app = express();
 
   if (env.TRUST_PROXY === '1' || env.TRUST_PROXY === 'true') {
@@ -92,7 +149,13 @@ export function createApp({
     db.seedUser(env.SEED_TEST_NAME, env.SEED_TEST_HASH);
   }
 
+  // Known demo password in repo — never seed outside development (audit V-05).
   if (env.SEED_JOURNAL_DEMO === '1') {
+    if (!config.isDevelopment) {
+      throw new Error(
+        'SEED_JOURNAL_DEMO is only allowed when NODE_ENV=development (known demo password)',
+      );
+    }
     void applyJournalDemoSeed(db, bcrypt);
   }
 
@@ -101,19 +164,87 @@ export function createApp({
   const registerIpLimiter = makeIpLimiter('register', config.registerMaxAttempts, config);
   const registerNameLimiter = makeNameLimiter('register', config.registerMaxAttempts, config);
 
-  app.use(cors());
-  app.use(express.json());
+  app.use(createCorsMiddleware(config));
+  app.use(express.json({limit: '256kb'}));
   app.use(securityHeaders(config));
-  void fileWorkspace.ensureWorkspace();
+
+  if (config.enableFileWorkspace) {
+    void fileWorkspace.ensureWorkspace();
+  }
 
   function authAny(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({error: 'Нет токена'});
+    if (!token) {
+      // #region agent log
+      fetch('http://127.0.0.1:7373/ingest/c92f3132-d363-48dd-83d0-fea11bddc1f0', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': '8ed724'},
+        body: JSON.stringify({
+          sessionId: '8ed724',
+          runId: 'initial',
+          hypothesisId: 'H1,H2',
+          location: 'server/app.js:151',
+          message: 'protected request missing bearer token',
+          data: {path: req.path, method: req.method},
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+      return res.status(401).json({error: 'Нет токена'});
+    }
 
     try {
-      req.user = jwt.verify(token, config.jwtSecret);
+      const payload = jwt.verify(token, config.jwtSecret);
+      const name = typeof payload?.name === 'string' ? payload.name : '';
+      if (!name) return res.status(401).json({error: 'Токен недействителен'});
+
+      const tokenVersion = Number(payload.tv);
+      const currentVersion = db.getTokenVersion(name);
+      if (currentVersion === null) {
+        return res.status(401).json({error: 'Токен недействителен'});
+      }
+      // #region agent log
+      fetch('http://127.0.0.1:7373/ingest/c92f3132-d363-48dd-83d0-fea11bddc1f0', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': '8ed724'},
+        body: JSON.stringify({
+          sessionId: '8ed724',
+          runId: 'initial',
+          hypothesisId: 'H1,H2',
+          location: 'server/app.js:168',
+          message: 'jwt verified and token version checked',
+          data: {
+            path: req.path,
+            method: req.method,
+            tokenVersionFinite: Number.isFinite(tokenVersion),
+            tokenVersionMatches: tokenVersion === currentVersion,
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+      if (!Number.isFinite(tokenVersion) || tokenVersion !== currentVersion) {
+        return res.status(401).json({error: 'Токен недействителен'});
+      }
+
+      req.user = {name, tv: currentVersion};
       next();
     } catch {
+      // #region agent log
+      fetch('http://127.0.0.1:7373/ingest/c92f3132-d363-48dd-83d0-fea11bddc1f0', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': '8ed724'},
+        body: JSON.stringify({
+          sessionId: '8ed724',
+          runId: 'initial',
+          hypothesisId: 'H2',
+          location: 'server/app.js:177',
+          message: 'jwt verification rejected token',
+          data: {path: req.path, method: req.method},
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       res.status(401).json({error: 'Токен недействителен'});
     }
   }
@@ -121,12 +252,50 @@ export function createApp({
   function auth(req, res, next) {
     authAny(req, res, () => {
       if (req.user.name !== req.params.name) {
+        // #region agent log
+        fetch('http://127.0.0.1:7373/ingest/c92f3132-d363-48dd-83d0-fea11bddc1f0', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': '8ed724'},
+          body: JSON.stringify({
+            sessionId: '8ed724',
+            runId: 'initial',
+            hypothesisId: 'H1',
+            location: 'server/app.js:188',
+            message: 'authorization subject does not match route subject',
+            data: {path: req.path, method: req.method},
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
         res.status(403).json({error: 'Доступ запрещён'});
         return;
       }
       next();
     });
   }
+
+  function requireFileWorkspace(_req, res, next) {
+    if (!config.enableFileWorkspace) {
+      res.status(404).json({error: 'File workspace отключён'});
+      return;
+    }
+    next();
+  }
+
+  function signAccessToken(name, tokenVersion) {
+    return jwt.sign({name, tv: tokenVersion}, config.jwtSecret, {
+      expiresIn: config.jwtExpiresIn,
+    });
+  }
+
+  // CORS errors from the origin callback surface as Error — map to 403 JSON.
+  app.use((err, _req, res, next) => {
+    if (err instanceof Error && err.message.startsWith('CORS blocked')) {
+      res.status(403).json({error: 'CORS: origin не разрешён'});
+      return;
+    }
+    next(err);
+  });
 
   app.post('/api/auth/register', registerIpLimiter, registerNameLimiter, async (req, res) => {
     const {name, password} = req.body;
@@ -140,23 +309,37 @@ export function createApp({
     const hash = await bcrypt.hash(password, 10);
     db.createUser(name.trim(), hash);
     resetLimiters(req, 'register', registerIpLimiter, registerNameLimiter);
-    const token = jwt.sign({name: name.trim()}, config.jwtSecret, {expiresIn: '30d'});
+    const token = signAccessToken(name.trim(), 0);
     res.json({token, name: name.trim()});
   });
+
+  // Fixed bcrypt hash for timing parity when user is missing (not a real password).
+  const LOGIN_DUMMY_HASH = '$2b$10$w1wsmd0bMGWpp2QdTT3Td.lADekYlXEFrxYKU39XTEk9xqWQrcrY2';
+  const LOGIN_ERROR = 'Неверный логин или пароль';
 
   app.post('/api/auth/login', loginIpLimiter, loginNameLimiter, async (req, res) => {
     const {name, password} = req.body;
     if (!name?.trim() || !password) return res.status(400).json({error: 'Заполни все поля'});
 
     const row = db.getUserAuth(name.trim());
-    if (!row) return res.status(401).json({error: 'Пользователь не найден'});
+    const hash = row?.password_hash || LOGIN_DUMMY_HASH;
+    const ok = row ? await bcrypt.compare(password, hash) : false;
+    // Always run a compare against dummy when missing user (timing).
+    if (!row) await bcrypt.compare(password, LOGIN_DUMMY_HASH);
 
-    const ok = await bcrypt.compare(password, row.password_hash);
-    if (!ok) return res.status(401).json({error: 'Неверный пароль'});
+    if (!row || !ok) {
+      return res.status(401).json({error: LOGIN_ERROR});
+    }
 
     resetLimiters(req, 'login', loginIpLimiter, loginNameLimiter);
-    const token = jwt.sign({name: row.name}, config.jwtSecret, {expiresIn: '30d'});
+    const tv = Number(row.token_version) || 0;
+    const token = signAccessToken(row.name, tv);
     res.json({token, name: row.name});
+  });
+
+  app.post('/api/auth/logout', authAny, (req, res) => {
+    db.bumpTokenVersion(req.user.name);
+    res.json({ok: true});
   });
 
   app.get('/api/health', (_req, res) => {
@@ -181,26 +364,134 @@ export function createApp({
     res.json({ok: true});
   });
 
-  app.get('/api/files/workspace', authAny, async (_req, res) => {
+  app.get('/api/billing/status', authAny, (req, res) => {
+    res.json(getBillingStatusPayload(req.user.name));
+  });
+
+  app.post('/api/billing/checkout', authAny, async (req, res) => {
+    if (!config.plategaEnabled) {
+      return res.status(503).json({error: 'Оплата отключена в этой среде'});
+    }
+
+    try {
+      const paymentId = createInternalPaymentId();
+      db.createBillingPayment({
+        id: paymentId,
+        userName: req.user.name,
+        amount: config.plategaPriceRub,
+        currency: 'RUB',
+        status: 'PENDING',
+        providerTransactionId: null,
+      });
+
+      const checkout = await createPlategaCheckout({
+        config,
+        userName: req.user.name,
+        paymentId,
+      });
+
+      db.updateBillingPaymentStatus(paymentId, 'PENDING', checkout.transactionId);
+
+      res.json({
+        transactionId: checkout.transactionId,
+        paymentUrl: checkout.paymentUrl,
+      });
+    } catch (error) {
+      res.status(502).json({
+        error: error instanceof Error ? error.message : 'Не удалось создать платёж',
+      });
+    }
+  });
+
+  app.post('/api/billing/webhook', (req, res) => {
+    if (!config.plategaEnabled) {
+      return res.status(404).json({error: 'Billing disabled'});
+    }
+    if (!verifyPlategaWebhookHeaders(req, config)) {
+      return res.status(401).json({error: 'Unauthorized webhook'});
+    }
+
+    const parsed = parsePlategaWebhookBody(req.body);
+    if (parsed.error) {
+      return res.status(400).json({error: parsed.error});
+    }
+
+    applyWebhookToDb(db, parsed, config);
+    res.json({ok: true});
+  });
+
+  app.post('/api/calculator/calculate', authAny, (req, res) => {
+    const validated = validateCalculationBody(req.body);
+    if (validated.error) {
+      return res.status(400).json({error: validated.error});
+    }
+
+    const computed = computeOneRm(validated.payload);
+    if (computed.error) {
+      return res.status(400).json({error: computed.error});
+    }
+
+    const outcome = db.runConsumeCalculation(
+      req.user.name,
+      {...validated.payload, freeLimit: config.freeCalculationLimit},
+      computed,
+      !config.plategaEnabled,
+    );
+
+    if (outcome.type === 'conflict') {
+      return res.status(409).json({error: 'Конфликт requestId'});
+    }
+
+    if (outcome.type === 'limit') {
+      return res.status(402).json({error: 'CALCULATION_LIMIT_REACHED', remaining: 0});
+    }
+
+    res.json(outcome.result);
+  });
+
+  app.get('/api/calculator/history', authAny, (req, res) => {
+    const rows = db.listCalculationHistory(req.user.name);
+    res.json(rows.map(mapHistoryRow));
+  });
+
+  function getBillingStatusPayload(userName) {
+    const snapshot = db.getBillingSnapshot(userName, config);
+    return {
+      premium: snapshot.premium,
+      freeLimit: snapshot.freeLimit,
+      used: snapshot.used,
+      remaining: snapshot.remaining,
+      price: snapshot.price,
+      currency: snapshot.currency,
+      pendingPayment: snapshot.pendingPayment,
+    };
+  }
+
+  app.get('/api/files/workspace', authAny, requireFileWorkspace, async (_req, res) => {
     res.json(await fileWorkspace.listFiles());
   });
 
-  app.post('/api/files/workspace/analyze', authAny, async (_req, res) => {
+  app.post('/api/files/workspace/analyze', authAny, requireFileWorkspace, async (_req, res) => {
     res.json(await fileWorkspace.analyzeAllFiles());
   });
 
-  app.post('/api/files/workspace/analyze/:name', authAny, async (req, res) => {
-    try {
-      await fileWorkspace.analyzeFile(req.params.name);
-      res.json(await fileWorkspace.listFiles());
-    } catch (err) {
-      if (err instanceof Error && err.message.includes('Access denied')) {
-        res.status(400).json({error: err.message});
-      } else {
-        res.status(500).json({error: 'Ошибка при анализе файла'});
+  app.post(
+    '/api/files/workspace/analyze/:name',
+    authAny,
+    requireFileWorkspace,
+    async (req, res) => {
+      try {
+        await fileWorkspace.analyzeFile(req.params.name);
+        res.json(await fileWorkspace.listFiles());
+      } catch (err) {
+        if (err instanceof Error && err.message.includes('Access denied')) {
+          res.status(400).json({error: err.message});
+        } else {
+          res.status(500).json({error: 'Ошибка при анализе файла'});
+        }
       }
-    }
-  });
+    },
+  );
 
   if (enableStatic) {
     app.use(express.static(distDir));

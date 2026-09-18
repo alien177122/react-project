@@ -1,22 +1,18 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import prettierConfig from 'eslint-config-prettier'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+import prettierConfig from 'eslint-config-prettier';
+import {defineConfig, globalIgnores} from 'eslint/config';
 
 export default defineConfig([
   prettierConfig,
-  // The web/shared lint config only covers the Vite frontend and the shared
-  // workspace. Native (training-app-mobile / apps/mobile / apps/macos) and
-  // build artefacts have their own toolchains and lint configs.
+  // Web/shared lint only. Native trees live in `_archive-non-web/` (2026-08-27).
   globalIgnores([
     'dist',
     'desktop-dist',
-    'training-app-mobile',
-    'apps/macos',
-    'apps/mobile',
+    '_archive-non-web',
     'public',
     'scripts',
     'workspace-files',
@@ -35,5 +31,17 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
-])
-
+  // Uncle Bob CRAP-lite pilot: complexity ceiling on calc/metrics pure modules.
+  // Broader shared files stay on crap-check allowlists until refactored.
+  {
+    files: [
+      'packages/shared/src/utils/calc.ts',
+      'packages/shared/src/utils/calcValidators.ts',
+      'packages/shared/src/utils/plates.ts',
+      'packages/shared/src/utils/journalMetrics.ts',
+    ],
+    rules: {
+      complexity: ['error', 12],
+    },
+  },
+]);

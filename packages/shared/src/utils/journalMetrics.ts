@@ -43,7 +43,9 @@ export function buildPeakSeries(
 
 export function deltaLastWeeks(points: ChartPoint[], weeks = 4): number | null {
   if (points.length < 2) return null;
-  const latest = points[points.length - 1].peak;
+  const latestPoint = points[points.length - 1];
+  if (!latestPoint) return null;
+  const latest = latestPoint.peak;
   const cutoffIndex = Math.max(0, points.length - weeks - 1);
   const earlier = points[cutoffIndex]?.peak;
   if (earlier == null) return null;

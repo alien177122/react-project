@@ -3,6 +3,7 @@
 // ============================================================
 
 export * from './auth.ts';
+export * from './billing.ts';
 
 export interface WeekScheme {
   sets: number;
@@ -29,6 +30,8 @@ export interface ExerciseConfig {
   percentages: number[];
   weekSchemes: WeekScheme[];
   primaryMuscle: SplitMuscleId;
+  /** Bodyweight lifts are tracked as bodyWeight + extra load. */
+  usesBodyWeight?: boolean;
   isPullup?: boolean;
 }
 
@@ -45,10 +48,24 @@ export interface CustomSplit {
   days: SplitDayConfig[];
   varyIntensity: boolean;
   weightMode: SplitWeightMode;
-  /** Exactly two leg exercise keys when legs are used in the split. */
+  /** Exactly two leg exercise keys when legs are used in the split. (Deprecated) */
   legExercises?: [string, string];
   fixedWeights?: Record<string, number[]>;
+  /** (Deprecated) */
   exerciseDayOverrides?: Record<string, 1 | 2 | 3>;
+  /** Exercise keys hidden from specific training days. (Deprecated) */
+  excludedExercisesByDay?: Partial<Record<1 | 2 | 3, string[]>>;
+  /** Explicit list of exercise keys for each day. If present, it overrides legacy muscle-based population. */
+  customExercisesByDay?: Partial<Record<1 | 2 | 3, string[]>>;
+  /**
+   * 0-based week indices (0–7) the athlete marked as completed in the
+   * 8-week progression preview.
+   */
+  completedWeeks?: number[];
+  /**
+   * Progression days marked done. `week` is 0–7; `day` is the split day number.
+   */
+  completedDays?: Array<{week: number; day: 1 | 2 | 3}>;
   createdAt: string;
   updatedAt: string;
 }
@@ -60,6 +77,17 @@ export interface SavedExercise {
   oneRM: number;
   date: string;
   bodyWeight?: number;
+}
+
+/**
+ * Immutable input snapshot for one calculated split forecast.
+ * Completion marks remain mutable so progress survives future visits.
+ */
+export interface SplitCalculation {
+  id: string;
+  calculatedAt: string;
+  split: CustomSplit;
+  exercises: SavedExercise[];
 }
 
 export interface TrainingProgress {
@@ -138,6 +166,8 @@ export interface UserData {
   journal?: JournalSession[];
   splits?: CustomSplit[];
   activeSplitId?: string | null;
+  splitCalculations?: SplitCalculation[];
+  activeSplitCalculationId?: string | null;
   activeProgram?: ActiveProgram;
   testResults?: TestResult[];
   programSettings?: ProgramSettings;

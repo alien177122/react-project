@@ -47,7 +47,9 @@ export function buildChapterOgMeta(chapterId: ChapterId): OgMeta {
   return {
     title: `${chapter.panelTitle} — ${DEFAULT_TITLE}`,
     description: chapter.summary,
-    image: absoluteOgImage(`/og/og-${chapterId}.png`),
+    image: absoluteOgImage(
+      chapter.kind === 'reading' ? '/og/og-default.png' : `/og/og-${chapterId}.png`,
+    ),
     url: url.toString(),
     type: 'article',
   };

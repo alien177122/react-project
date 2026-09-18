@@ -5,7 +5,7 @@ import {
   filterChartPreviewWeeks,
   getPhaseDisplayLabel,
   type ProgressionPreviewWeek,
-} from '@shared/program/progressionPreview';
+} from '@training/shared/program/progressionPreview';
 
 export interface PreviewChartWeek extends ProgressionPreviewWeek {
   hasWeight: boolean;
@@ -121,8 +121,8 @@ export function useProgressionPreview(settings: ProgramSettings) {
       linePath: linePath(intensityPoints),
       areaPath: areaPath(intensityPoints),
       viewBox: `0 0 ${VIEW.width} 280`,
-      grid: [0, 1, 2, 3].map(i => VIEW.top + i * (chartHeight / 3)),
+      grid: Array.from({length: 7}, (_, i) => VIEW.top + i * (chartHeight / 6)),
       deloadWeek,
     };
-  }, [settings.progressionPreset, settings.daysPerWeek]);
+  }, [settings.progressionPreset]);
 }

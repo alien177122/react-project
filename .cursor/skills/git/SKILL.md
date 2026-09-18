@@ -16,23 +16,24 @@ description: >-
 
 ## Repository
 
-| Item       | Value                                                                         |
-| ---------- | ----------------------------------------------------------------------------- |
-| Remote     | `https://github.com/alien177122/react-project.git`                            |
-| Layout     | See `STRUCTURE.md` — web core at root; workspaces `packages/*`, `platforms/*` |
-| CODEOWNERS | `@alien177122` — `server/`, `src/`, `packages/shared/`                        |
+| Item       | Value                                                                    |
+| ---------- | ------------------------------------------------------------------------ |
+| Remote     | `https://github.com/alien177122/react-project.git`                       |
+| Layout     | See `STRUCTURE.md` — web core at root; workspaces `packages/*`, `apps/*` |
+| CODEOWNERS | `@alien177122` — `server/`, `src/`, `packages/shared/`                   |
 
 ### Monorepo touch points
 
-| Path                                                          | Note                                                              |
-| ------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `src/`                                                        | Vite + React web UI                                               |
-| `server/`                                                     | Express + SQLite API                                              |
-| `packages/shared/`                                            | `@training/shared` — shared hooks/utils                           |
-| `platforms/desktop/`, `platforms/mobile/`, `platforms/macos/` | Native shells                                                     |
-| `tests/`                                                      | Node test runner (also run on pre-commit)                         |
-| `memory-bank/`                                                | Agent context — commit only when task workflow requires           |
-| `.planning/`                                                  | GSD artifacts — **exclude from code PRs** (use **gsd-pr-branch**) |
+| Path                           | Note                                                              |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `src/`                         | Vite + React web UI                                               |
+| `server/`                      | Express + SQLite API                                              |
+| `packages/shared/`             | `@training/shared` — shared hooks/utils                           |
+| `apps/mobile/`, `apps/macos/`  | Expo native tracks                                                |
+| `desktop/`, `ios/`, `android/` | Electron + Capacitor shells                                       |
+| `tests/`                       | Node test runner (also run on pre-commit)                         |
+| `memory-bank/`                 | Agent context — commit only when task workflow requires           |
+| `.planning/`                   | GSD artifacts — **exclude from code PRs** (use **gsd-pr-branch**) |
 
 ## Never commit
 

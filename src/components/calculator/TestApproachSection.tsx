@@ -20,14 +20,18 @@ export interface TestApproachSectionProps {
   setTestReps: (value: string) => void;
   keyboardInsetPx: number;
   onCalculate: () => void;
+  isCalculating?: boolean;
+  calculateError?: string | null;
+  freeRemaining?: number | null;
+  billingPremium?: boolean;
 }
 
-function TestApproachFootnote({isPullup}: {isPullup: boolean}) {
-  if (isPullup) {
+function TestApproachFootnote({isBodyWeightLift}: {isBodyWeightLift: boolean}) {
+  if (isBodyWeightLift) {
     return (
       <p className="calc-test__footnote">
-        <span className="calc-test__footnote-lead">Подтягивания.</span> Вес тела и доп. вес на
-        поясе. В таблице — только прибавка; минус — ассист.
+        <span className="calc-test__footnote-lead">Упражнение с весом тела.</span> Вес тела и доп.
+        вес. В таблице — только прибавка; минус — ассист.
       </p>
     );
   }
@@ -53,9 +57,13 @@ export function TestApproachSection({
   setTestReps,
   keyboardInsetPx,
   onCalculate,
+  isCalculating = false,
+  calculateError = null,
+  freeRemaining = null,
+  billingPremium = false,
 }: TestApproachSectionProps) {
   const config = EXERCISES[selectedExercise];
-  const isPullup = Boolean(config?.isPullup);
+  const isBodyWeightLift = Boolean(config?.usesBodyWeight || config?.isPullup);
   const shellStyle =
     keyboardInsetPx > 0
       ? ({'--calc-test-keyboard-inset': `${keyboardInsetPx}px`} as CSSProperties)
@@ -69,7 +77,7 @@ export function TestApproachSection({
       className="calc-test-section"
       titleId="calc-test-heading">
       <form
-        className={`calc-test${isPullup ? ' calc-test--pullup' : ''}`}
+        className={`calc-test${isBodyWeightLift ? ' calc-test--pullup' : ''}`}
         style={shellStyle}
         noValidate
         onSubmit={event => {
@@ -90,7 +98,7 @@ export function TestApproachSection({
         </div>
 
         <TestApproachMetrics
-          isPullup={isPullup}
+          isBodyWeightLift={isBodyWeightLift}
           config={config}
           testWeight={testWeight}
           setTestWeight={setTestWeight}
@@ -103,9 +111,23 @@ export function TestApproachSection({
         />
 
         <div className="calc-test__action" role="group" aria-label="Расчёт результата">
+          {!billingPremium && freeRemaining !== null ? (
+            <p className="calc-test__limit" role="status">
+              Осталось бесплатных расчётов: {freeRemaining}
+            </p>
+          ) : null}
+          {calculateError ? (
+            <p className="calc-test__error" role="alert">
+              {calculateError}
+            </p>
+          ) : null}
           <div className="calc-test__action-inner">
-            <Button type="submit" className="calc-test__submit">
-              Рассчитать
+            <Button
+              type="submit"
+              className="calc-test__submit"
+              disabled={isCalculating}
+              aria-busy={isCalculating}>
+              {isCalculating ? 'Считаем…' : 'Рассчитать'}
             </Button>
             <span className="calc-test__action-hint" aria-hidden="true">
               <kbd>↵</kbd>
@@ -115,7 +137,7 @@ export function TestApproachSection({
       </form>
 
       <NoteBox variant="apple">
-        <TestApproachFootnote isPullup={isPullup} />
+        <TestApproachFootnote isBodyWeightLift={isBodyWeightLift} />
       </NoteBox>
     </SectionBlock>
   );

@@ -4,7 +4,7 @@ import {PremiumInput} from '../ui/PremiumInput';
 type ExerciseConfig = (typeof EXERCISES)[string];
 
 interface TestApproachMetricsProps {
-  isPullup: boolean;
+  isBodyWeightLift: boolean;
   config: ExerciseConfig;
   testWeight: string;
   setTestWeight: (value: string) => void;
@@ -17,7 +17,7 @@ interface TestApproachMetricsProps {
 }
 
 export function TestApproachMetrics({
-  isPullup,
+  isBodyWeightLift,
   config,
   testWeight,
   setTestWeight,
@@ -30,7 +30,7 @@ export function TestApproachMetrics({
 }: TestApproachMetricsProps) {
   return (
     <div className="calc-test__metrics">
-      {isPullup ? (
+      {isBodyWeightLift ? (
         <>
           <PremiumInput
             id="calc-body-weight"

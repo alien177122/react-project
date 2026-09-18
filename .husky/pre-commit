@@ -1,1 +1,3 @@
 npm test
+npm run typecheck
+npx --no-install react-doctor . --project "*" --yes || true

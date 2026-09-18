@@ -11,7 +11,7 @@
   justify-content: space-between;
   width: 100%;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
   color: var(--text);
@@ -62,13 +62,21 @@
   color: var(--ta-text-dim);
 }
 .ew-trigger-icon {
+  align-items: center;
   color: var(--muted);
-  font-size: 20px;
-  line-height: 1;
-  margin-left: 16px;
+  display: inline-flex;
   flex-shrink: 0;
+  height: 16px;
+  justify-content: center;
+  margin-left: 16px;
   transform: rotate(0deg);
   transition: transform var(--duration-micro) var(--ease-micro);
+  width: 16px;
+}
+.ew-trigger-icon svg {
+  display: block;
+  height: 16px;
+  width: 16px;
 }
 .ew-trigger-icon.is-open {
   transform: rotate(180deg);
@@ -91,16 +99,16 @@
 
 .ew-menu {
   background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--glass-radius-panel);
   box-shadow: var(--shadow-layered);
   display: grid;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 8px;
   max-height: min(520px, calc(100svh - 160px));
   opacity: 0;
   overflow: hidden;
-  padding: 12px;
+  padding: 8px;
   transform: translateY(-10px) scale(0.985);
   transform-origin: top center;
   transition:
@@ -114,7 +122,7 @@
 }
 
 .ta-shell .ew-menu {
-  background: var(--ta-surface-2);
+  background: var(--ta-calc-surface, var(--ta-surface));
   border-color: var(--ta-calc-border);
 }
 
@@ -187,9 +195,81 @@
   color: var(--ta-text-dim);
 }
 
+.ew-search {
+  padding: 0 4px;
+}
+
+.ew-search__input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: var(--border-width) solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  transition:
+    border-color var(--duration-micro) var(--ease-micro),
+    outline-color var(--duration-micro) var(--ease-micro);
+}
+
+.ew-search__input::-webkit-search-decoration,
+.ew-search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.ew-search__input::placeholder {
+  color: var(--text-placeholder, var(--muted));
+  font-weight: 400;
+}
+
+.ew-search__input:focus-visible {
+  border-color: var(--accent, #ffb020);
+  outline: 2px solid var(--accent, #ffb020);
+  outline-offset: 2px;
+}
+
+.ta-shell .ew-search__input {
+  background: var(--ta-calc-surface, var(--ta-surface));
+  border-color: var(--ta-calc-border, var(--ta-border));
+  color: var(--ta-text);
+}
+
+.ta-shell .ew-search__input:focus-visible {
+  border-color: var(--ta-calc-accent, var(--accent, #ffb020));
+  outline-color: var(--ta-calc-accent, var(--accent, #ffb020));
+}
+
+.ew-empty {
+  margin: 0;
+  padding: 16px 10px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.ta-shell .ew-empty {
+  color: var(--ta-text-dim);
+}
+
+.ew-option.is-focused:not(.is-active) {
+  background: var(--overlay-soft);
+  border-color: var(--border-subtle);
+}
+
+.ta-shell .ew-option.is-focused:not(.is-active) {
+  background: color-mix(in srgb, var(--ta-text) 5%, transparent);
+  border-color: var(--ta-border);
+}
+
 .ew-options {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   max-height: min(448px, calc(100svh - 224px));
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -201,16 +281,16 @@
   align-items: center;
   appearance: none;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 12px;
+  border: var(--border-width) solid transparent;
+  border-radius: 10px;
   color: var(--text);
   cursor: pointer;
   display: grid;
   font: inherit;
-  gap: 10px;
-  grid-template-columns: 10px minmax(0, 1fr) auto auto;
-  min-height: 60px;
-  padding: 10px 12px;
+  gap: 8px;
+  grid-template-columns: 4px minmax(0, 1fr) auto auto;
+  min-height: 52px;
+  padding: 8px 10px;
   text-align: left;
   transition:
     background var(--duration-micro) var(--ease-micro),
@@ -252,8 +332,8 @@
 .ew-option-swatch {
   align-self: stretch;
   background: var(--ew-option-color);
-  border-radius: 50%;
-  min-height: 28px;
+  border-radius: 2px;
+  min-height: 24px;
   width: 4px;
 }
 
@@ -287,12 +367,15 @@
 }
 
 .ew-option-rm {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--border);
+  /* Rounded rectangle (Split-like), not capsule pill */
+  border-radius: var(--glass-radius-badge);
   color: var(--text-soft);
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  padding: 5px 8px;
+  line-height: 1.2;
+  padding: 4px 8px;
   white-space: nowrap;
 }
 
@@ -304,8 +387,9 @@
 .ew-option-check {
   align-items: center;
   background: var(--accent);
-  border-radius: 50%;
-  color: var(--bg);
+  /* Squircle check badge — not a full circle */
+  border-radius: var(--glass-radius-badge);
+  color: var(--accent-fg, #0a0a0b);
   display: inline-flex;
   font-size: 12px;
   font-weight: 700;
@@ -331,14 +415,15 @@
 }
 @media (max-width: 600px) {
   .ew-menu {
-    border-radius: 16px;
-    gap: 10px;
-    padding: 10px;
+    border-radius: var(--glass-radius-panel);
+    gap: 8px;
+    padding: 8px;
   }
 
+  .calc-test .ew-option,
   .ew-option {
-    grid-template-columns: 10px minmax(0, 1fr) auto;
-    min-height: 56px;
+    grid-template-columns: 4px minmax(0, 1fr) auto;
+    min-height: 48px;
   }
 
   .ew-option-check {

@@ -31,6 +31,7 @@ export interface TrainingExerciseRow {
   exerciseType: 'A' | 'B' | 'C' | 'D';
   warmupStep: number;
   isPullup?: boolean;
+  usesBodyWeight?: boolean;
   extraWeight?: number;
   progressionMode: ProgressionMode;
   pyramidType?: PyramidType;
@@ -73,8 +74,9 @@ export function getTrainingExercises(
 
     const totalWeight = calcWorkingWeight(saved.oneRM, percentage, config);
     const isPullup = !!config.isPullup;
+    const usesBodyWeight = !!config.usesBodyWeight;
     const extraWeight =
-      isPullup && saved.bodyWeight != null ? totalWeight - saved.bodyWeight : undefined;
+      usesBodyWeight && saved.bodyWeight != null ? totalWeight - saved.bodyWeight : undefined;
 
     const {progressionMode, rpeBase} = preferences;
     const pyramidType: PyramidType = 'descending';
@@ -111,6 +113,7 @@ export function getTrainingExercises(
         exerciseType: config.type,
         warmupStep: config.warmupStep,
         isPullup,
+        usesBodyWeight,
         extraWeight,
         progressionMode,
         pyramidType: progressionMode === 'pyramid' ? pyramidType : undefined,

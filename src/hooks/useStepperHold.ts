@@ -18,12 +18,13 @@ interface UseStepperHoldOptions {
 
 function numberFrom(value: InputValue | string | number | undefined): number | null {
   if (Array.isArray(value) || value == null || value === '') return null
-  const parsed = Number(value)
+  const clean = typeof value === 'string' ? value.replace(',', '.') : value
+  const parsed = Number(clean)
   return Number.isFinite(parsed) ? parsed : null
 }
 
 function formatNumber(value: number): string {
-  return Number(value.toFixed(3)).toString()
+  return Number(value.toFixed(2)).toString()
 }
 
 function clamp(value: number, min?: string | number, max?: string | number): number {

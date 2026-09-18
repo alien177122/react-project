@@ -114,6 +114,8 @@ bun run public:stable
 
 See root [README.md](../README.md) for Cloudflare tunnel setup.
 
+**Удалённый терминал / управление Mac** (Tailscale, SSH, RustDesk) — не путать с public tunnel приложения: см. [REMOTE-ACCESS.md](./REMOTE-ACCESS.md).
+
 ## Health check
 
 ```bash
@@ -123,8 +125,12 @@ curl http://127.0.0.1:3002/api/health
 
 ## Security checklist
 
-- [ ] Strong `JWT_SECRET` in production
-- [ ] CORS limited to known origins
+- [ ] Strong `JWT_SECRET` in production (required; Docker has no default secret)
+- [ ] `CORS_ORIGINS` set to known browser origins (comma-separated; no `*`)
+- [ ] `ENABLE_FILE_WORKSPACE=0` on public/tunnel unless intentionally enabled
+- [ ] Never set `SEED_JOURNAL_DEMO=1` outside local development
 - [ ] HTTPS everywhere
 - [ ] `gym.db` backups on server, not in git
 - [ ] Rate limits enabled (default in `server/app.js`)
+
+See also [`audit/security-vulnerability-audit-2026-07.md`](../audit/security-vulnerability-audit-2026-07.md).

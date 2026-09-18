@@ -2,10 +2,51 @@
 
 .app-tab-shell--split {
   container-name: split;
+  container-type: inline-size;
+}
+
+/*
+ * Soft accent atmosphere on the split shell — mirrors app-hero__glass washes.
+ * Light: Peak amber radials (Ghost cyan/crimson stay opacity 0 on other shells).
+ * Dark: whisper of split purple into the glass fill; Ghost bisect unchanged.
+ */
+html[data-theme='light'] .app-shell .ta-shell.ta-shell--split {
+  background: color-mix(in srgb, var(--accent, #ffb020) 5%, var(--surface, #ffffff));
+  border-color: color-mix(
+    in srgb,
+    var(--accent, #ffb020) 14%,
+    var(--border-subtle, rgba(0, 0, 0, 0.08))
+  );
+}
+
+html[data-theme='light'] .app-shell .ta-shell.ta-shell--split::before {
+  opacity: 0.55;
+  background: radial-gradient(
+    ellipse 72% 88% at 6% 18%,
+    color-mix(in srgb, var(--accent, #ffb020) 10%, transparent) 0%,
+    transparent 64%
+  );
+}
+
+html[data-theme='light'] .app-shell .ta-shell.ta-shell--split::after {
+  opacity: 0.4;
+  background: radial-gradient(
+    ellipse 58% 72% at 94% 82%,
+    color-mix(in srgb, var(--accent-soft, var(--accent, #ffb020)) 10%, transparent) 0%,
+    transparent 66%
+  );
+}
+
+html[data-theme='dark'] .app-shell .ta-shell.ta-shell--split {
+  background: color-mix(
+    in srgb,
+    var(--ta-sec-04, #d946ef) 7%,
+    color-mix(in srgb, var(--surface, #141415) 76%, transparent)
+  );
 }
 
 .split-validation {
-  margin: 0;
+  margin: var(--space-4) 0 0;
   font-size: var(--type-14);
   line-height: 1.5;
   color: var(--red);
@@ -17,11 +58,75 @@
   container-type: inline-size;
 }
 
-.split-toolbar__top {
+.split-toolbar__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.split-toolbar__primary {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr);
   align-items: end;
+}
+
+.split-toolbar__secondary {
+  --split-toolbar-control-min: 2.75rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(var(--split-toolbar-control-min), auto);
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
+}
+
+.split-toolbar__saved {
+  display: grid;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+
+.split-toolbar__saved .split-toolbar__field {
+  display: grid;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+}
+
+.split-toolbar__saved .split-picker,
+.split-toolbar__saved .ew-select {
+  align-self: stretch;
+  min-height: 0;
+}
+
+.split-toolbar__saved .ew-select {
+  height: 100%;
+}
+
+.split-toolbar__saved:empty {
+  display: none;
+}
+
+.split-toolbar__saved:empty + .split-toolbar__actions {
+  grid-column: 1 / -1;
+}
+
+@container split-toolbar (max-width: 600px) {
+  .split-toolbar__primary,
+  .split-toolbar__secondary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .split-toolbar__saved {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .split-toolbar__actions {
+    grid-column: 1;
+    grid-row: auto;
+  }
 }
 
 .split-toolbar__field {
@@ -39,19 +144,26 @@
   color: var(--text-secondary);
 }
 
+.split-toolbar__help {
+  max-width: 36rem;
+  margin: calc(var(--space-2) * -1) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--type-14);
+  line-height: 1.45;
+}
+
 .split-toolbar__legend {
   display: block;
   margin: 0 0 var(--space-2);
   padding: 0;
 }
 
-.split-toolbar__input,
-.split-toolbar__select {
+.split-toolbar__input {
   width: 100%;
   min-height: 2.75rem;
   padding: var(--space-3);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   background: var(--surface-raised);
   color: var(--text);
   font-size: var(--type-16);
@@ -67,45 +179,66 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .split-toolbar__input:hover,
-  .split-toolbar__select:hover {
+  .split-toolbar__input:hover {
     border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
   }
 }
 
-.split-toolbar__input:focus-visible,
-.split-toolbar__select:focus-visible {
+.split-toolbar__input:focus-visible {
   border-color: var(--accent);
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.split-toolbar__select-wrap {
-  position: relative;
+.split-toolbar .split-picker .ew-trigger {
+  min-height: var(--split-toolbar-control-min, 2.75rem);
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  border-color: var(--border);
+  box-shadow: none;
+  padding: var(--space-3) var(--space-4);
 }
 
-.split-toolbar__select-wrap::after {
-  content: '';
-  pointer-events: none;
-  position: absolute;
-  top: 50%;
-  right: var(--space-4);
-  width: 0.5rem;
-  height: 0.5rem;
-  border-right: 2px solid var(--text-secondary);
-  border-bottom: 2px solid var(--text-secondary);
-  transform: translateY(-65%) rotate(45deg);
+.split-toolbar .split-picker .ew-trigger--placeholder .ew-trigger-name {
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
-.split-toolbar__select {
-  appearance: none;
-  padding-right: var(--space-8);
-  cursor: pointer;
+@media (hover: hover) and (pointer: fine) {
+  .split-toolbar .split-picker .ew-trigger:hover {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  }
+}
+
+.split-toolbar .split-picker .ew-trigger:focus-visible {
+  border-color: var(--accent, #ffb020);
+  outline: 2px solid var(--accent, #ffb020);
+  outline-offset: 2px;
+}
+
+.split-toolbar .split-picker .ew-option {
+  min-height: 44px;
+}
+
+.split-toolbar .split-picker .ew-option.is-active {
+  background: color-mix(in srgb, var(--accent, #ffb020) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #ffb020) 40%, transparent);
+}
+
+.split-toolbar .split-picker .ew-option-check {
+  background: var(--accent, #ffb020);
+  color: #0a0a0b;
 }
 
 .split-toolbar__actions {
+  grid-column: 2;
+  grid-row: 2;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  align-self: stretch;
   gap: var(--space-2);
 }
 
@@ -114,15 +247,19 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  width: 100%;
-  min-height: 2.75rem;
-  padding: var(--space-2) var(--space-3);
+  width: auto;
+  flex: 1 1 auto;
+  min-height: var(--split-toolbar-control-min, 2.75rem);
+  height: auto;
+  align-self: stretch;
+  padding: 0 var(--space-4);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   background: var(--surface-raised);
   color: var(--text);
   font-size: var(--type-14);
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     transform var(--duration-micro) var(--ease-out),
@@ -149,17 +286,19 @@
 .split-toolbar__action--ghost {
   border-color: var(--border);
   background: var(--surface-raised);
+  color: var(--text);
 }
 
 .split-toolbar__action--muted {
-  background: transparent;
+  border-color: var(--border);
+  background: var(--surface-raised);
   color: var(--text-secondary);
 }
 
 .split-toolbar__action--save {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--bg);
+  border-color: var(--accent, #ffb020);
+  background: var(--accent, #ffb020);
+  color: var(--accent-fg, #0a0a0b);
   font-weight: 600;
 }
 
@@ -197,7 +336,7 @@
   margin: 0;
   padding: var(--space-3);
   min-width: 0;
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width) solid var(--border-subtle);
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
 }
@@ -399,12 +538,24 @@
   }
 }
 
+@container split-toolbar (max-width: 430px) {
+  .split-toolbar__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+
+  .split-toolbar__action--save {
+    grid-column: 1 / -1; /* Кнопка "Сохранить" на всю ширину */
+  }
+}
+
 /* Shared chip */
 .split-chip {
   min-height: 2.75rem;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border);
+  border-radius: var(--glass-radius-badge);
+  border: var(--border-width) solid var(--border);
   background: var(--surface-raised);
   color: var(--text);
   font-size: var(--type-14);
@@ -441,7 +592,7 @@
 .split-select {
   min-height: 2.75rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   background: var(--surface-raised);
   color: var(--text);
   padding: var(--space-2) var(--space-3);
@@ -462,60 +613,853 @@
   gap: var(--space-2);
 }
 
-/* Muscle grid */
-.split-muscle-pool {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+/* Exercise grid — day cards + compact steppers */
+.split-exercises {
+  container-name: split-exercises;
+  container-type: inline-size;
+}
+
+.split-exercises__hint {
+  margin: 0;
+  font-size: var(--type-14);
+  line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 .split-day-grid {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
   grid-template-columns: minmax(0, 1fr);
 }
 
-.split-day-column {
-  min-height: 7.5rem;
-  padding: var(--space-3);
+.split-day-card {
+  container-name: split-day;
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
   border-radius: var(--radius-md);
-  border: 1px dashed var(--border);
+  /* Uniform Peak outline — equal thickness on all sides (no left rail) */
+  border: 2px solid var(--accent);
   background: var(--surface-raised);
-  transition: border-color var(--duration-micro) var(--ease-out);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
 }
 
-.split-day-column.is-over {
-  border-color: var(--accent);
-  border-style: solid;
+.split-day-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-inline-start: var(--space-1);
 }
 
-.split-day-title {
-  margin: 0 0 var(--space-2);
+.split-day-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--glass-radius-badge);
+  background: var(--accent-dim);
+  color: var(--accent);
   font-size: var(--type-14);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.split-day-card__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.split-day-card__title {
+  margin: 0;
+  font-size: var(--type-16);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--text);
 }
 
-.split-day-muscles {
+.split-day-card__count {
+  font-size: var(--type-12);
+  line-height: 1.33;
+  color: var(--text-secondary);
+}
+
+.split-day-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.split-exercise-card {
+  min-width: 0;
+  animation: split-exercise-enter var(--duration-medium) var(--ease-out) both;
+  animation-delay: calc(var(--split-card-index, 0) * 60ms);
+}
+
+@keyframes split-exercise-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.split-exercise-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-subtle);
+  background: var(--surface);
+  transition:
+    border-color var(--duration-micro) var(--ease-out),
+    box-shadow var(--duration-micro) var(--ease-out);
+}
+
+.split-exercise-card__headline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.split-exercise-card__actions {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+}
+
+.split-exercise-card__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--type-20);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out),
+    background var(--duration-micro) var(--ease-out),
+    opacity var(--duration-micro) var(--ease-out);
+}
+
+.split-exercise-card__remove:active {
+  opacity: 0.88;
+  transform: scale(0.98);
+}
+
+.split-exercise-card__remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-exercise-card__remove:hover {
+    color: var(--red);
+    border-color: color-mix(in srgb, var(--red) 35%, var(--border-subtle));
+    background: color-mix(in srgb, var(--red) 6%, transparent);
+  }
+}
+
+.split-exercise-card__main:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-subtle));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.split-exercise-card__name-text {
+  flex: 1 1 auto;
+  min-width: min(100%, 5rem);
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+  font-size: var(--type-14);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.split-exercise-card__duplicate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 2.75rem;
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--type-12);
+  font-weight: 500;
+  line-height: 1.33;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out),
+    background var(--duration-micro) var(--ease-out),
+    opacity var(--duration-micro) var(--ease-out);
+}
+
+.split-exercise-card__duplicate-icon {
+  color: var(--accent);
+  font-size: var(--type-14);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.split-exercise-card__duplicate:active:not(:disabled) {
+  opacity: 0.88;
+  transform: scale(0.98);
+}
+
+.split-exercise-card__duplicate:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.split-exercise-card__duplicate:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-exercise-card__duplicate:hover:not(:disabled) {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border-subtle));
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+}
+
+.split-exercise-card__rm {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.split-day-card__empty {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-12);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.split-day-card__excluded {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) 0 0;
+  border-top: var(--border-width-hairline) solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-@container split (min-width: 34rem) {
-  .split-day-grid.is-two-days {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.split-day-card__excluded-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+}
 
-  .split-day-grid:not(.is-two-days) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.split-day-card__excluded-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--type-12);
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.split-day-card__restore {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out),
+    background var(--duration-micro) var(--ease-out);
+}
+
+.split-day-card__restore:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-day-card__restore:hover {
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border-subtle));
   }
 }
 
+.split-day-card__restore:active {
+  opacity: 0.88;
+}
+
+/* Compact unified stepper inside split exercises */
+.split-exercises .pi-group {
+  gap: 0;
+  min-width: 0;
+}
+
+.split-exercises .pi-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.split-exercises .pi-stepper {
+  gap: 0;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-subtle);
+  background: var(--surface-raised);
+  overflow: hidden;
+}
+
+.split-exercises .pi-wrapper--stepper {
+  min-height: 2.75rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.split-exercises .pi-wrapper--stepper.pi-wrapper--focused,
+.split-exercises .pi-wrapper--stepper.pi-wrapper--error {
+  border: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.split-exercises .pi-stepper:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-subtle));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.split-exercises .pi-stepper:focus-within .pi-wrapper--stepper .pi-input {
+  transform: none;
+}
+
+.split-exercises .pi-stepper__btn {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 0;
+  border-right: var(--border-width-hairline) solid var(--border-subtle);
+  background: transparent;
+  color: var(--text);
+  font-size: var(--type-20);
+  font-weight: 500;
+  transition:
+    background var(--duration-micro) var(--ease-out),
+    opacity var(--duration-micro) var(--ease-out);
+}
+
+.split-exercises .pi-stepper__btn:last-of-type {
+  border-right: none;
+  border-left: var(--border-width-hairline) solid var(--border-subtle);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-exercises .pi-stepper__btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+}
+
+.split-exercises .pi-stepper__btn:active:not(:disabled) {
+  opacity: 0.75;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.split-exercises .pi-stepper__btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.split-exercises .pi-wrapper--stepper .pi-input,
+.split-exercises .split-one-rm-input.pi-input {
+  --pi-pl: 12px;
+  --pi-pr: 28px;
+  padding-block: 10px;
+  min-width: 0;
+}
+
+.split-exercises .pi-input {
+  font-size: var(--type-16);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--text);
+}
+
+.split-exercises .pi-unit {
+  right: 8px;
+  font-size: var(--type-12);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.split-exercises .pi-stepper {
+  min-width: 0;
+}
+
+.split-exercise-card__rm .pi-group {
+  width: 100%;
+}
+
+/* Per-day card width — compact horizontal cluster when column is wide enough */
+@container split-day (min-width: 22rem) {
+  .split-exercise-card__main {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .split-exercise-card__headline {
+    flex: 1 1 auto;
+    min-width: min(100%, 10rem);
+  }
+
+  .split-exercise-card__actions {
+    margin-inline-start: 0;
+  }
+
+  .split-exercise-card__rm {
+    flex: 0 1 auto;
+    min-width: 9rem;
+    max-width: 13rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .split-exercise-card__headline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .split-exercise-card__actions {
+    margin-inline-start: 0;
+    justify-content: flex-start;
+  }
+
+  .split-exercise-card__rm {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/*
+ * Day columns: stack on phone, auto-fit 2+ on tablet, 3 cols only when ≥280px each.
+ * minmax(17.5rem, 1fr) prevents squeeze below readable card width.
+ */
+@container split (min-width: 36rem) {
+  .split-day-grid {
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+  }
+}
+
+@container split (min-width: 56rem) {
+  .split-day-grid.is-three-days {
+    grid-template-columns: repeat(3, minmax(17.5rem, 1fr));
+  }
+}
+
+@container split (min-width: 52rem) {
+  .split-day-grid {
+    gap: var(--space-5);
+  }
+
+  .split-day-card {
+    padding: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-exercise-card {
+    animation: none;
+  }
+}
+
+/* Legacy aliases (drag states) */
+.split-day-column.is-over {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
 /* Preview */
+.split-calculation-history {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.split-calculation-history__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.split-calculation-history__head h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--type-18);
+  font-weight: 600;
+}
+
+.split-calculation-history__head span {
+  color: var(--text-secondary);
+  font-size: var(--type-12);
+  font-variant-numeric: tabular-nums;
+}
+
+.split-calculation-history__list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.split-calculation-card-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.split-calculation-card-wrap.is-active .split-calculation-card {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-raised));
+}
+
+.split-calculation-card {
+  appearance: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 14px var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out),
+    background var(--duration-micro) var(--ease-out);
+}
+
+.split-calculation-card-wrap .split-calculation-card.is-active,
+.split-calculation-card.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-raised));
+}
+
+.split-calculation-card__copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.split-calculation-card__copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: var(--type-16);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.split-calculation-card__copy span {
+  color: var(--text-secondary);
+  font-size: var(--type-12);
+  line-height: 1.4;
+}
+
+.split-calculation-card__program {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  color: var(--text);
+  font-size: var(--type-14);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.split-calculation-card__program span {
+  color: inherit;
+  font-size: inherit;
+}
+
+.split-calculation-card__action {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--type-12);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.split-calculation-card__metric {
+  color: var(--accent);
+  font-size: var(--type-16);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.split-calculation-card:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.split-calculation-card__delete {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out),
+    color var(--duration-micro) var(--ease-out),
+    background var(--duration-micro) var(--ease-out);
+}
+
+.split-calculation-card__delete:focus-visible {
+  border-color: var(--destructive, #c0392b);
+  color: var(--destructive, #c0392b);
+  outline: 2px solid color-mix(in srgb, var(--destructive, #c0392b) 40%, transparent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-calculation-card__delete:hover {
+    border-color: color-mix(in srgb, var(--destructive, #c0392b) 45%, var(--border));
+    color: var(--destructive, #c0392b);
+    background: color-mix(in srgb, var(--destructive, #c0392b) 6%, var(--surface-raised));
+  }
+}
+
+.split-calculation-delete-backdrop {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: max(var(--space-4), env(safe-area-inset-top, 0px)) var(--space-4)
+    max(var(--space-4), calc(4.5rem + env(safe-area-inset-bottom, 0px)));
+  position: fixed;
+  z-index: 1200;
+}
+
+.split-calculation-delete-dialog {
+  animation: splitCalculationDeleteIn 240ms var(--ease-out) both;
+  background: var(--card);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+  max-width: 420px;
+  padding: var(--space-5);
+  width: 100%;
+}
+
+@keyframes splitCalculationDeleteIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.split-calculation-delete-dialog__title {
+  margin: 0 0 var(--space-3);
+  color: var(--text);
+  font-size: var(--type-20);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.split-calculation-delete-dialog__body {
+  margin: 0 0 var(--space-5);
+  color: var(--text-secondary);
+  font-size: var(--type-14);
+  line-height: 1.5;
+}
+
+.split-calculation-delete-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-calculation-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 430px) {
+  .split-calculation-card-wrap {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1);
+  }
+
+  .split-calculation-card {
+    align-items: start;
+    padding-inline: var(--space-3);
+  }
+
+  .split-calculation-card__delete {
+    align-self: stretch;
+    width: 2.75rem;
+    min-height: 4.5rem;
+  }
+
+  .split-preview__frame {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  .split-week-stepper {
+    gap: var(--space-1);
+  }
+}
+
 .split-preview {
   min-width: 0;
+}
+
+.split-preview__frame {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  background: var(--surface-raised);
+}
+
+.split-preview__lede {
+  margin: 0;
+  font-size: var(--type-14);
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: none;
+}
+
+.split-preview__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+}
+
+.split-preview__legend-item {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--glass-radius-badge);
+  border: var(--border-width) solid var(--border-subtle);
+  font-size: var(--type-12);
+  font-weight: 500;
+  line-height: 1.33;
+}
+
+.split-preview__legend-item--passed {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-raised));
+  color: var(--text);
+}
+
+.split-preview__legend-item--current {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface-raised));
+  color: var(--text);
+}
+
+.split-preview__legend-item--upcoming {
+  background: var(--surface-raised);
+  color: var(--text-secondary);
 }
 
 .split-section-label {
@@ -528,32 +1472,56 @@
 }
 
 .split-week-stepper {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--space-1);
-  scrollbar-width: thin;
+  width: 100%;
+  margin-bottom: 0;
 }
 
 .split-week-btn {
-  flex-shrink: 0;
-  min-width: 2.25rem;
-  min-height: 2.25rem;
+  aspect-ratio: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   background: var(--surface-raised);
   color: var(--text-secondary);
-  font-size: var(--type-14);
-  font-weight: 500;
+  font-size: var(--type-16);
+  font-weight: 600;
   cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.55rem;
+  /* transform/opacity only — bg/border snap instantly to avoid light-theme flash */
   transition:
-    border-color var(--duration-micro) var(--ease-in-out),
-    color var(--duration-micro) var(--ease-in-out),
-    background var(--duration-micro) var(--ease-in-out);
+    transform var(--duration-micro) var(--ease-out),
+    opacity var(--duration-micro) var(--ease-out);
+}
+
+.split-week-btn--passed {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface-raised));
+}
+
+.split-week-btn--current {
+  border-color: var(--accent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-raised));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.split-week-btn--upcoming {
+  color: var(--text-secondary);
+  background: var(--surface-raised);
+}
+
+.split-week-btn:active {
+  transform: scale(0.96);
+  opacity: 0.88;
 }
 
 .split-week-btn.is-active {
@@ -562,17 +1530,132 @@
   background: color-mix(in srgb, var(--accent) 14%, var(--surface-raised));
 }
 
+.split-week-btn.is-done {
+  color: var(--text);
+}
+
+.split-week-btn.is-done::before {
+  content: '';
+  position: absolute;
+  top: 0.28rem;
+  right: 0.28rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+/* Partial: some days of the week marked — show progress in the square before full done. */
+.split-week-btn.is-partial {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-raised));
+}
+
+.split-week-btn.is-partial::before {
+  content: '';
+  position: absolute;
+  top: 0.28rem;
+  right: 0.28rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.split-week-btn[data-status='passed']::after,
+.split-week-btn[data-status='current']::after,
+.split-week-btn[data-status='upcoming']::after {
+  content: '';
+  position: absolute;
+  inset-inline: 50%;
+  inset-block-end: 0.32rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-inline-start: -0.2rem;
+  border-radius: 999px;
+}
+
+.split-week-btn[data-status='passed']::after {
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+.split-week-btn[data-status='current']::after {
+  background: var(--accent);
+}
+
+.split-week-btn[data-status='upcoming']::after {
+  background: var(--border);
+}
+
 .split-week-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+.split-week-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.split-week-progress__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: var(--space-2);
+}
+
+.split-week-progress__days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.split-week-progress__label {
+  margin: 0;
+  font-size: var(--type-12);
+  font-weight: 500;
+  color: var(--text-secondary);
+  width: 100%;
+}
+
+.split-day-done-btn {
+  appearance: none;
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--type-13);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.split-day-done-btn.is-done {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-raised));
+  color: var(--text);
+}
+
+.split-day-done-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .split-fixed-weights {
-  margin-top: var(--space-4);
+  margin-top: 0;
   padding: var(--space-3);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-raised);
+  border: var(--border-width) solid var(--border-subtle);
+  background: var(--surface);
 }
 
 .split-fixed-row {
@@ -610,4 +1693,522 @@
 .split-preview .training-card--split-preview .pt th,
 .split-preview .training-card--split-preview .pt td {
   font-family: var(--font-system);
+}
+
+/* Split preview — motion-safe table chrome (light + dark) */
+.split-preview .training-card--split-preview tr.training-row td {
+  background: var(--surface);
+  transition: none;
+}
+
+.split-preview .training-card--split-preview tr.training-row--stripe td {
+  background: var(--surface-raised);
+}
+
+.split-preview .training-card--split-preview tr.training-row.is-expanded td {
+  background: var(--surface-raised);
+}
+
+.split-preview .training-card--split-preview .training-exercise-trigger,
+.split-preview .training-card--split-preview .training-exercise-trigger__hint {
+  transition: none;
+}
+
+.split-preview .training-card--split-preview .training-exercise-trigger__hint {
+  background: var(--surface-raised);
+  border-color: var(--border);
+}
+
+.split-preview .training-card--split-preview .w-sr {
+  color: var(--text-secondary);
+}
+
+.split-preview .training-card--split-preview .v-md {
+  color: var(--text-secondary);
+}
+
+.split-preview .training-load-menu.ta-shell {
+  box-shadow: var(--shadow-2);
+}
+
+@media (hover: hover) {
+  .split-preview .training-card--split-preview table.pt tr.training-row:hover td {
+    background: color-mix(in srgb, var(--text-strong) 4%, var(--surface));
+  }
+
+  .split-preview .training-card--split-preview table.pt tr.training-row--stripe:hover td {
+    background: color-mix(in srgb, var(--text-strong) 4%, var(--surface-raised));
+  }
+
+  .split-preview
+    .training-card--split-preview
+    table.pt
+    tr.training-row:hover
+    .training-exercise-trigger,
+  .split-preview .training-card--split-preview .training-exercise-trigger:hover {
+    background: transparent;
+    color: var(--text);
+  }
+
+  .split-preview .training-card--split-preview table.pt tr.training-row:hover .w-kg {
+    color: var(--text-strong);
+  }
+
+  .split-preview .training-card--split-preview table.pt tr.training-row:hover .w-sr,
+  .split-preview .training-card--split-preview table.pt tr.training-row:hover .v-md {
+    color: var(--text-secondary);
+  }
+
+  .split-preview
+    .training-card--split-preview
+    table.pt
+    tr.training-row:hover
+    .training-exercise-trigger__hint,
+  .split-preview
+    .training-card--split-preview
+    .training-exercise-trigger:hover
+    .training-exercise-trigger__hint {
+    background: var(--highlight-inset-soft);
+    border-color: var(--border);
+    color: var(--text-secondary);
+  }
+}
+
+@media (max-width: 760px) {
+  .split-preview .training-card--split-preview tr.training-row td {
+    background: transparent;
+    transition: none;
+  }
+
+  .split-preview .training-card--split-preview tr.training-row {
+    background: var(--surface);
+    transition: none;
+  }
+
+  .split-preview .training-card--split-preview tr.training-row--stripe {
+    background: var(--surface-raised);
+  }
+
+  .split-preview .training-card--split-preview tr.training-row.is-expanded {
+    background: var(--surface-raised);
+  }
+
+  .split-preview .training-card--split-preview .training-exercise-trigger:hover {
+    background: transparent;
+  }
+
+  .split-preview .training-card--split-preview tr.training-row:active {
+    background: color-mix(in srgb, var(--text-strong) 6%, var(--surface));
+  }
+
+  .split-preview .training-card--split-preview tr.training-row--stripe:active {
+    background: color-mix(in srgb, var(--text-strong) 6%, var(--surface-raised));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-calculation-card {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .split-preview .split-week-btn {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .split-preview .training-card--split-preview .training-exercise-trigger,
+  .split-preview .training-card--split-preview .training-exercise-trigger__hint,
+  .split-preview .training-card--split-preview tr.training-row td,
+  .split-preview .training-load-menu.ta-shell {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Global Exercise Adder */
+.global-exercise-adder__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.global-exercise-adder__picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.global-exercise-adder__picker .calc-test {
+  gap: 0;
+  padding-bottom: 0;
+}
+
+.global-exercise-adder__weight-and-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-5);
+  background: var(--surface);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--border);
+  box-shadow: var(--shadow-1);
+}
+
+.global-exercise-adder__weight {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  flex: 1 1 auto;
+}
+
+.global-exercise-adder__weight .pi-group {
+  flex: 1 1 0px !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+.global-exercise-adder .pi-wrapper--stepper {
+  height: 44px;
+}
+
+.global-exercise-adder .pi-wrapper--stepper .pi-input,
+.global-exercise-adder .split-one-rm-input.pi-input {
+  height: 100%;
+  padding-block: 0;
+  --pi-pl: 12px;
+  --pi-pr: 28px;
+  min-width: 0;
+}
+
+.global-exercise-adder .pi-input {
+  font-size: var(--type-16);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--text);
+}
+
+.global-exercise-adder .pi-unit {
+  right: 8px;
+  font-size: var(--type-12);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.global-exercise-adder__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.global-exercise-adder__actions .split-toolbar__label {
+  color: var(--theory-muted, var(--muted));
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.global-exercise-adder__buttons {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.global-exercise-adder__buttons .split-toolbar__action {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: 12px;
+  background: var(--surface-raised);
+  border: var(--border-width) solid var(--border);
+  font-weight: 600;
+  font-size: var(--type-14);
+  color: var(--text);
+  transition:
+    border-color var(--duration-micro) var(--ease-micro),
+    background var(--duration-micro) var(--ease-micro),
+    color var(--duration-micro) var(--ease-micro),
+    transform var(--duration-micro) var(--ease-micro);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .global-exercise-adder__buttons .split-toolbar__action:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--text-strong);
+  }
+}
+
+.global-exercise-adder__buttons .split-toolbar__action:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.global-exercise-adder__buttons .split-toolbar__action:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 680px) {
+  .global-exercise-adder__weight-and-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+  .global-exercise-adder__weight {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  .global-exercise-adder__weight .pi-group {
+    max-width: none;
+  }
+}
+
+/* ===== OneRMDisplay (Calculated 1RM Display) ===== */
+.one-rm-display {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.one-rm-display__card {
+  box-sizing: border-box;
+  height: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--surface-raised) !important;
+  cursor: default;
+  transform: none !important;
+  transition: border-color var(--duration-micro) var(--ease-out);
+}
+
+.one-rm-display__card:hover {
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.one-rm-display__card--empty {
+  background: var(--surface) !important;
+}
+
+.one-rm-display__value-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 28px 0 12px;
+  min-width: 0;
+}
+
+.one-rm-display__value {
+  font-size: var(--type-16);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-align: center;
+  min-width: 0;
+}
+
+.one-rm-display__value--empty {
+  color: var(--text-tertiary, var(--theory-muted, var(--muted)));
+  font-weight: 500;
+  opacity: 0.55;
+}
+
+.one-rm-display__unit {
+  right: 8px;
+  font-size: var(--type-12);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+html[data-theme='light'] .one-rm-display__card--empty {
+  background: var(--surface-raised) !important;
+}
+
+html[data-theme='light'] .one-rm-display__value--empty {
+  color: var(--text-tertiary, #6a7383);
+}
+
+@keyframes one-rm-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .one-rm-display__value:not(.one-rm-display__value--empty) {
+    animation: one-rm-pulse 200ms var(--ease-micro);
+    transform-origin: center center;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 430px) {
+  .global-exercise-adder__weight-and-actions {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .one-rm-display,
+  .one-rm-display__card {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ===== Static Read-Only 1RM Display inside Day Cards ===== */
+.split-exercise-card__static-rm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-raised);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-subtle);
+  font-size: var(--type-12);
+}
+
+.split-exercise-card__static-label {
+  color: var(--theory-muted, var(--muted));
+  font-weight: 500;
+}
+
+.split-exercise-card__static-value-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0;
+}
+
+.split-exercise-card__static-value {
+  color: var(--text-strong, var(--text));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.split-exercise-card__static-details {
+  color: var(--theory-muted, var(--muted));
+  font-weight: 400;
+  font-size: var(--type-12);
+}
+
+.split-exercise-card__static-value--none {
+  color: var(--theory-muted, var(--muted));
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ===== Split primary CTAs (calculate + mark week) =====
+   Match calc-test__submit: solid --accent + --accent-fg, full-width.
+   Override .btn nowrap/letter-spacing so long RU labels fit on ≤430px. */
+.split-calculate-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: var(--space-6) 0;
+  padding: 0;
+}
+
+.split-calculate-btn,
+.split-week-done-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 3rem;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-fg, #0a0a0b);
+  font-family: inherit;
+  font-size: var(--type-14);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: break-word;
+  cursor: pointer;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  transition:
+    background var(--duration-micro) var(--ease-micro),
+    transform var(--duration-micro) var(--ease-micro),
+    opacity var(--duration-micro) var(--ease-micro);
+}
+
+.split-calculate-btn:hover,
+.split-week-done-btn:hover:not(.btn-ghost) {
+  background: var(--accent-hover);
+}
+
+.split-calculate-btn:active,
+.split-week-done-btn:active {
+  transform: scale(0.98);
+}
+
+/* Done-state: keep full-width layout, use ghost token instead of accent fill */
+.split-week-done-btn.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: var(--border-width) solid var(--border);
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .split-calculate-btn,
+  .split-week-done-btn {
+    font-size: var(--type-12);
+    letter-spacing: 0.02em;
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+@media (max-width: 430px) {
+  .split-calculate-btn,
+  .split-week-done-btn {
+    font-size: 11px;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+    min-height: 3rem;
+    padding-block: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-calculate-btn:active,
+  .split-week-done-btn:active {
+    transform: none;
+  }
 }

@@ -25,11 +25,11 @@ function plateToken(weight: number): string {
 }
 
 function plateHeight(weight: number): number {
-  return Math.max(20, Math.min(48, 20 + (weight / 25) * 28))
+  return Math.max(20, Math.min(48, 20 + (weight / 20) * 28))
 }
 
 function plateWidth(weight: number): number {
-  return Math.max(7, Math.min(16, 7 + (weight / 25) * 9))
+  return Math.max(7, Math.min(16, 7 + (weight / 20) * 9))
 }
 
 function buildPieces(plates: number[], side: 'left' | 'right'): PlatePiece[] {

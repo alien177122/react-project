@@ -1,0 +1,196 @@
+/* Logged-in ambient — solid canvas + subtle grain/vignette (auth triptych stays separate) */
+
+/* Page canvas when logged in — dark: #0a0a0b; light: Apple cool gray */
+html:has(.app-shell),
+html:has(.app-ambient-bg):not(:has(.auth-screen)) {
+  background: #0a0a0b;
+}
+
+html:has(.app-shell) body,
+html:has(.app-ambient-bg):not(:has(.auth-screen)) body {
+  background: #0a0a0b;
+}
+
+#root:has(.app-shell),
+#root:has(.app-ambient-bg):not(:has(.auth-screen)) {
+  background: #0a0a0b;
+}
+
+html[data-theme='light']:has(.app-shell),
+html[data-theme='light']:has(.app-ambient-bg):not(:has(.auth-screen)) {
+  background: var(--app-ambient-canvas, var(--bg-grouped, #f2f2f7));
+}
+
+html[data-theme='light']:has(.app-shell) body,
+html[data-theme='light']:has(.app-ambient-bg):not(:has(.auth-screen)) body {
+  background: var(--app-ambient-canvas, var(--bg-grouped, #f2f2f7));
+}
+
+html[data-theme='light'] #root:has(.app-shell),
+html[data-theme='light'] #root:has(.app-ambient-bg):not(:has(.auth-screen)) {
+  background: var(--app-ambient-canvas, var(--bg-grouped, #f2f2f7));
+}
+
+.app-ambient-bg {
+  --app-ambient-bg: #0a0a0b;
+  --app-ambient-grain-opacity: 0.045;
+  --app-ambient-grain-blend: soft-light;
+  --app-ambient-mesh-opacity: 0.52;
+  --app-ambient-vignette: radial-gradient(
+    ellipse 125% 105% at 50% 40%,
+    transparent 32%,
+    rgba(0, 0, 0, 0.52) 100%
+  );
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+html[data-theme='light'] .app-ambient-bg {
+  --app-ambient-bg: var(--app-ambient-canvas, var(--bg-grouped, #f2f2f7));
+  --app-ambient-grain-opacity: 0;
+  --app-ambient-grain-blend: soft-light;
+  --app-ambient-mesh-opacity: 0;
+  --app-ambient-vignette: radial-gradient(
+    ellipse 120% 100% at 50% 45%,
+    transparent 72%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+}
+
+.app-ambient-bg__base {
+  background:
+    radial-gradient(
+      ellipse 88% 62% at 50% 0%,
+      color-mix(in srgb, var(--surface-raised, #1d1d1d) 48%, transparent) 0%,
+      transparent 62%
+    ),
+    var(--app-ambient-bg);
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+html[data-theme='light'] .app-ambient-bg__base {
+  background: var(--app-ambient-bg);
+}
+
+/* Ghost dual-tone mesh — canvas depth (logged-in dark only) */
+.app-ambient-bg__mesh {
+  background:
+    radial-gradient(
+      ellipse 46% 90% at 0% 48%,
+      var(--glow-cyan, rgba(0, 212, 255, 0.16)) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 46% 90% at 100% 52%,
+      var(--glow-crimson, rgba(255, 45, 85, 0.14)) 0%,
+      transparent 72%
+    );
+  inset: 0;
+  opacity: var(--app-ambient-mesh-opacity);
+  position: absolute;
+  z-index: 1;
+}
+
+/* SVG fractal noise — static only (animated grain + blend = scanline flicker on glass) */
+.app-ambient-bg__grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  inset: 0;
+  mix-blend-mode: var(--app-ambient-grain-blend, overlay);
+  opacity: var(--app-ambient-grain-opacity);
+  position: absolute;
+  z-index: 2;
+  /* Why: translate/opacity animation on full-viewport blend layer forces continuous
+     compositor flicker that reads as «рябит» through frosted cards. */
+  animation: none;
+  transform: none;
+}
+
+.app-ambient-bg__vignette {
+  background: var(--app-ambient-vignette);
+  inset: 0;
+  position: absolute;
+  z-index: 3;
+}
+
+/* Light theme: grain through white glass = horizontal banding — hide completely */
+html[data-theme='light'] .app-ambient-bg__grain {
+  display: none;
+}
+
+/* Frosted glass surfaces — readability on canvas */
+.app-shell .user-bar {
+  background: color-mix(in srgb, var(--surface, #141415) 78%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #fff 5%, transparent) inset,
+    0 12px 32px -20px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme='light'] .app-shell .user-bar {
+  background: color-mix(in srgb, var(--surface, #ffffff) 88%, transparent);
+  border-color: var(--border-subtle, rgba(0, 0, 0, 0.08));
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #fff 60%, transparent) inset,
+    0 4px 12px -6px rgba(0, 0, 0, 0.08);
+}
+
+/* Tab shells — ghost dual-tone edge via glass-surface.css; only reset theory wash */
+.app-shell .ta-shell:not(.training-load-menu) {
+  --ta-bg: transparent;
+}
+
+.app-shell .app-tab-section {
+  background: color-mix(in srgb, var(--surface, #141415) 76%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+html[data-theme='light'] .app-shell .app-tab-section {
+  background: color-mix(in srgb, var(--surface, #ffffff) 94%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: var(--border-subtle, rgba(0, 0, 0, 0.08));
+}
+
+/*
+ * Nested `.app-tab-section` inside elevated `.ta-calc-section__inner` must blend —
+ * ambient tint above is stronger than theory-apple’s transparent rule and painted a
+ * hard color slab (Split «Упражнения»). Match section-elevation-standard: no second lift.
+ */
+.app-shell .ta-calc-section__inner .app-tab-section,
+html[data-theme='light'] .app-shell .ta-calc-section__inner .app-tab-section {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-ambient-bg__grain {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .app-shell .user-bar,
+  .app-shell .ta-shell,
+  .app-shell .app-tab-section {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  html[data-theme='light'] .app-shell .user-bar {
+    background: var(--surface, #141415);
+  }
+}

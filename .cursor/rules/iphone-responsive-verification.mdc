@@ -1,6 +1,7 @@
 ---
 description: After every UI/design change, verify iPhone web viewport in Cursor browser
-alwaysApply: true
+globs: src/**/*.{tsx,ts,css,html}
+alwaysApply: false
 ---
 
 # iPhone-first responsive verification

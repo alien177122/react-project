@@ -1,5 +1,7 @@
 # React Project
 
+> **Web-only root (2026-08-27).** Active product: Vite + React (`src/`), `packages/`, `server/`, `tests/`. Native / mobile / Capacitor / Electron trees were **moved** (not deleted) to [`_archive-non-web/`](_archive-non-web/README.md). Restore: see that README.
+
 ## Local development
 
 ```sh
@@ -25,7 +27,7 @@ npm test            # node --test on the shared utils suite
 npm run lint        # eslint on src/, packages/, root config files
 ```
 
-`build` and `lint` only cover the web/shared workspace. `training-app-mobile/` and `apps/macos` have their own toolchains and are ignored by the root ESLint config.
+`build` and `lint` cover the web/shared workspace. Archived Expo / Capacitor / Electron trees are under `_archive-non-web/` and are ignored by root ESLint.
 
 ## Vercel deploy
 
@@ -66,12 +68,51 @@ Offline support / Service Worker is intentionally not included in this iteration
 
 1. Web deploy → PWA — current step.
 2. User testing on iOS via the home-screen install.
-3. Optional: Capacitor wrap → App Store, only if push / biometric / native FS access is required.
-4. `training-app-mobile/` — parallel React Native track for the same flows when nativeness is the goal rather than convenience.
+3. Optional live reload: `CAP_DEV_SERVER_URL=http://<LAN-IP>:5173 npm run cap:sync`
+4. `npm run cap:open:ios` or `cap:open:android`
+
+## Ionic + Capacitor (iOS / Android native shells)
+
+The web app (`src/`) is wrapped by **Capacitor 7** into native iOS/Android projects. **Ionic React** provides iOS-mode bootstrap and optional native UI primitives; existing tab UI is unchanged.
+
+| Script                     | Action                           |
+| -------------------------- | -------------------------------- |
+| `npm run cap:sync`         | `npm run build` + `npx cap sync` |
+| `npm run cap:ios`          | sync + open Xcode                |
+| `npm run cap:android`      | sync + open Android Studio       |
+| `npm run cap:open:ios`     | open Xcode only                  |
+| `npm run cap:open:android` | open Android Studio only         |
+
+**First-time setup:**
+
+```sh
+cp .env.capacitor.example .env.capacitor.local
+# Set VITE_API_URL (required for native — no relative /api)
+# iOS Simulator: http://127.0.0.1:3002/api
+# Android emulator: http://10.0.2.2:3002/api
+# Physical device: http://<your-mac-lan-ip>:3002/api
+
+export $(grep -v '^#' .env.capacitor.local | xargs)
+npm run cap:sync
+npm run cap:open:ios    # or cap:open:android
+```
+
+**Live reload (optional):** with `npm run dev` running, set `CAP_DEV_SERVER_URL=http://<LAN-IP>:5173` before `cap:sync`.
+
+**Prerequisites:** Xcode + CocoaPods (iOS), Android Studio + SDK (Android). Full reference: `memory-bank/reference/ionic-capacitor-standard.md`.
+
+**Expo (`apps/mobile/`, `apps/macos/`)** remains a parallel React Native track (Readiness screen, Android release scripts) — not replaced by Capacitor.
+
+## Roadmap
+
+1. Web deploy → PWA — done.
+2. User testing on iOS via home-screen install or Capacitor shell.
+3. App Store / Play Store via Capacitor when store distribution is needed.
+4. `apps/mobile/` — RN track for native-only features if Capacitor is insufficient.
 
 ## macOS desktop
 
-`training-app-mobile` остаётся Expo/iOS/Android контуром. Для macOS теперь используется desktop shell над текущим адаптивным веб-клиентом, потому что этот путь переиспользует готовый UI и backend без переписывания проекта под `react-native-macos`.
+Desktop — Electron shell (`desktop/main.cjs`) над адаптивным веб-клиентом. Native Expo-трек: `apps/mobile/` и `apps/macos/`. Legacy `training-app-mobile/` и `platforms/` удалены (2026-07-15).
 
 Локальный desktop dev:
 
@@ -227,6 +268,33 @@ What the launch agent does:
 - restarts it after crashes
 - starts it automatically after macOS login
 - writes logs to `logs/public.launchd.out.log` and `logs/public.launchd.err.log`
+
+## Freemium billing (Platega.io)
+
+Web users get three free server-side 1RM calculations per account. After the limit, form fields stay editable but new results are withheld until a one-time Platega payment confirms via webhook. Journal, split, theory, and training tabs remain accessible.
+
+**Local dev:** leave `PLATEGA_ENABLED=0` (default). The server treats all accounts as premium — no Platega network calls.
+
+**Production / tunnel:** set in `.env.public`, `.env.docker`, or server env:
+
+| Variable                 | Purpose                                        |
+| ------------------------ | ---------------------------------------------- |
+| `PLATEGA_ENABLED=1`      | Enable checkout and free-tier limits           |
+| `PLATEGA_MERCHANT_ID`    | Merchant ID from Platega dashboard             |
+| `PLATEGA_SECRET`         | API secret (headers only, never in frontend)   |
+| `PLATEGA_PRICE_RUB`      | Server-side price (client cannot override)     |
+| `FREE_CALCULATION_LIMIT` | Free calculations before paywall (default `3`) |
+| `PUBLIC_APP_URL`         | HTTPS origin, e.g. `https://app.example.com`   |
+
+**Webhook:** configure in Platega cabinet:
+
+```txt
+https://<PUBLIC_HOSTNAME>/api/billing/webhook
+```
+
+Do not use `localhost`, plain HTTP, or private IPs for callbacks. Checkout return URLs are derived from `PUBLIC_APP_URL`; the webhook URL is configured separately in Platega.
+
+**API routes:** `GET /api/billing/status`, `POST /api/billing/checkout`, `POST /api/billing/webhook`, `POST /api/calculator/calculate`, `GET /api/calculator/history`.
 
 ## Health checks
 

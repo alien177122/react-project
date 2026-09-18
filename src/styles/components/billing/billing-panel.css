@@ -1,0 +1,54 @@
+.billing-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-secondary);
+}
+
+.billing-panel--premium {
+  border-color: color-mix(in srgb, var(--color-success) 24%, var(--color-border-subtle));
+}
+
+.billing-panel__header {
+  display: grid;
+  gap: 4px;
+}
+
+.billing-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.billing-panel__meta,
+.billing-panel__notice,
+.billing-panel__error {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+}
+
+.billing-panel__error {
+  color: var(--color-destructive);
+}
+
+.billing-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.billing-panel__checkout {
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .billing-panel__checkout:active {
+    transform: none;
+  }
+}

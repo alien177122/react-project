@@ -10,17 +10,18 @@ import {
   STRENGTH_WAVE_PHASES,
   type PriorityLevel,
   type StrengthScienceCard,
-} from '@shared/data/strength-formula'
-import type { ReactNode } from 'react'
-import { useDetailsState } from '../hooks/useDetailsState'
+} from '@training/shared/data/strength-formula';
+import type {MouseEvent, ReactNode} from 'react';
+import {useDetailsState} from '../hooks/useDetailsState';
+import {TierPyramid, type TierEntry} from './TierPyramid';
 
 const INTERNAL_NAV = [
-  { id: 'principles', label: 'Принципы' },
-  { id: 'wave', label: 'Волна' },
-  { id: 'warmup', label: 'Разминка' },
-  { id: 'autoreg', label: 'Авторегуляция' },
-  { id: 'science', label: 'Наука' },
-] as const
+  {id: 'principles', label: 'Принципы'},
+  {id: 'wave', label: 'Волна'},
+  {id: 'warmup', label: 'Разминка'},
+  {id: 'autoreg', label: 'Авторегуляция'},
+  {id: 'science', label: 'Наука'},
+] as const;
 
 const LEVEL_LABELS: Record<PriorityLevel, string> = {
   foundation: 'Фундамент',
@@ -28,38 +29,50 @@ const LEVEL_LABELS: Record<PriorityLevel, string> = {
   tuning: 'Тюнинг',
   advanced: 'Только опытным',
   remove: 'Убрать',
-}
+};
 
 const AUTOREG_COLUMNS = [
-  { id: 'before', title: 'До', items: STRENGTH_AUTOREG_CHECKLIST.before },
-  { id: 'during', title: 'Во время', items: STRENGTH_AUTOREG_CHECKLIST.during },
-  { id: 'after', title: 'После', items: STRENGTH_AUTOREG_CHECKLIST.after },
-] as const
+  {id: 'before', title: 'До', items: STRENGTH_AUTOREG_CHECKLIST.before},
+  {id: 'during', title: 'Во время', items: STRENGTH_AUTOREG_CHECKLIST.during},
+  {id: 'after', title: 'После', items: STRENGTH_AUTOREG_CHECKLIST.after},
+] as const;
 
-const FORMULA_OPERATORS = ['×', '×', '×', '−'] as const
+const FORMULA_OPERATORS = ['×', '×', '×', '−'] as const;
 
 const FORMULA_PARTS = [...STRENGTH_FORMULA_OVERVIEW.formulaParts].sort(
   (a, b) => a.visualOrder - b.visualOrder,
-)
+);
 
 const PRIORITY_FACTORS = [...STRENGTH_FACTOR_TIERS].sort(
   (a, b) => PRIORITY_ORDER[a.level] - PRIORITY_ORDER[b.level],
-)
+);
+
+/** Same card language as Tier List: badge + chips + readable note. */
+const PRIORITY_TIERS: readonly TierEntry[] = PRIORITY_FACTORS.map(tier => ({
+  tier: tier.rank.replace('-TIER', ''),
+  color: tier.color,
+  textColor: tier.textColor,
+  label: `${LEVEL_LABELS[tier.level]}: ${tier.plainLabel}`,
+  items: tier.keyParameters,
+  note: `${tier.detail} ${tier.action}`,
+}));
 
 const SCIENCE_CARD_GROUPS = Array.from(
   STRENGTH_SCIENCE_CARDS.reduce((groups, card) => {
-    const currentGroup = groups.get(card.group) ?? []
-    currentGroup.push(card)
-    groups.set(card.group, currentGroup)
-    return groups
+    const currentGroup = groups.get(card.group) ?? [];
+    currentGroup.push(card);
+    groups.set(card.group, currentGroup);
+    return groups;
   }, new Map<string, StrengthScienceCard[]>()),
-)
+);
 
 function groupStorageId(group: string) {
-  return group
-    .toLowerCase()
-    .replace(/[^a-zа-я0-9]+/gi, '-')
-    .replace(/^-|-$/g, '') || 'science'
+  return (
+    group
+      .toLowerCase()
+      .replace(/[^a-zа-я0-9]+/gi, '-')
+      .replace(/^-|-$/g, '') || 'science'
+  );
 }
 
 function StrengthBlock({
@@ -68,29 +81,31 @@ function StrengthBlock({
   title,
   children,
 }: {
-  id: string
-  eyebrow: string
-  title: string
-  children: ReactNode
+  id: string;
+  eyebrow: string;
+  title: string;
+  children: ReactNode;
 }) {
   return (
     <section id={id} className="ta-strength-block" aria-labelledby={`${id}-heading`}>
       <div className="ta-strength-block__head">
         <span className="ta-strength-eyebrow">{eyebrow}</span>
-        <h3 id={`${id}-heading`} className="ta-strength-block__title">{title}</h3>
+        <h3 id={`${id}-heading`} className="ta-strength-block__title">
+          {title}
+        </h3>
       </div>
       {children}
     </section>
-  )
+  );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({label, value}: {label: string; value: string}) {
   return (
     <div className="ta-strength-info-row">
       <dt>{label}</dt>
       <dd>{value}</dd>
     </div>
-  )
+  );
 }
 
 function ScienceDetailsGroup({
@@ -98,26 +113,33 @@ function ScienceDetailsGroup({
   cards,
   defaultOpen,
 }: {
-  group: string
-  cards: StrengthScienceCard[]
-  defaultOpen: boolean
+  group: string;
+  cards: StrengthScienceCard[];
+  defaultOpen: boolean;
 }) {
-  const [open, setOpen] = useDetailsState(groupStorageId(group), defaultOpen)
+  const [open, setOpen] = useDetailsState(groupStorageId(group), defaultOpen);
+
+  const handleSummaryClick = (event: MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    setOpen(current => !current);
+  };
+
+  const contentId = `strength-science-${groupStorageId(group)}`;
 
   return (
-    <details
-      className="ta-strength-science-group"
-      open={open}
-      onToggle={(event) => setOpen(event.currentTarget.open)}
-    >
-      <summary className="ta-strength-science-group__summary">
+    <details className={`ta-strength-science-group${open ? ' is-open' : ''}`} open={open}>
+      <summary
+        className="ta-strength-science-group__summary"
+        aria-expanded={open}
+        aria-controls={contentId}
+        onClick={handleSummaryClick}>
         <span className="ta-strength-science-group__title">{group}</span>
         <span className="ta-strength-science-group__count">
           {cards.length} {cards.length === 1 ? 'карточка' : 'карточек'}
         </span>
       </summary>
 
-      <div className="ta-strength-science-group__content">
+      <div id={contentId} className="ta-strength-science-group__content">
         <div className="ta-strength-science-group__inner">
           {cards.map(card => (
             <article key={card.id} className="ta-strength-science-card">
@@ -125,9 +147,7 @@ function ScienceDetailsGroup({
                 <span>{card.category}</span>
                 <span>Diff {card.difficulty}/3</span>
               </div>
-              <h4 className="ta-strength-science-card__question">
-                {card.question}
-              </h4>
+              <h4 className="ta-strength-science-card__question">{card.question}</h4>
               <p className="ta-strength-copy">{card.answer}</p>
               <p className="ta-strength-science-card__apply">
                 <strong>Как применить:</strong> {card.application}
@@ -141,7 +161,7 @@ function ScienceDetailsGroup({
         </div>
       </div>
     </details>
-  )
+  );
 }
 
 export function StrengthFormulaSection() {
@@ -154,23 +174,23 @@ export function StrengthFormulaSection() {
         </h3>
         <p className="ta-strength-lede">{STRENGTH_FORMULA_OVERVIEW.thesis}</p>
 
-        <div className="ta-strength-formula" aria-label="Формула силы: специфичность умножить на тяжёлые экспозиции, умножить на восстановление, умножить на качество повторов, минус лишняя усталость">
+        <div
+          className="ta-strength-formula"
+          aria-label="Формула силы: специфичность умножить на тяжёлые экспозиции, умножить на восстановление, умножить на качество повторов, минус лишняя усталость">
           {FORMULA_PARTS.map((part, index) => (
             <span key={part.id} className="ta-strength-formula__pair">
               <span
                 className="ta-strength-formula__term"
                 data-part={part.id}
                 data-tone={part.tone}
-                title={part.hint}
-              >
+                title={part.hint}>
                 {part.label}
               </span>
               {FORMULA_OPERATORS[index] ? (
                 <span
                   className="ta-strength-formula__op"
                   data-op={FORMULA_OPERATORS[index] === '−' ? 'minus' : 'multiply'}
-                  aria-hidden="true"
-                >
+                  aria-hidden="true">
                   {FORMULA_OPERATORS[index]}
                 </span>
               ) : null}
@@ -181,7 +201,9 @@ export function StrengthFormulaSection() {
         <div className="ta-strength-hero__footer">
           <div className="ta-strength-chip-row" aria-label="Пример исходных данных">
             {STRENGTH_FORMULA_OVERVIEW.parameters.map(item => (
-              <span key={item} className="ta-strength-chip">{item}</span>
+              <span key={item} className="ta-strength-chip">
+                {item}
+              </span>
             ))}
           </div>
           <div className="ta-strength-meta-pair">
@@ -200,30 +222,7 @@ export function StrengthFormulaSection() {
       </nav>
 
       <StrengthBlock id="principles" eyebrow="Приоритеты" title="Что двигает силу первым">
-        <ol className="ta-strength-priority" role="list">
-          {PRIORITY_FACTORS.map(tier => (
-            <li
-              key={tier.rank}
-              className="ta-strength-priority__item"
-              data-level={tier.level}
-            >
-              <div className="ta-strength-priority__level">
-                <span>{LEVEL_LABELS[tier.level]}</span>
-                <small>{tier.rank}</small>
-              </div>
-              <div className="ta-strength-priority__body">
-                <h4>{tier.plainLabel}</h4>
-                <p className="ta-strength-copy">{tier.detail}</p>
-                <div className="ta-strength-chip-row">
-                  {tier.keyParameters.map(item => (
-                    <span key={item} className="ta-strength-chip">{item}</span>
-                  ))}
-                </div>
-                <p className="ta-strength-action">{tier.action}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <TierPyramid tiers={PRIORITY_TIERS} />
       </StrengthBlock>
 
       <StrengthBlock id="wave" eyebrow="Периодизация" title="8-недельная волна">
@@ -262,8 +261,7 @@ export function StrengthFormulaSection() {
           {STRENGTH_WARMUP_STACK.map(step => (
             <li
               key={step.stage}
-              className={`ta-strength-ladder__step${step.isWorkSet ? ' is-working' : ''}`}
-            >
+              className={`ta-strength-ladder__step${step.isWorkSet ? ' is-working' : ''}`}>
               <span className="ta-strength-ladder__stage">{step.stage}</span>
               <span className="ta-strength-ladder__weight">{step.weight || '\u00a0'}</span>
               <span className="ta-strength-ladder__goal">{step.goal}</span>
@@ -278,12 +276,18 @@ export function StrengthFormulaSection() {
         <p className="ta-strength-note ta-strength-note--compact">
           Вес округляется вверх к ближайшим 2.5 кг: {STRENGTH_FORMULA_OVERVIEW.rounding}.
         </p>
+        <p className="ta-strength-note ta-strength-note--compact" style={{ marginTop: '8px' }}>
+          💡 За сессию обычно достаточно ~1–2 качественных тяжёлых прямых сетов в движении; объём — back-off.
+        </p>
       </StrengthBlock>
 
       <StrengthBlock id="autoreg" eyebrow="Контроль нагрузки" title="Авторегуляция без героизма">
         <div className="ta-strength-autoreg">
           {AUTOREG_COLUMNS.map(column => (
-            <section key={column.id} className="ta-strength-autoreg__column" aria-labelledby={`autoreg-${column.id}`}>
+            <section
+              key={column.id}
+              className="ta-strength-autoreg__column"
+              aria-labelledby={`autoreg-${column.id}`}>
               <h4 id={`autoreg-${column.id}`}>{column.title}</h4>
               <ul role="list">
                 {column.items.map(item => (
@@ -305,7 +309,9 @@ export function StrengthFormulaSection() {
               {step.description ? <p>{step.description}</p> : null}
               {step.bullets ? (
                 <ul role="list">
-                  {step.bullets.map(item => <li key={item}>{item}</li>)}
+                  {step.bullets.map(item => (
+                    <li key={item}>{item}</li>
+                  ))}
                 </ul>
               ) : null}
             </article>
@@ -326,5 +332,5 @@ export function StrengthFormulaSection() {
         </div>
       </StrengthBlock>
     </div>
-  )
+  );
 }

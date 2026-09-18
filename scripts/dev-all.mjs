@@ -59,10 +59,10 @@ function spawnManaged(label, command, args, extraEnv = {}) {
 
   managedChildren.push(child);
 
-  child.once('exit', code => {
+  child.once('exit', (code, signal) => {
     if (shuttingDown) return;
     if (code === 0) return;
-    console.error(`[dev] ${label} exited with code ${code ?? 'unknown'}`);
+    console.error(`[dev] ${label} exited with code ${code ?? 'unknown'} (signal: ${signal})`);
     void shutdown(code ?? 1);
   });
 

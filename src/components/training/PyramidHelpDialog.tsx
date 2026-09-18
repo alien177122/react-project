@@ -1,4 +1,5 @@
 import {useEffect, useId, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
 import {useBodyScrollLock} from '../../hooks/useBodyScrollLock';
 
 const PYRAMID_STEPS = [
@@ -8,7 +9,7 @@ const PYRAMID_STEPS = [
   },
   {
     title: 'Нисходящая ↓',
-    body: 'Вес снижается ~3% на каждый +1 повтор. Повторы: 4 → 5 → 6 → 6. Пример: 100×4 → 97×5 → 94×6 → 91×6.',
+    body: 'Вес ходит в пределах ~±3% от целевого (один шаг вверх / один вниз). Пример @150 кг: 155×3 → 150×4 → 150×4 → 145×5. Лишние подходы держат середину, без второго провала.',
   },
   {
     title: 'Разминка',
@@ -40,6 +41,55 @@ export default function PyramidHelpDialog() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
+  // Portal to body: .reveal-section keeps transform:translate3d even when visible,
+  // so nested position:fixed binds to the tall section and docks off-screen.
+  const dialog =
+    open && typeof document !== 'undefined'
+      ? createPortal(
+          <div className="progression-dialog-backdrop" onClick={() => setOpen(false)}>
+            <div
+              className="progression-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              onClick={event => event.stopPropagation()}>
+              <header className="progression-dialog__head">
+                <div>
+                  <p className="progression-dialog__eyebrow">Пирамида нагрузки</p>
+                  <h2 className="progression-dialog__title" id={titleId}>
+                    Алгоритм подходов
+                  </h2>
+                </div>
+                <button
+                  ref={closeRef}
+                  type="button"
+                  className="progression-dialog__close"
+                  onClick={() => setOpen(false)}>
+                  Закрыть
+                </button>
+              </header>
+
+              <ol className="progression-dialog__steps">
+                {PYRAMID_STEPS.map((step, index) => (
+                  <li key={step.title} className="progression-dialog__step">
+                    <span className="progression-dialog__step-num">{index + 1}</span>
+                    <div>
+                      <h3>{step.title}</h3>
+                      <p>{step.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+
+              <p className="progression-dialog__note">
+                Расчёты — ориентиры. Корректируйте по технике и RPE в зале.
+              </p>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
     <>
       <button
@@ -54,49 +104,7 @@ export default function PyramidHelpDialog() {
         </span>
         <span className="progression-pyramid-help__text">Алгоритм</span>
       </button>
-
-      {open && (
-        <div className="progression-dialog-backdrop" onClick={() => setOpen(false)}>
-          <div
-            className="progression-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            onClick={event => event.stopPropagation()}>
-            <header className="progression-dialog__head">
-              <div>
-                <p className="progression-dialog__eyebrow">Пирамида нагрузки</p>
-                <h2 className="progression-dialog__title" id={titleId}>
-                  Алгоритм подходов
-                </h2>
-              </div>
-              <button
-                ref={closeRef}
-                type="button"
-                className="progression-dialog__close"
-                onClick={() => setOpen(false)}>
-                Закрыть
-              </button>
-            </header>
-
-            <ol className="progression-dialog__steps">
-              {PYRAMID_STEPS.map((step, index) => (
-                <li key={step.title} className="progression-dialog__step">
-                  <span className="progression-dialog__step-num">{index + 1}</span>
-                  <div>
-                    <h3>{step.title}</h3>
-                    <p>{step.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-
-            <p className="progression-dialog__note">
-              Расчёты — ориентиры. Корректируйте по технике и RPE в зале.
-            </p>
-          </div>
-        </div>
-      )}
+      {dialog}
     </>
   );
 }

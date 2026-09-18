@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/data/exercises.ts'
+export * from '@training/shared/data/exercises'

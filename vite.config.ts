@@ -10,18 +10,19 @@ const apiProxyTarget =
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    include: ['framer-motion'],
-  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@shared': fileURLToPath(new URL('./packages/shared/src', import.meta.url)),
+      '@training/shared': fileURLToPath(new URL('./packages/shared/src', import.meta.url)),
     },
   },
   server: {
     host: true,
     allowedHosts: true,
+    watch: {
+      ignored: ['**/_tmp_auth_sync/**', '**/_tmp_*/**', '**/public/imagePhone/**'],
+    },
     proxy: {
       '/api': {
         target: apiProxyTarget,

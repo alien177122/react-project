@@ -3,4 +3,4 @@ export type {
   PasswordValidationResult,
   StrengthLabel,
   StrengthScore,
-} from '@shared/types/security';
+} from '@training/shared/types/security';

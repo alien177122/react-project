@@ -1,10 +1,18 @@
 export const SPLIT_LIMITS = {
   MAX_SPLITS: 50,
+  MAX_CALCULATIONS: 50,
   MAX_NAME_LENGTH: 40,
   MAX_DAY_LABEL_LENGTH: 20,
 };
 
-export const LEG_EXERCISE_KEYS = new Set(['squat', 'legPress', 'legExt', 'legCurl', 'gluteBridge']);
+export const LEG_EXERCISE_KEYS = new Set([
+  'squat',
+  'legPress',
+  'legExt',
+  'legCurl',
+  'gluteBridge',
+  'seatedCalfRaise',
+]);
 
 const SPLIT_MUSCLES = new Set(['chest', 'biceps', 'legs', 'shoulders', 'back', 'triceps']);
 const WEIGHT_MODES = new Set(['progression', 'fixed', 'scheme_only']);

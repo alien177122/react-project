@@ -50,10 +50,12 @@ export function filterChartPreviewWeeks(
   weeks: ProgressionPreviewWeek[],
   _preset: ProgressionPreset = 'general',
 ): ProgressionPreviewWeek[] {
+  void _preset;
   return weeks.filter(week => !week.isTestWeek && !week.isPrepWeek);
 }
 
 export function getTestWeekExplanation(_preset: ProgressionPreset = 'general'): string {
+  void _preset;
   return 'Веса считаются от исходного 1ПМ по фиксированным %. На 5-й неделе — разгрузка (ниже объём и интенсивность). Тестовых недель нет.';
 }
 
@@ -61,6 +63,7 @@ export function buildProgressionPreviewWeeks(
   _preset: ProgressionPreset = 'general',
   oneRM = DEMO_SQUAT_ONE_RM,
 ): ProgressionPreviewWeek[] {
+  void _preset;
   return buildGeneralPreviewWeeks(oneRM);
 }
 
@@ -83,6 +86,7 @@ export function getPhaseDisplayLabel(
   week: Pick<ProgressionPreviewWeek, 'week' | 'phase' | 'sets' | 'reps'>,
   _preset: ProgressionPreset = 'general',
 ): string {
+  void _preset;
   if (GENERAL_PHASE_DISPLAY[week.phase]) {
     return GENERAL_PHASE_DISPLAY[week.phase] ?? week.phase;
   }
@@ -106,6 +110,7 @@ export function getProgressionPreviewMeta(_settings: ProgramSettings): {
   subtitle: string;
   weekCount: number;
 } {
+  void _settings;
   const weeks = buildProgressionPreviewWeeks('general');
   return {
     title: `Присед · 1ПМ ${DEMO_SQUAT_ONE_RM} кг`,

@@ -1,0 +1,290 @@
+/* Frosted glass surfaces — TabNav etalon (memory-bank/reference/mobile-tab-nav-background-standard.md) */
+
+.glass-surface {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--border-width) solid var(--glass-border);
+  border-radius: var(--glass-radius-panel);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-surface--inner {
+  border-radius: var(--glass-radius-inner);
+}
+
+.glass-surface--card {
+  background: var(--glass-bg-card);
+}
+
+/* Ghost tactical bisected lighting — cyan left, crimson right (container surfaces only) */
+.ghost-glass,
+.app-hero__glass,
+.app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)),
+.ta-shell .journal-tab-layout .ta-period,
+.ta-shell .journal-tab-layout .ta-calc-note,
+.ta-shell .journal-tab-layout .ew-trigger,
+.ta-shell .journal-tab-layout .journal-chart-empty,
+.ta-shell .journal-tab-layout .journal-history-empty {
+  position: relative;
+  isolation: isolate;
+  background: color-mix(in srgb, var(--surface, #141415) 76%, transparent);
+  backdrop-filter: blur(var(--glass-blur, 20px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  border: var(--border-width) solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #fff 4%, transparent) inset,
+    inset 1px 0 0 color-mix(in srgb, var(--accent-cyan) 10%, transparent),
+    inset -1px 0 0 color-mix(in srgb, var(--accent-crimson) 8%, transparent),
+    0 20px 48px -28px rgba(0, 0, 0, 0.5);
+}
+
+.ghost-glass::before,
+.ghost-glass::after,
+.app-hero__glass::before,
+.app-hero__glass::after,
+.app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::before,
+.app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::after,
+.ta-shell .journal-tab-layout .ta-period::before,
+.ta-shell .journal-tab-layout .ta-period::after,
+.ta-shell .journal-tab-layout .ta-calc-note::before,
+.ta-shell .journal-tab-layout .ta-calc-note::after,
+.ta-shell .journal-tab-layout .ew-trigger::before,
+.ta-shell .journal-tab-layout .ew-trigger::after,
+.ta-shell .journal-tab-layout .journal-chart-empty::before,
+.ta-shell .journal-tab-layout .journal-chart-empty::after,
+.ta-shell .journal-tab-layout .journal-history-empty::before,
+.ta-shell .journal-tab-layout .journal-history-empty::after {
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.ghost-glass::before,
+.app-hero__glass::before,
+.app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::before,
+.ta-shell .journal-tab-layout .ta-period::before,
+.ta-shell .journal-tab-layout .ta-calc-note::before,
+.ta-shell .journal-tab-layout .ew-trigger::before,
+.ta-shell .journal-tab-layout .journal-chart-empty::before,
+.ta-shell .journal-tab-layout .journal-history-empty::before {
+  background: radial-gradient(ellipse 42% 88% at 0% 50%, var(--glow-cyan) 0%, transparent 68%);
+  opacity: 0.55;
+}
+
+.ghost-glass::after,
+.app-hero__glass::after,
+.app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::after,
+.ta-shell .journal-tab-layout .ta-period::after,
+.ta-shell .journal-tab-layout .ta-calc-note::after,
+.ta-shell .journal-tab-layout .ew-trigger::after,
+.ta-shell .journal-tab-layout .journal-chart-empty::after,
+.ta-shell .journal-tab-layout .journal-history-empty::after {
+  background: radial-gradient(ellipse 42% 88% at 100% 50%, var(--glow-crimson) 0%, transparent 68%);
+  opacity: 0.5;
+}
+
+/* Keep interactive content above bisect washes */
+.ghost-glass > *,
+.app-hero__glass > *,
+.app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)) > *,
+.ta-shell .journal-tab-layout .ta-period > *,
+.ta-shell .journal-tab-layout .ta-calc-note > *,
+.ta-shell .journal-tab-layout .ew-trigger > *,
+.ta-shell .journal-tab-layout .journal-chart-empty > *,
+.ta-shell .journal-tab-layout .journal-history-empty > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Tab shells — drop theory-apple orange/purple page wash */
+.app-shell .ta-shell:not(.training-load-menu) {
+  --ta-bg: transparent;
+}
+
+html[data-theme='light'] .ghost-glass,
+html[data-theme='light'] .app-hero__glass,
+html[data-theme='light']
+  .app-shell
+  .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)),
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-period,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-calc-note,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ew-trigger,
+html[data-theme='light'] .ta-shell .journal-tab-layout .journal-chart-empty,
+html[data-theme='light'] .ta-shell .journal-tab-layout .journal-history-empty {
+  background: var(--surface, #ffffff);
+  backdrop-filter: blur(var(--glass-blur, 20px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  border-color: var(--border-subtle, rgba(0, 0, 0, 0.08));
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme='light'] .app-shell .ta-shell:not(.training-load-menu):has(.journal-tab-layout) {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+}
+
+html[data-theme='light']
+  .app-shell
+  .ta-shell:not(.training-load-menu):has(.journal-tab-layout)::before,
+html[data-theme='light']
+  .app-shell
+  .ta-shell:not(.training-load-menu):has(.journal-tab-layout)::after {
+  content: none;
+  display: none;
+}
+
+/* Journal section containers — same lift as Theory `.ta-chapter-panel` (inner only) */
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-calc-section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-section-inner.ta-calc-section__inner {
+  background: var(--ta-surface, var(--surface, #ffffff));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: var(--ta-border, var(--border-subtle, rgba(0, 0, 0, 0.08)));
+  box-shadow: var(--section-elevation);
+}
+
+html[data-theme='light'] .ghost-glass::before,
+html[data-theme='light'] .app-hero__glass::before,
+html[data-theme='light']
+  .app-shell
+  .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::before,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-period::before,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-calc-note::before,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ew-trigger::before,
+html[data-theme='light'] .ta-shell .journal-tab-layout .journal-chart-empty::before,
+html[data-theme='light'] .ta-shell .journal-tab-layout .journal-history-empty::before {
+  opacity: 0;
+}
+
+html[data-theme='light'] .ghost-glass::after,
+html[data-theme='light'] .app-hero__glass::after,
+html[data-theme='light']
+  .app-shell
+  .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::after,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-period::after,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ta-calc-note::after,
+html[data-theme='light'] .ta-shell .journal-tab-layout .ew-trigger::after,
+html[data-theme='light'] .ta-shell .journal-tab-layout .journal-chart-empty::after,
+html[data-theme='light'] .ta-shell .journal-tab-layout .journal-history-empty::after {
+  opacity: 0;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-surface,
+  .glass-surface--card {
+    background: var(--surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .ghost-glass,
+  .app-hero__glass,
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)),
+  .ta-shell .journal-tab-layout .ta-period,
+  .ta-shell .journal-tab-layout .ta-calc-note,
+  .ta-shell .journal-tab-layout .ew-trigger,
+  .ta-shell .journal-tab-layout .journal-chart-empty,
+  .ta-shell .journal-tab-layout .journal-history-empty {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface, #141415);
+  }
+
+  .ghost-glass::before,
+  .ghost-glass::after,
+  .app-hero__glass::before,
+  .app-hero__glass::after,
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::before,
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::after,
+  .ta-shell .journal-tab-layout .ta-period::before,
+  .ta-shell .journal-tab-layout .ta-period::after,
+  .ta-shell .journal-tab-layout .ta-calc-note::before,
+  .ta-shell .journal-tab-layout .ta-calc-note::after,
+  .ta-shell .journal-tab-layout .ew-trigger::before,
+  .ta-shell .journal-tab-layout .ew-trigger::after,
+  .ta-shell .journal-tab-layout .journal-chart-empty::before,
+  .ta-shell .journal-tab-layout .journal-chart-empty::after,
+  .ta-shell .journal-tab-layout .journal-history-empty::before,
+  .ta-shell .journal-tab-layout .journal-history-empty::after {
+    content: none;
+  }
+
+  .ghost-glass,
+  .app-hero__glass,
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)),
+  .ta-shell .journal-tab-layout .ta-period,
+  .ta-shell .journal-tab-layout .ta-calc-note,
+  .ta-shell .journal-tab-layout .ew-trigger,
+  .ta-shell .journal-tab-layout .journal-chart-empty,
+  .ta-shell .journal-tab-layout .journal-history-empty {
+    box-shadow:
+      0 1px 0 color-mix(in srgb, #fff 4%, transparent) inset,
+      0 20px 48px -28px rgba(0, 0, 0, 0.5);
+  }
+
+  .ta-shell .journal-tab-layout .ta-section-inner.ta-calc-section__inner {
+    box-shadow: var(--section-elevation);
+  }
+
+  html[data-theme='light'] .ghost-glass,
+  html[data-theme='light'] .app-hero__glass,
+  html[data-theme='light'] .app-shell .ta-shell:not(.training-load-menu),
+  html[data-theme='light'] .ta-shell .journal-tab-layout .ta-period,
+  html[data-theme='light'] .ta-shell .journal-tab-layout .ta-calc-note,
+  html[data-theme='light'] .ta-shell .journal-tab-layout .ew-trigger,
+  html[data-theme='light'] .ta-shell .journal-tab-layout .journal-chart-empty,
+  html[data-theme='light'] .ta-shell .journal-tab-layout .journal-history-empty {
+    background: var(--surface, #ffffff);
+    box-shadow:
+      0 1px 0 color-mix(in srgb, #fff 28%, transparent) inset,
+      0 16px 40px -24px rgba(0, 0, 0, 0.12);
+  }
+
+  html[data-theme='light'] .ta-shell .journal-tab-layout .ta-section-inner.ta-calc-section__inner {
+    background: var(--ta-surface, var(--surface, #ffffff));
+    box-shadow: var(--section-elevation);
+  }
+}
+
+/* Phone/tablet: drop the ghost-glass rear plate on tab shells (Calculator
+ * `.ta-stack--calc` sat inside this painted frame). Journal keeps inner cards. */
+@media (max-width: 899px) {
+  html[data-theme='light']
+    .app-shell
+    .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)),
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout)) {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  html[data-theme='light']
+    .app-shell
+    .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::before,
+  html[data-theme='light']
+    .app-shell
+    .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::after,
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::before,
+  .app-shell .ta-shell:not(.training-load-menu):not(:has(.journal-tab-layout))::after {
+    content: none;
+    display: none;
+  }
+}

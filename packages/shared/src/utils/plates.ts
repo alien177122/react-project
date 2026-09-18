@@ -1,5 +1,6 @@
 export const DEFAULT_BAR_WEIGHT = 20
-export const DEFAULT_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25] as const
+/** Standard gym set — 20 kg is the heaviest plate most gyms stock; 25 kg is omitted by default. */
+export const DEFAULT_PLATES = [20, 15, 10, 5, 2.5, 1.25] as const
 
 export type PlateResult =
   | {

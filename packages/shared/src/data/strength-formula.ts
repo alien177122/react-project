@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import {z} from 'zod';
 
 export const FormulaPartOrderSchema = z.union([
   z.literal(1),
@@ -6,7 +6,7 @@ export const FormulaPartOrderSchema = z.union([
   z.literal(3),
   z.literal(4),
   z.literal(5),
-])
+]);
 
 export const StrengthFormulaPartSchema = z.object({
   id: z.string().min(1),
@@ -14,7 +14,7 @@ export const StrengthFormulaPartSchema = z.object({
   hint: z.string().min(1),
   tone: z.enum(['positive', 'negative']),
   visualOrder: FormulaPartOrderSchema,
-})
+});
 
 export const StrengthFormulaOverviewSchema = z.object({
   title: z.string().min(1),
@@ -24,7 +24,7 @@ export const StrengthFormulaOverviewSchema = z.object({
   parameters: z.array(z.string().min(1)).min(1),
   rounding: z.string().min(1),
   logic: z.string().min(1),
-})
+});
 
 export const PriorityLevelSchema = z.enum([
   'foundation',
@@ -32,9 +32,9 @@ export const PriorityLevelSchema = z.enum([
   'tuning',
   'advanced',
   'remove',
-])
+]);
 
-export type PriorityLevel = z.infer<typeof PriorityLevelSchema>
+export type PriorityLevel = z.infer<typeof PriorityLevelSchema>;
 
 export const PRIORITY_ORDER: Record<PriorityLevel, number> = {
   foundation: 0,
@@ -42,7 +42,7 @@ export const PRIORITY_ORDER: Record<PriorityLevel, number> = {
   tuning: 2,
   advanced: 3,
   remove: 4,
-} as const
+} as const;
 
 export const StrengthFactorTierSchema = z.object({
   rank: z.enum(['S-TIER', 'A-TIER', 'B-TIER', 'C-TIER', 'F-TIER']),
@@ -55,7 +55,7 @@ export const StrengthFactorTierSchema = z.object({
   trigger: z.string().min(1),
   color: z.string().min(1),
   textColor: z.string().min(1).optional(),
-})
+});
 
 export const StrengthWavePhaseSchema = z.object({
   id: z.string().min(1),
@@ -68,7 +68,7 @@ export const StrengthWavePhaseSchema = z.object({
   focus: z.string().min(1),
   stopRule: z.string().min(1),
   color: z.string().min(1),
-})
+});
 
 export const StrengthWarmupStepSchema = z.object({
   stage: z.string().min(1),
@@ -78,7 +78,7 @@ export const StrengthWarmupStepSchema = z.object({
   goal: z.string().min(1),
   color: z.string().min(1),
   isWorkSet: z.boolean().optional(),
-})
+});
 
 export const StrengthScienceCardSchema = z.object({
   id: z.string().min(1),
@@ -91,7 +91,7 @@ export const StrengthScienceCardSchema = z.object({
   source: z.string().min(1),
   tags: z.array(z.string().min(1)).min(1),
   color: z.string().min(1),
-})
+});
 
 export const StrengthProtocolStepSchema = z.object({
   step: z.string().min(1),
@@ -99,13 +99,13 @@ export const StrengthProtocolStepSchema = z.object({
   description: z.string().min(1).optional(),
   bullets: z.array(z.string().min(1)).optional(),
   color: z.string().min(1),
-})
+});
 
 export const StrengthAutoregChecklistSchema = z.object({
   before: z.array(z.string().min(1)).min(1),
   during: z.array(z.string().min(1)).min(1),
   after: z.array(z.string().min(1)).min(1),
-})
+});
 
 export const StrengthFormulaDataSchema = z.object({
   overview: StrengthFormulaOverviewSchema,
@@ -116,18 +116,18 @@ export const StrengthFormulaDataSchema = z.object({
   scienceCards: z.array(StrengthScienceCardSchema).min(1),
   protocolSteps: z.array(StrengthProtocolStepSchema).min(1),
   autoregChecklist: StrengthAutoregChecklistSchema,
-})
+});
 
-export type FormulaPartVisualOrder = z.infer<typeof FormulaPartOrderSchema>
-export type StrengthFormulaPart = z.infer<typeof StrengthFormulaPartSchema>
-export type StrengthFormulaOverview = z.infer<typeof StrengthFormulaOverviewSchema>
-export type StrengthFactorTier = z.infer<typeof StrengthFactorTierSchema>
-export type StrengthWavePhase = z.infer<typeof StrengthWavePhaseSchema>
-export type StrengthWarmupStep = z.infer<typeof StrengthWarmupStepSchema>
-export type StrengthScienceCard = z.infer<typeof StrengthScienceCardSchema>
-export type StrengthProtocolStep = z.infer<typeof StrengthProtocolStepSchema>
-export type StrengthAutoregChecklist = z.infer<typeof StrengthAutoregChecklistSchema>
-export type StrengthFormulaData = z.infer<typeof StrengthFormulaDataSchema>
+export type FormulaPartVisualOrder = z.infer<typeof FormulaPartOrderSchema>;
+export type StrengthFormulaPart = z.infer<typeof StrengthFormulaPartSchema>;
+export type StrengthFormulaOverview = z.infer<typeof StrengthFormulaOverviewSchema>;
+export type StrengthFactorTier = z.infer<typeof StrengthFactorTierSchema>;
+export type StrengthWavePhase = z.infer<typeof StrengthWavePhaseSchema>;
+export type StrengthWarmupStep = z.infer<typeof StrengthWarmupStepSchema>;
+export type StrengthScienceCard = z.infer<typeof StrengthScienceCardSchema>;
+export type StrengthProtocolStep = z.infer<typeof StrengthProtocolStepSchema>;
+export type StrengthAutoregChecklist = z.infer<typeof StrengthAutoregChecklistSchema>;
+export type StrengthFormulaData = z.infer<typeof StrengthFormulaDataSchema>;
 
 const strengthFormulaDataInput = {
   overview: {
@@ -195,15 +195,15 @@ const strengthFormulaDataInput = {
         'профицит калорий',
       ],
       trigger: 'Если этого нет, всё остальное даёт мало отдачи.',
-      color: '#ff4d4d',
+      color: '#ffb020',
+      textColor: '#000',
     },
     {
       rank: 'A-TIER',
       zone: 'Оптимум',
       level: 'optimization',
       plainLabel: 'Держи тяжёлую работу качественной',
-      detail:
-        'Сила лучше растёт от повторяемых тяжёлых сетов с запасом, чем от хаотичного отказа.',
+      detail: 'Сила лучше растёт от повторяемых тяжёлых сетов с запасом, чем от хаотичного отказа.',
       action: 'Работай чаще в RPE 8-9, оставляя 1-2 повтора в запасе на большинстве сетов.',
       keyParameters: [
         '3-6 сетов',
@@ -214,7 +214,8 @@ const strengthFormulaDataInput = {
         'взрывные подходы 40-60%',
       ],
       trigger: 'Подключай, когда база стабильна и восстановление под контролем.',
-      color: '#ff9f40',
+      color: '#ffc94d',
+      textColor: '#000',
     },
     {
       rank: 'B-TIER',
@@ -224,16 +225,10 @@ const strengthFormulaDataInput = {
       detail:
         'Подсобка, паузы и объёмная база полезны, когда они решают конкретную проблему движения.',
       action: 'Добавляй 1-2 вспомогательных упражнения, а не отдельную программу поверх основной.',
-      keyParameters: [
-        'подсобка',
-        'паузы',
-        'объёмная база 65-80%',
-        'изоляция 12-20 повторений',
-      ],
-      trigger:
-        'Шлифуй слабые звенья, но не перегружай ЦНС вспомогательной работой.',
-      color: '#ffcc5c',
-      textColor: '#1a1a1a',
+      keyParameters: ['подсобка', 'паузы', 'объёмная база 65-80%', 'изоляция 12-20 повторений'],
+      trigger: 'Шлифуй слабые звенья, но не перегружай ЦНС вспомогательной работой.',
+      color: '#5ba4ff',
+      textColor: '#000',
     },
     {
       rank: 'C-TIER',
@@ -242,10 +237,12 @@ const strengthFormulaDataInput = {
       plainLabel: 'Используй спецметоды только под задачу',
       detail:
         'Негативы, цепи, резина и изометрия помогают опытным атлетам, но быстро дорожают усталостью.',
-      action: 'Вводи один спецметод на блок и убирай его, если техника или восстановление проседают.',
+      action:
+        'Вводи один спецметод на блок и убирай его, если техника или восстановление проседают.',
       keyParameters: ['негативы', 'цепи и резина', 'изометрия'],
       trigger: 'Точечный инструмент для опытных, а не замена базе.',
-      color: '#5ba4ff',
+      color: '#3affb8',
+      textColor: '#000',
     },
     {
       rank: 'F-TIER',
@@ -264,7 +261,8 @@ const strengthFormulaDataInput = {
         'дефицит калорий',
       ],
       trigger: 'Крадут силу, мешают технике и повышают риск травмы.',
-      color: '#666666',
+      color: '#ff4d4d',
+      textColor: '#fff',
     },
   ],
   wavePhases: [
@@ -278,7 +276,7 @@ const strengthFormulaDataInput = {
       volume: '32 -> 28 повторов',
       focus: 'RIR 2, полный ROM, контроль эксцентрики.',
       stopRule: 'Останови сет, если техника начинает ломаться раньше последнего повтора.',
-      color: '#ff9f40',
+      color: '#ffc94d',
     },
     {
       id: 'transition',
@@ -290,7 +288,7 @@ const strengthFormulaDataInput = {
       volume: '24 -> 20 повторов',
       focus: 'Внешний фокус, отдых 4-5 минут, RIR 1-2.',
       stopRule: 'Если RPE уже на втором сете >=9.5, снизь вес на 2.5-5 кг.',
-      color: '#ff6b35',
+      color: '#ffb020',
     },
     {
       id: 'deload',
@@ -342,7 +340,7 @@ const strengthFormulaDataInput = {
       reps: '5',
       rest: '2-3 мин',
       goal: 'Нейроактивация и фиксация паттерна движения.',
-      color: '#ff9f40',
+      color: '#ffc94d',
     },
     {
       stage: 'Разминка 4',
@@ -350,7 +348,7 @@ const strengthFormulaDataInput = {
       reps: '4',
       rest: '3-4 мин',
       goal: 'Подгонка под рабочий тонус.',
-      color: '#ff9f40',
+      color: '#ffc94d',
     },
     {
       stage: 'Рабочие подходы ×4',
@@ -358,7 +356,7 @@ const strengthFormulaDataInput = {
       reps: '8',
       rest: '4-5 мин',
       goal: 'Полная отдача и внешний фокус.',
-      color: '#ff6b35',
+      color: '#ffb020',
       isWorkSet: true,
     },
   ],
@@ -375,7 +373,7 @@ const strengthFormulaDataInput = {
         'Если цель - жим 1ПМ, 2-3 касания штанги в неделю полезнее, чем набор случайной изоляции.',
       source: 'Saeterbakken et al., 2025',
       tags: ['специфичность', '1ПМ'],
-      color: '#ff6b35',
+      color: '#ffb020',
     },
     {
       id: 'strength_formula_load_zone',
@@ -385,11 +383,10 @@ const strengthFormulaDataInput = {
       question: 'Какая зона интенсивности лучше для 1ПМ?',
       answer:
         'Лучше всего работают нагрузки выше 80% 1ПМ в диапазоне 1-6 повторений. Тяжёлые веса учат рекрутировать высокопороговые моторные единицы и работать в соревновательной механике.',
-      application:
-        'Хороший ориентир - присед 4×3 на 82-85% 1ПМ с запасом 1-3 повтора.',
+      application: 'Хороший ориентир - присед 4×3 на 82-85% 1ПМ с запасом 1-3 повтора.',
       source: 'Lopez et al., 2021',
       tags: ['интенсивность', 'тяжёлые веса'],
-      color: '#ff6b35',
+      color: '#ffb020',
     },
     {
       id: 'strength_formula_neural_component',
@@ -403,7 +400,7 @@ const strengthFormulaDataInput = {
         'После 6-8 недель силового блока рост 1ПМ без визуального набора массы - нормальный сценарий.',
       source: 'Rong et al., 2025',
       tags: ['нейроадаптация', 'координация'],
-      color: '#ff9f40',
+      color: '#ffc94d',
     },
     {
       id: 'strength_formula_sets',
@@ -413,11 +410,10 @@ const strengthFormulaDataInput = {
       question: '1 сет или несколько для роста силы?',
       answer:
         'Несколько качественных сетов выигрывают у одиночного. Сила лучше растёт от повторяемых тяжёлых экспозиций, а не от одного пикового усилия.',
-      application:
-        'Вместо 1×5 используй top set и 2-3 back-off сета в той же задаче.',
+      application: 'Вместо 1×5 используй top set и 2-3 back-off сета в той же задаче.',
       source: 'Krieger, 2009',
       tags: ['сеты', 'объём'],
-      color: '#ff6b35',
+      color: '#ffb020',
     },
     {
       id: 'strength_formula_frequency',
@@ -431,7 +427,7 @@ const strengthFormulaDataInput = {
         '6 тяжёлых сетов жима часто лучше разбить на 3 сессии по 2 сета, чем сделать всё за один день.',
       source: 'Grgic et al., 2018',
       tags: ['частота', 'восстановление'],
-      color: '#ff9f40',
+      color: '#ffc94d',
     },
     {
       id: 'strength_formula_rest',
@@ -441,11 +437,10 @@ const strengthFormulaDataInput = {
       question: 'Почему отдых 3-5 минут лучше для силы?',
       answer:
         'Длинный отдых сохраняет повторения, тоннаж и качество усилия. Короткие паузы поднимают метаболическую усталость и мешают повторно выдавать высокий уровень силы.',
-      application:
-        'После приседа 3×3 на 85% держи около 4 минут отдыха вместо 90 секунд.',
+      application: 'После приседа 3×3 на 85% держи около 4 минут отдыха вместо 90 секунд.',
       source: 'de Salles et al., 2009',
       tags: ['отдых', 'межсетные паузы'],
-      color: '#ff6b35',
+      color: '#ffb020',
     },
     {
       id: 'strength_formula_rom',
@@ -510,8 +505,7 @@ const strengthFormulaDataInput = {
       question: 'Какие настройки VBT практичны для силы?',
       answer:
         'Часто лучше всего работают 70-80% 1ПМ, 3-5 сетов, 2-4 минуты отдыха и порог потери скорости 15-30%. Это позволяет дозировать усталость без лишнего накопления.',
-      application:
-        'В приседе можно вести 5×3 на 75-80% и обрывать сет при 20% velocity loss.',
+      application: 'В приседе можно вести 5×3 на 75-80% и обрывать сет при 20% velocity loss.',
       source: 'Zhang et al., 2023',
       tags: ['VBT', 'velocity loss'],
       color: '#3affb8',
@@ -551,7 +545,7 @@ const strengthFormulaDataInput = {
       title: 'Тест 1ПМ',
       description:
         'Проведи тест за 5-7 дней до старта. Если не хочешь тестировать максимум, оцени 1ПМ по формуле вес × (1 + повторы / 30) из отказного подхода на 3-5 ПМ.',
-      color: '#ff6b35',
+      color: '#ffb020',
     },
     {
       step: '02',
@@ -561,7 +555,7 @@ const strengthFormulaDataInput = {
         'Сон не меньше 7 часов и калорийный профицит +200-300 ккал.',
         'Отказ оставляй только на последние сеты изоляции, ориентир RIR 0-1.',
       ],
-      color: '#ff9f40',
+      color: '#ffc94d',
     },
     {
       step: '03',
@@ -597,7 +591,7 @@ const strengthFormulaDataInput = {
       'Если боль повторяется две тренировки подряд, убери один сет или спецметод.',
     ],
   },
-} satisfies z.input<typeof StrengthFormulaDataSchema>
+} satisfies z.input<typeof StrengthFormulaDataSchema>;
 
 const strengthFormulaFallback: StrengthFormulaData = {
   overview: {
@@ -605,11 +599,11 @@ const strengthFormulaFallback: StrengthFormulaData = {
     subtitle: 'Данные секции временно недоступны.',
     thesis: 'Данные секции временно недоступны.',
     formulaParts: [
-      { id: 'fallback-1', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 1 },
-      { id: 'fallback-2', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 2 },
-      { id: 'fallback-3', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 3 },
-      { id: 'fallback-4', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 4 },
-      { id: 'fallback-5', label: 'Недоступно', hint: 'Недоступно', tone: 'negative', visualOrder: 5 },
+      {id: 'fallback-1', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 1},
+      {id: 'fallback-2', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 2},
+      {id: 'fallback-3', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 3},
+      {id: 'fallback-4', label: 'Недоступно', hint: 'Недоступно', tone: 'positive', visualOrder: 4},
+      {id: 'fallback-5', label: 'Недоступно', hint: 'Недоступно', tone: 'negative', visualOrder: 5},
     ],
     parameters: [],
     rounding: 'Недоступно',
@@ -626,36 +620,31 @@ const strengthFormulaFallback: StrengthFormulaData = {
     during: ['Данные секции временно недоступны.'],
     after: ['Данные секции временно недоступны.'],
   },
-}
+};
 
-const parsedStrengthFormulaData =
-  StrengthFormulaDataSchema.safeParse(strengthFormulaDataInput)
+const parsedStrengthFormulaData = StrengthFormulaDataSchema.safeParse(strengthFormulaDataInput);
 
 const runtimeProcess =
   typeof globalThis === 'object' && 'process' in globalThis
-    ? (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process
-    : undefined
+    ? (globalThis as {process?: {env?: {NODE_ENV?: string}}}).process
+    : undefined;
 
-if (
-  !parsedStrengthFormulaData.success &&
-  runtimeProcess?.env?.NODE_ENV !== 'production'
-) {
+if (!parsedStrengthFormulaData.success && runtimeProcess?.env?.NODE_ENV !== 'production') {
   console.warn(
     '[strength-formula] Zod validation failed, using fallback data.',
     parsedStrengthFormulaData.error.flatten(),
-  )
+  );
 }
 
-export const strengthFormulaData: StrengthFormulaData =
-  parsedStrengthFormulaData.success
-    ? parsedStrengthFormulaData.data
-    : strengthFormulaFallback
+export const strengthFormulaData: StrengthFormulaData = parsedStrengthFormulaData.success
+  ? parsedStrengthFormulaData.data
+  : strengthFormulaFallback;
 
-export const STRENGTH_FORMULA_OVERVIEW = strengthFormulaData.overview
-export const STRENGTH_FACTOR_TIERS = strengthFormulaData.factorTiers
-export const STRENGTH_WAVE_PHASES = strengthFormulaData.wavePhases
-export const STRENGTH_BICEPS_NOTE = strengthFormulaData.bicepsNote
-export const STRENGTH_WARMUP_STACK = strengthFormulaData.warmupStack
-export const STRENGTH_SCIENCE_CARDS = strengthFormulaData.scienceCards
-export const STRENGTH_PROTOCOL_STEPS = strengthFormulaData.protocolSteps
-export const STRENGTH_AUTOREG_CHECKLIST = strengthFormulaData.autoregChecklist
+export const STRENGTH_FORMULA_OVERVIEW = strengthFormulaData.overview;
+export const STRENGTH_FACTOR_TIERS = strengthFormulaData.factorTiers;
+export const STRENGTH_WAVE_PHASES = strengthFormulaData.wavePhases;
+export const STRENGTH_BICEPS_NOTE = strengthFormulaData.bicepsNote;
+export const STRENGTH_WARMUP_STACK = strengthFormulaData.warmupStack;
+export const STRENGTH_SCIENCE_CARDS = strengthFormulaData.scienceCards;
+export const STRENGTH_PROTOCOL_STEPS = strengthFormulaData.protocolSteps;
+export const STRENGTH_AUTOREG_CHECKLIST = strengthFormulaData.autoregChecklist;

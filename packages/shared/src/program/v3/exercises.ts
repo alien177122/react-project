@@ -115,7 +115,8 @@ export const EXERCISES_V3: Record<string, ExerciseConfigV3> = {
     alternativeName: 'Мёртвая тяга',
     category: 'barbell',
     step: 2.5,
-    primaryMuscle: 'back',
+    // Primary: glutes + hamstrings; erectors assist — classify as legs.
+    primaryMuscle: 'legs',
   },
   legPress: {
     name: 'Жим платформы ногами',
@@ -175,7 +176,7 @@ export const CATEGORY_LABELS_V3: Record<ExerciseCategoryV3, string> = {
 };
 
 export const CATEGORY_COLORS_V3: Record<ExerciseCategoryV3, string> = {
-  barbell: '#ff6b35',
+  barbell: '#ffb020',
   dumbbell: '#5ba4ff',
   bodyweight: '#c4a1ff',
   machine: '#3affb8',

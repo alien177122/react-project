@@ -92,7 +92,7 @@ bunx gitleaks detect --source . --verbose
 2. Убрать из текущего дерева и из истории git.
 3. Повторить `gitleaks` до чистого прохода.
 
-### 1.2 PII в `gym.db`
+### 1.2 PII в `gym.db` и других базах
 
 ```bash
 sqlite3 gym.db "SELECT COUNT(*) FROM users;"
@@ -101,23 +101,48 @@ sqlite3 gym.db "SELECT COUNT(*) FROM workouts;"
 
 | Результат   | Действие                                                               |
 | ----------- | ---------------------------------------------------------------------- |
-| 0 записей   | Удалить `gym.db` из git, добавить `server/seed.sql` с демо-данными     |
+| 0 записей   | Удалить `gym.db` из git; схема создаётся при старте (`createDb`)       |
 | Есть данные | **Не публиковать** до полной очистки истории; заменить на seed без PII |
+
+> **Важно (факт кода):** `gym.db` / SQLite **не** коммитить. Таблица `users` создаётся в `createDb` при старте. Демо-аккаунт `JournalDemo` / `Squat123!` создаётся **только** при `SEED_JOURNAL_DEMO=1` (`applyJournalDemoSeed` в `server/app.js`) — это **не** автосид «из коробки».
+>
+> **Для contributors (Zero-Setup):** в README — `cp .env.*.example` + опционально `SEED_JOURNAL_DEMO=1` **только для local**. На public demo / production seed **запрещён** (известный пароль в репо = High, см. `audit/security-vulnerability-audit-2026-07.md` V-05).
 
 ### 1.3 Очистка истории git
 
+Для полного удаления бинарных баз данных, настроек окружения и логов выполните очистку истории:
+
 ```bash
-# pip install git-filter-repo  (если нет)
+# Установка git-filter-repo, если нет: brew install git-filter-repo или pip install git-filter-repo
 git filter-repo --invert-paths \
   --path gym.db \
+  --path db.sqlite \
+  --path .env \
+  --path .env.local \
+  --path .env.capacitor.local \
   --path .DS_Store \
-  --path workspace-files/
+  --path workspace-files/ \
+  --path .logs/
 
-# Проверка
-git log --all --full-history -- gym.db .env* *.key *.pem
+# Проверка истории на остатки секретов и БД
+git log --all --full-history -- gym.db db.sqlite .env* *.key *.pem
 ```
 
-> `memory-bank/` и `.cursor/` — добавить в `.gitignore` и убрать из истории, если уже коммитились.
+> `memory-bank/` и `.cursor/` — добавить в `.gitignore` и убрать из истории, если они ранее ошибочно коммитились.
+
+### 1.3.1 Аудит мобильных платформ (Capacitor/Native)
+
+Мобильные папки (`ios/`, `android/`, `fastlane/`) могут содержать скрытые секреты:
+
+- **iOS:** Проверить файлы `GoogleService-Info.plist` (если подключен Firebase), `*.mobileprovision`, сертификаты разработчика и ключи.
+- **Android:** Проверить `google-services.json`, файлы `.keystore` / `.jks` (кроме публичного `debug.keystore`), а также файл `android/key.properties`, содержащий пароли к ключам.
+- **Fastlane:** Проверить `fastlane/Appfile`, `fastlane/Fastfile` и `.env` файлы внутри папки `fastlane/` на наличие жестко прописанных Apple ID паролей или API-ключей App Store Connect.
+- **Исключения:** Убедиться, что все указанные файлы внесены в `.gitignore`.
+
+### 1.3.2 Аудит медиа-ассетов и лицензий
+
+- Проверить папку `imagePhone/` и другие графические файлы. Если скриншоты или макеты содержат чужие торговые марки, персональные данные тестировщиков или платный контент, их необходимо заменить.
+- Убедиться, что шрифты и сторонние библиотеки используются согласно их лицензиям (например, SIL Open Font License, Apache 2.0, MIT).
 
 ### 1.4 Расширенный `.gitignore`
 
@@ -161,26 +186,46 @@ git ls-files | grep -E '\.(db|sqlite|key|pem)$'
 
 ### 1.6 Известные артефакты проекта
 
-| Артефакт                          | Статус                                      |
-| --------------------------------- | ------------------------------------------- |
-| `JWT_SECRET=dev` в `package.json` | OK для локалки; в README: не для production |
-| `debug.keystore` (Android)        | OK — debug, не production                   |
-| Cloudflare tunnel token           | Только в `.env.public` (ignored)            |
-| `bun.lockb`                       | **Должен** быть в git                       |
+| Артефакт                            | Статус                                                        |
+| ----------------------------------- | ------------------------------------------------------------- |
+| `JWT_SECRET=dev` / `gym-secret-dev` | OK **только** local; Docker default — убрать до public (V-04) |
+| `debug.keystore` (Android)          | OK — debug, не production                                     |
+| Cloudflare tunnel token             | Только в `.env.public` (ignored)                              |
+| `bun.lockb` / `bun.lock`            | **Должен** быть в git                                         |
+| `JournalDemo` / `Squat123!`         | Только `SEED_JOURNAL_DEMO=1` local; **не** на public demo     |
 
 ### 1.7 Данные для contributors
 
-- [ ] `server/seed.sql` или `bun run db:seed` — без PII
-- [ ] Инструкция в `CONTRIBUTING.md`
+- [ ] Документировать: пустая БД при старте; регистрация через UI **или** local-only `SEED_JOURNAL_DEMO=1`
+- [ ] Инструкция в `CONTRIBUTING.md` + копирование `.env.*.example`
+- [ ] Не коммитить `server/seed.sql` с реальными PII
+
+### 1.8 Hardening перед public demo (из security audit 2026-07-09)
+
+Блокер для **публичного** demo/tunnel (не только для git history). Полный отчёт: [`audit/security-vulnerability-audit-2026-07.md`](../audit/security-vulnerability-audit-2026-07.md).
+
+| ID        | Severity | Действие до Make public / public demo                                                 |
+| --------- | -------- | ------------------------------------------------------------------------------------- |
+| V-01      | Critical | CORS allowlist (`CORS_ORIGINS`), не `cors()`                                          |
+| V-02      | Critical | Сократить JWT TTL и/или план httpOnly+refresh (минимум: TTL ≤ 24h на demo)            |
+| V-03      | High     | File workspace выкл. по умолчанию; не отдавать absolute paths                         |
+| V-04      | High     | Убрать `JWT_SECRET:-gym-secret-dev` из Docker; fail без секрета                       |
+| V-05      | High     | `SEED_JOURNAL_DEMO` запрещён в production/public                                      |
+| V-06–V-08 | Medium   | Единый login error, body limit, ужесточить password policy (можно сразу после public) |
+
+**P0 (1–2 дня) до public demo:** V-01, V-03, V-04, V-05.  
+**P1 после public:** сессии (V-02, V-09).
 
 ### Чеклист фазы 1
 
 - [ ] `gitleaks` — чистый проход
 - [ ] `gym.db` удалён из дерева и истории
 - [ ] 0 реальных пользователей в seed/истории
-- [ ] `.gitignore` обновлён
+- [ ] `.gitignore` обновлён (вкл. mobile secrets: `key.properties`, `*.keystore`, `GoogleService-Info.plist`, `google-services.json`)
+- [ ] Аудит `ios/`, `android/`, `fastlane/` (§1.3.1)
 - [ ] `git ls-files` без `.db` / секретов
-- [ ] `bun.lockb` в git
+- [ ] `bun.lockb` / lockfile в git
+- [ ] P0 security hardening (§1.8) для public demo — или demo только localhost
 
 ---
 
@@ -425,18 +470,39 @@ git clone https://github.com/alien177122/react-project.git test-clone
 cd test-clone && bun install && bun run typecheck && bun run lint && bun test
 bunx gitleaks detect --source . --verbose
 
-# 3. GitHub → Settings → Danger Zone → Make public
+# 3. Пуш изменений (Решение проблемы с gh auth login)
+# Если стандартный force push заблокирован из-за Keychain на macOS, используйте один из вариантов:
+# Вариант А: Использование SSH (рекомендуется)
+# 1. Проверьте SSH соединение: ssh -T git@github.com
+# 2. Переключите remote на SSH:
+git remote set-url origin git@github.com:alien177122/react-project.git
+# 3. Выполните пуш:
+git push --force-with-lease origin main
+
+# Вариант Б: Использование Personal Access Token (PAT)
+# 1. Сгенерируйте PAT (Classic) на github.com с правами 'repo'.
+# 2. Переопределите remote с токеном:
+# git remote set-url origin https://<YOUR_GITHUB_USERNAME>:<YOUR_TOKEN>@github.com/alien177122/react-project.git
+# 3. Выполните пуш:
+# git push --force-with-lease origin main
+
+# Вариант В: Сброс Keychain в GitHub CLI
+# gh auth logout
+# gh auth login --with-token < /path/to/token.txt  # или пройти интерактивный логин в браузере
+
+# 4. GitHub → Settings → Danger Zone → Make public
 ```
 
 ### Чеклист go public
 
 - [ ] gitleaks — чисто (локально + на clone)
-- [ ] `gym.db` нет в git history
+- [ ] `gym.db` и `db.sqlite` нет в git history
 - [ ] `LICENSE` в корне
 - [ ] README с badges CI + MIT
-- [ ] CI проходит после public
+- [ ] CI проходит после public (workflow `web.yml`)
 - [ ] Demo на Vercel живой (`VITE_API_URL`)
 - [ ] Welcome Issue: «Project is now open source — contributions welcome»
+- [ ] Базовая инструкция в README: копирование `.env.*.example` перед запуском
 
 ---
 
@@ -499,13 +565,17 @@ flowchart LR
 
 ## Риски
 
-| Риск                        | Митигация                                   |
-| --------------------------- | ------------------------------------------- |
-| `gym.db` с PII в истории    | `git filter-repo` **до** public             |
-| Секрет в старом коммите     | gitleaks + ротация секрета                  |
-| Спам Issues                 | templates + CODE_OF_CONDUCT                 |
-| «Донат = фича»              | disclaimer только в Support (приложение A)  |
-| Agent tooling в public repo | `.gitignore` для `.cursor/`, `memory-bank/` |
+| Риск                                       | Митигация                                                         |
+| ------------------------------------------ | ----------------------------------------------------------------- |
+| `gym.db` с PII в истории                   | `git filter-repo` **до** public                                   |
+| Секрет в старом коммите                    | gitleaks + ротация секрета                                        |
+| Public demo с CORS=\* / JWT в localStorage | §1.8 P0 до включения tunnel/Vercel API                            |
+| Известный `JournalDemo` на public          | Не ставить `SEED_JOURNAL_DEMO=1` вне local                        |
+| Спам Issues                                | templates + CODE_OF_CONDUCT                                       |
+| «Донат = фича»                             | disclaimer только в Support (приложение A)                        |
+| Блокировка счетов Kaspi                    | Лимит 100 уникальных переводов/мес; ИП e-Salyq Business при росте |
+| Утечка ключей Capacitor / Fastlane         | `key.properties`, `release.keystore`, сертификаты в `.gitignore`  |
+| Agent tooling в public repo                | `.gitignore` для `.cursor/`, `memory-bank/`                       |
 
 ---
 
@@ -527,6 +597,8 @@ ls -1 .github/workflows/ci.yml
 - [ ] `gym.db` — нет в git и history
 - [ ] PII — 0 реальных пользователей
 - [ ] `.cursor/`, `memory-bank/` — не в public tree
+- [ ] Mobile secrets (§1.3.1) — нет в tree/history
+- [ ] Public demo: CORS allowlist + нет demo seed + JWT_SECRET задан (§1.8)
 
 ### Качество
 
@@ -540,9 +612,13 @@ ls -1 .github/workflows/ci.yml
 
 > **Вторично.** Выполнять **после** публикации OSS и рабочего demo. Не блокирует go public.
 
-### Уровень 1 — физлицо (0 ₸ на старте)
+> [!CAUTION]
+> **Финансовый комплаенс в РК (Казахстан):**
+> Регулярное получение мобильных переводов (Kaspi Gold) от более чем 100 разных лиц в течение 3 последовательных месяцев классифицируется налоговыми органами как предпринимательская деятельность. Несоблюдение правил ведет к блокировке счетов банком и штрафам за незаконное предпринимательство.
 
-Перевод на Kaspi Gold по номеру телефона. Комиссия 0% между Kaspi.
+### Уровень 1 — физлицо (для единичных донатов)
+
+Перевод на Kaspi Gold по номеру телефона. Подходит только на старте для редких несистематических переводов.
 
 ```markdown
 ## Support (optional)
@@ -552,25 +628,39 @@ MIT licensed, free to use. Voluntary donations welcome.
 **Kaspi (KZ):** transfer to `+7 XXX XXX XX XX`, comment: «Donat Periodizatsiya»
 ```
 
-### Уровень 2 — ИП + Kaspi Pay
+### Уровень 2 — ИП + Kaspi Pay (при росте популярности)
 
-Постоянная ссылка: [Kaspi Pay → Удалённая оплата](https://guide.kaspi.kz/partner/ru/pos/payments/remote/q2019). Комиссия ~0,95%; обслуживание ~1 950 ₸/мес.
+Если количество донатов растет, необходимо зарегистрировать ИП (Индивидуальный Предприниматель):
 
-### Уровень 3 — кнопка в PWA
+1. **Налоговый режим:** Рекомендуется выбрать **Специальный налоговый режим (СНР) с использованием специального мобильного приложения** («e-Salyq Business»). Ставка налога — всего **1%** от дохода для услуг/донейшенов физлицам, без необходимости вести бухгалтерский учет и сдавать декларацию 910.00 (все считается автоматически в приложении).
+2. **Kaspi Pay:** Подключение бизнес-аккаунта и генерация ссылки/QR-кода для удаленной оплаты. Комиссия банка составляет ~0,95%.
+3. **Ссылка на оплату:** [Kaspi Pay → Удалённая оплата](https://guide.kaspi.kz/partner/ru/pos/payments/remote/q2019).
 
-Только после уровня 1/2. Экран «О проекте» → ссылка `pay.kaspi.kz`. **Не** хранить номер карты в коде.
+### Уровень 3 — кнопка в PWA / Web-клиенте
 
-### Налоги (Казахстан)
+После настройки уровня 1 или 2, добавить кнопку «Поддержать проект» на экран «О проекте» со ссылкой на `pay.kaspi.kz` или QR-кодом. **Не** хранить реквизиты карт в коде.
 
-| Суммы           | Действие                                 |
-| --------------- | ---------------------------------------- |
-| < ~50 000 ₸/мес | часто как личные переводы                |
-| > ~50 000 ₸/мес | ИП + декларация; консультация бухгалтера |
+### Международные альтернативы (поскольку Kaspi работает только в РК)
+
+Для получения поддержки от разработчиков из других стран рекомендуется добавить ссылки на:
+
+- **Boosty.to** или **Patreon** (для регулярной подписки)
+- **Buy Me a Coffee** или **Ko-fi** (для разовых донатов)
+
+### Сравнение налоговых вариантов в Казахстане
+
+| Вариант                    | Условия и налоги                                                                                                               | Риски и особенности                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| **Kaspi Gold (Физлицо)**   | Без налогов до лимита в 100 уникальных переводов в месяц.                                                                      | Риск блокировки банком при превышении лимитов; отсутствие легального статуса для юрлиц. |
+| **ИП на e-Salyq Business** | **1% налог** с доходов. Без отчетов и кассового аппарата. Обязательные пенсионные и соц. отчисления (~15 000 ₸/мес в 2026 г.). | Идеально для небольших проектов. Доход фиксируется через чеки в приложении.             |
+| **ИП на упрощенке**        | **3% налог** (форма 910.00). Требуется кассовый аппарат (ККМ) и сдача отчетности раз в полгода.                                | Подходит для больших оборотов или при наличии наемных работников.                       |
 
 ### `.github/FUNDING.yml` (опционально)
 
 ```yaml
-custom: ['https://pay.kaspi.kz/pay/YOUR_LINK']
+custom:
+  - 'https://pay.kaspi.kz/pay/YOUR_LINK'
+  - 'https://www.buymeacoffee.com/YOUR_USERNAME'
 ```
 
 ### Placeholder реквизитов
@@ -585,17 +675,15 @@ Email security:    security@___________
 
 ## Следующий шаг (исполнение)
 
-1. **Фаза 1** — `gym.db` + `gitleaks` (блокер)
-2. **Фаза 2** — `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`
-3. **Фаза 3–4** — README, docs, CI
-4. **Фаза 5** — Make public
-5. **Приложение A** — Kaspi, когда OSS уже живой
+1. **Фаза 1** — добить mobile/gitleaks + **§1.8 P0** если будет public demo
+2. **Фаза 5** — `git push --force-with-lease` через SSH/PAT (§5), затем Make public
+3. **Приложение A** — Kaspi / e-Salyq, когда OSS уже живой
 
 ---
 
-## Статус исполнения (2026-06-17)
+## Статус исполнения
 
-### Сделано в репозитории
+### Сделано в репозитории (2026-06-17+)
 
 - [x] `LICENSE` (MIT), `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, `.editorconfig`
 - [x] `docs/ARCHITECTURE.md`, `docs/DEPLOYMENT.md`, `docs/design-standards/` (копия reference)
@@ -605,11 +693,14 @@ Email security:    security@___________
 - [x] `gym.db` убран из индекса git; ephemeral `memory-bank/tasks|activeContext|progress` — untracked
 - [x] `.gitignore` исправлен и расширен
 - [x] `bun run typecheck`, `lint`, `test`, `build` — OK
+- [x] План дополнен: mobile audit (§1.3.1), media licenses (§1.3.2), Keychain/SSH/PAT (§5), Kaspi/e-Salyq (прил. A)
+- [x] Security audit 2026-07-09 → §1.8 (P0/P1); исправлена ошибка про «автосид JournalDemo»
 
 ### Осталось вручную (перед public)
 
-- [x] **Очистить `gym.db` из git history** (`git filter-repo --invert-paths --path gym.db`) — локально выполнено 2026-06-17
-- [ ] `git push --force-with-lease` — нужен `gh auth login` (токен в keyring недействителен)
+- [x] **Очистить `gym.db` из git history** — локально 2026-06-17
+- [x] **P0 hardening (§1.8)** — CORS allowlist, Docker без default JWT, seed только в development, file workspace opt-in + relative paths (2026-07-09)
+- [ ] `git push --force-with-lease` — через **SSH** (рекомендуется) или PAT / `gh auth login` (§5)
 - [ ] GitHub → Settings → **Make public**
 - [ ] Welcome issue / demo URL в README
 - [ ] Kaspi — [Приложение A](#приложение-a--добровольная-поддержка-kaspi)

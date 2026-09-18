@@ -1,1 +1,0 @@
-../../../../../../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTRuntimeExecutor.h

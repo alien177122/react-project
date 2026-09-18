@@ -1,0 +1,83 @@
+/**
+ * Web app root shell layout — replaces Ionic IonApp scroll/layout overrides.
+ */
+
+:root {
+  --app-safe-area-top: var(--sat, env(safe-area-inset-top, 0px));
+  --app-safe-area-bottom: var(--sab, env(safe-area-inset-bottom, 0px));
+  --app-safe-area-left: var(--sal, env(safe-area-inset-left, 0px));
+  --app-safe-area-right: var(--sar, env(safe-area-inset-right, 0px));
+}
+
+/*
+ * AppShell uses document scroll + sticky tab nav — not a nested scroll container.
+ * Keep html/body/#root as a flex column with visible overflow for the tab bar.
+ */
+html {
+  height: auto;
+  min-height: var(--app-min-height, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+body {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: auto;
+  max-height: none;
+  width: 100%;
+  transform: none;
+  min-height: var(--app-min-height, 100%);
+  background: var(--bg);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: var(--app-min-height, 100%);
+  background: transparent;
+}
+
+.app-root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  contain: none;
+  width: 100%;
+  height: auto;
+  min-height: var(--app-content-min-height, calc(var(--app-min-height, 100%) - 112px));
+  overflow: visible;
+  inset: unset;
+  left: unset;
+  right: unset;
+  top: unset;
+  bottom: unset;
+  z-index: auto;
+  justify-content: flex-start;
+  background: transparent;
+}
+
+.app-root > .app-shell,
+.app-root > .auth-screen {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+/* Auth is full-bleed; form width is constrained in auth.css (.auth-stage) */
+.app-root > .auth-screen {
+  max-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-root {
+    animation: none !important;
+    transition: none !important;
+  }
+}

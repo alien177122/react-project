@@ -1,0 +1,515 @@
+/* Split tab — card-grid exercise picker (GlobalExerciseAdder) */
+
+.split-ex-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.split-ex-picker__toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.split-ex-picker__filters {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.split-ex-picker__legend {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  list-style: none;
+  width: auto;
+  max-width: 100%;
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--glass-radius-inner);
+  background: color-mix(in srgb, var(--surface-raised) 88%, transparent);
+}
+
+.split-ex-picker__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.split-ex-picker__legend-swatch {
+  flex: 0 0 auto;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+  background: color-mix(
+    in srgb,
+    var(--split-ex-muscle-color, var(--accent)) 72%,
+    var(--surface-raised)
+  );
+  border: var(--border-width) solid
+    color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 40%, var(--border-subtle));
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 18%, transparent);
+}
+
+.split-ex-picker__legend-label {
+  font-size: var(--type-12);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.split-ex-picker__filter-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  width: 100%;
+}
+
+.split-ex-picker__filter-label {
+  font-size: var(--type-12);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  text-align: center;
+  width: 100%;
+}
+
+.split-ex-picker__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  overflow-x: visible;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-block: 2px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.split-ex-picker__chips--wrap {
+  justify-content: center;
+}
+
+.split-ex-picker__chips--wrap .split-ex-picker__chip {
+  flex: 0 0 auto;
+  width: auto;
+  text-align: center;
+}
+
+.split-ex-picker__chips::-webkit-scrollbar {
+  display: none;
+}
+
+.split-ex-picker__chip {
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--glass-radius-badge);
+  border: var(--border-width) solid var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-size: var(--type-14);
+  font-weight: 500;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color var(--duration-micro) var(--ease-out),
+    background var(--duration-micro) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out),
+    box-shadow var(--duration-micro) var(--ease-out);
+}
+
+.split-ex-picker__chip.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-raised));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.split-ex-picker__chip:active {
+  transform: scale(0.98);
+  opacity: 0.92;
+}
+
+.split-ex-picker__chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-ex-picker__chip:not(.is-active):hover {
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border-subtle));
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface-raised));
+  }
+}
+
+.split-ex-picker__grid-hint {
+  margin: 0;
+  font-size: var(--type-14);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-align: center;
+  width: 100%;
+}
+
+.split-ex-picker__grid {
+  display: grid;
+  /* Narrow default: full-width list rows (readable names). Wider → 2–3 cols below. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.split-ex-picker__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 4.5rem;
+  min-width: 0;
+  padding: 0;
+  border: var(--border-width) solid
+    color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 22%, var(--border-subtle));
+  border-radius: var(--glass-radius-inner);
+  background: color-mix(
+    in srgb,
+    var(--split-ex-muscle-color, var(--accent)) 14%,
+    var(--surface-raised)
+  );
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
+  transition:
+    background var(--duration-micro) var(--ease-out),
+    border-color var(--duration-micro) var(--ease-out),
+    box-shadow var(--duration-micro) var(--ease-out),
+    color var(--duration-micro) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out),
+    opacity var(--duration-micro) var(--ease-out);
+  animation: split-ex-picker-card-enter var(--duration-medium) var(--ease-out) both;
+  animation-delay: calc(var(--split-ex-card-index, 0) * 40ms);
+}
+
+[data-theme='dark'] .split-ex-picker__card {
+  background: color-mix(
+    in srgb,
+    var(--split-ex-muscle-color, var(--accent)) 18%,
+    var(--surface-raised)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--split-ex-muscle-color, var(--accent)) 28%,
+    var(--border-subtle)
+  );
+}
+
+@keyframes split-ex-picker-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.split-ex-picker__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 100%;
+  position: relative;
+}
+
+.split-ex-picker__card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-right: 3.25rem; /* room for absolute aside */
+}
+
+.split-ex-picker__card-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--type-14);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.split-ex-picker__card-aside {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 3rem;
+  pointer-events: none;
+}
+
+.split-ex-picker__card-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: 0 0 auto;
+  color: color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 82%, var(--text));
+}
+
+.split-ex-picker__card-muscle {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 72%, var(--text));
+}
+
+[data-theme='dark'] .split-ex-picker__card-muscle {
+  color: color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 78%, var(--text));
+}
+
+.split-ex-picker__card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  min-width: 0;
+  padding-right: 0.25rem;
+}
+
+.split-ex-picker__card-type {
+  font-size: var(--type-12);
+  line-height: 1.3;
+  font-weight: 500;
+  /* Muscle-tinted cards need primary text mix, not --text-secondary alone (WCAG AA). */
+  color: color-mix(in srgb, var(--text) 68%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+[data-theme='dark'] .split-ex-picker__card:not(.is-selected) .split-ex-picker__card-type {
+  color: color-mix(in srgb, var(--text) 86%, #ffffff 14%);
+}
+
+.split-ex-picker__card-rm {
+  margin-top: 2px;
+  align-self: flex-start;
+  padding: 2px var(--space-2);
+  border-radius: var(--glass-radius-badge);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--text);
+  font-size: var(--type-12);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+.split-ex-picker__card-rm--empty {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* Journal / contexts without calculator 1RM */
+.split-ex-picker__card--no-rm {
+  min-height: 3.75rem;
+}
+
+.split-ex-picker__card--no-rm .split-ex-picker__card-body {
+  justify-content: center;
+}
+
+/* Selected — quiet accent ring; no full white flip or pulse glow */
+.split-ex-picker__card.is-selected {
+  background: color-mix(
+    in srgb,
+    var(--split-ex-muscle-color, var(--accent)) 22%,
+    var(--surface-raised)
+  );
+  border-color: color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 52%, var(--border-subtle));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 24%, transparent),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='dark'] .split-ex-picker__card.is-selected {
+  background: color-mix(
+    in srgb,
+    var(--split-ex-muscle-color, var(--accent)) 26%,
+    var(--surface-raised)
+  );
+  border-color: color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 58%, var(--border-subtle));
+}
+
+.split-ex-picker__card:active {
+  opacity: 0.92;
+}
+
+.split-ex-picker__card.is-selected:active {
+  opacity: 1;
+}
+
+.split-ex-picker__card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .split-ex-picker__card:not(.is-selected):hover {
+    border-color: color-mix(
+      in srgb,
+      var(--split-ex-muscle-color, var(--accent)) 38%,
+      var(--border-subtle)
+    );
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 16%, transparent),
+      0 8px 20px color-mix(in srgb, var(--split-ex-muscle-color, var(--accent)) 10%, transparent);
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 599px) {
+  .split-ex-picker__toolbar {
+    flex-direction: column;
+  }
+
+  .split-ex-picker__legend {
+    align-self: stretch;
+    justify-content: flex-start;
+  }
+
+  /* List rows: horizontal content, no title clamp, muscle aside stays visible */
+  .split-ex-picker__card {
+    min-height: 0;
+  }
+
+  .split-ex-picker__card-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-3);
+    row-gap: 2px;
+    align-items: start;
+    padding: var(--space-3);
+  }
+
+  .split-ex-picker__card-top {
+    grid-column: 1;
+    grid-row: 1;
+    padding-right: 0;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .split-ex-picker__card-name {
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .split-ex-picker__card-aside {
+    position: static;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    max-width: none;
+    min-width: 3.25rem;
+    gap: var(--space-1);
+  }
+
+  .split-ex-picker__card-meta {
+    grid-column: 1;
+    grid-row: 2;
+    padding-right: 0;
+  }
+
+  .split-ex-picker__card-type {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .split-ex-picker__card-rm {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: var(--space-1);
+  }
+
+  .split-ex-picker__card--no-rm .split-ex-picker__card-body {
+    justify-content: start;
+  }
+}
+
+@media (min-width: 600px) {
+  .split-ex-picker__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .split-ex-picker__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-ex-picker__card,
+  .split-ex-picker__chip {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* GlobalExerciseAdder — picker column spans full width */
+.global-exercise-adder__picker .split-ex-picker {
+  width: 100%;
+}
+
+.global-exercise-adder__picker .calc-test__exercise {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

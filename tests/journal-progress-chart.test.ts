@@ -30,7 +30,13 @@ test('buildJournalProgressChartModel maps sessions to weeks with e1RM', () => {
   assert.ok(model.journalLinePath.includes('M'));
   assert.equal(model.journalWeeks[0]?.hasData, true);
   assert.equal(model.journalWeeks[1]?.hasData, true);
+  assert.equal(model.journalWeeks[0]?.restDaysSincePrev, null);
+  assert.equal(model.journalWeeks[1]?.restDaysSincePrev, 28);
   assert.equal(model.latestPeak != null && model.latestPeak > 100, true);
+  assert.equal(model.grid.length, 7);
+  assert.equal(model.weightTicks.length, 7);
+  assert.equal(model.grid[0], 28);
+  assert.equal(model.grid[6], 238);
 });
 
 test('buildJournalProgressChartModel scales volume bars by session tonnage not reps alone', () => {
@@ -66,6 +72,8 @@ test('buildJournalProgressChartModel scales volume bars by session tonnage not r
   const week2 = model.journalWeeks[1];
 
   assert.equal(week1?.totalReps, week2?.totalReps);
+  assert.equal(week1?.restDaysSincePrev, null);
+  assert.equal(week2?.restDaysSincePrev, 7);
   assert.ok(week1?.volume != null && week2?.volume != null);
   assert.ok(week2.volume! > week1.volume!);
   assert.ok(week2.barHeight! > week1.barHeight!);

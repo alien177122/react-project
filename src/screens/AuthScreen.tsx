@@ -1,11 +1,11 @@
-import {motion} from 'framer-motion';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {PremiumInput} from '../components/ui/PremiumInput';
 import {Button} from '../components/ui/Button';
 import {PasswordInput} from '../components/auth/PasswordInput';
-import {fadeInScale} from '../theme/animations';
 import {useKeyboardAvoid} from '../hooks/useKeyboardAvoid';
 import {useReducedMotion} from '../hooks/useReducedMotion';
+import {AuthHeroDecor} from '../components/auth/AuthHeroDecor';
+import {AUTH_CANVAS_COLOR, getStoredTheme, THEME_META_COLORS} from '../theme/theme';
 
 const AUTH_PLAN_WEEKS = Array.from({length: 8}, (_, index) => index + 1);
 
@@ -42,18 +42,25 @@ export default function AuthScreen({
   const {keyboardHeight} = useKeyboardAvoid();
   const [passHint, setPassHint] = useState<string | null>(null);
 
+  useEffect(() => {
+    const html = document.documentElement;
+    html.classList.add('auth-open');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', AUTH_CANVAS_COLOR);
+    return () => {
+      html.classList.remove('auth-open');
+      if (meta) meta.setAttribute('content', THEME_META_COLORS[getStoredTheme()]);
+    };
+  }, []);
+
   return (
     <main
       className="auth-screen"
       aria-label="Вход в тренировочный калькулятор"
       style={keyboardHeight > 0 ? {paddingBottom: keyboardHeight} : undefined}>
+      <AuthHeroDecor reduced={reduced} />
       <div className="auth-stage">
-        <motion.div
-          className="auth-motion"
-          aria-hidden="true"
-          initial={reduced ? false : {opacity: 0, y: -8}}
-          animate={reduced ? undefined : {opacity: 1, y: 0}}
-          transition={{duration: 0.6, ease: [0.16, 1, 0.3, 1]}}>
+        <div className={`auth-motion${reduced ? '' : ' auth-motion--enter'}`} aria-hidden="true">
           <div className="auth-motion__brand">Тренировочный калькулятор</div>
           <div className="auth-motion__timeline">
             {AUTH_PLAN_WEEKS.map(week => (
@@ -64,13 +71,9 @@ export default function AuthScreen({
             ))}
           </div>
           <div className="auth-motion__caption">8 недель персонального плана</div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="auth-card"
-          variants={reduced ? undefined : fadeInScale}
-          initial={reduced ? false : 'hidden'}
-          animate={reduced ? undefined : 'show'}>
+        <div className={`auth-card${reduced ? '' : ' auth-card--enter'}`}>
           <div className="auth-tabs">
             <button
               className={`auth-tab${authMode === 'login' ? ' auth-tab-active' : ''}`}
@@ -152,13 +155,13 @@ export default function AuthScreen({
             )}
 
             <Button
-              style={{width: '100%', marginTop: 8}}
+              className="calc-test__submit auth-submit"
               onClick={handleAuth}
               disabled={authLoading}>
               {authLoading ? '...' : authMode === 'login' ? 'Войти' : 'Создать аккаунт'}
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </main>
   );

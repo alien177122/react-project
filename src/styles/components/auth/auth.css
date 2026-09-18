@@ -1,13 +1,286 @@
 /* ===== AUTH ===== */
+/* Auth owns a full-viewport black canvas — independent of app-shell ambient */
+/* html.auth-open is a :has() fallback (older Edge/Chrome on Windows). */
+#root:has(.auth-screen),
+html:has(.auth-screen),
+html:has(.auth-screen) body,
+html.auth-open,
+html.auth-open body,
+html.auth-open #root {
+  background: #0a0a0b;
+}
+
+/*
+ * Full-bleed auth canvas: drop #root chrome padding so statues sit flush
+ * with the viewport bottom. Form card stays phone-narrow via --auth-form-max.
+ */
+#root:has(.auth-screen),
+html.auth-open #root {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: 0;
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+html:has(.auth-screen) .app-root,
+html.auth-open .app-root {
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 100%;
+  width: 100%;
+}
+
 .auth-screen {
+  --auth-bg: #0a0a0b;
+  --auth-figure-opacity: 0.92;
+  /* Form / motion column only — never constrain the whole page */
+  --auth-form-max: 398px;
+  --auth-phone-max: var(--auth-form-max);
+  --auth-slot-inset: clamp(8px, 2.5vw, 24px);
+  /* Venus: flush right edge (no ~100px gutter). Mac canonical uses 100px on slot container only. */
+  --auth-right-nudge: 0px;
+  --auth-motion-text: rgba(255, 255, 255, 0.88);
+  --auth-motion-muted: rgba(255, 255, 255, 0.52);
+  /* Hero canvas stays dark; form tokens live on .auth-card via html[data-theme]. */
+  background: var(--auth-bg);
   display: grid;
-  min-height: calc(100svh - 112px);
+  flex: 1 1 auto;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
   place-items: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Light theme: keep black canvas (gunmetal is logged-in shell only) */
+html[data-theme='light']:has(.auth-screen),
+html[data-theme='light']:has(.auth-screen) body,
+html[data-theme='light'] #root:has(.auth-screen),
+html[data-theme='light'] .auth-screen,
+html[data-theme='light'].auth-open,
+html[data-theme='light'].auth-open body,
+html[data-theme='light'].auth-open #root {
+  --auth-bg: #0a0a0b;
+  background: #0a0a0b;
+}
+
+html[data-theme='light'] .auth-screen {
+  --auth-motion-text: rgba(255, 255, 255, 0.92);
+  --auth-motion-muted: rgba(255, 255, 255, 0.58);
+}
+
+/* INBOX 2236 — triptych wallpaper: left | center | right, feet flush with screen bottom */
+.auth-hero-decor {
+  bottom: 0;
+  inset-inline: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  z-index: 0;
+}
+
+.auth-hero-decor__base {
+  background: var(--auth-bg);
+  inset: 0;
+  position: absolute;
+}
+
+.auth-hero-decor__stage {
+  bottom: 0;
+  inset-inline: 0;
+  position: absolute;
+  top: 0;
+}
+
+.auth-hero-decor__slot {
+  align-items: flex-end;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  position: absolute;
+  /* Rise from bottom — do not stretch from top (avoids mid-page float) */
+  top: auto;
+  height: min(92%, 880px);
+}
+
+/* Stacking: left (bottom) < right (middle) < center (top) */
+.auth-hero-decor__slot--left {
+  inset-inline-start: 0;
+  width: 36%;
+  z-index: 1;
+}
+
+.auth-hero-decor__slot--center {
+  inset-inline: 0;
+  margin-inline: auto;
+  width: min(52%, 280px);
+  z-index: 3;
+}
+
+/* Desktop: wider triptych stage so statues use full viewport, not a phone column */
+@media (min-width: 768px) {
+  .auth-hero-decor__slot {
+    height: min(94%, 960px);
+  }
+
+  .auth-hero-decor__slot--left,
+  .auth-hero-decor__slot--right {
+    width: 38%;
+  }
+
+  .auth-hero-decor__slot--center {
+    width: min(36%, 360px);
+  }
+}
+
+.auth-hero-decor__slot--right {
+  inset-inline-end: var(--auth-right-nudge);
+  width: 36%;
+  z-index: 2;
+}
+
+.auth-hero-decor__figure-wrap {
+  align-items: flex-end;
+  bottom: 0;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  position: absolute;
+  inset-inline: 0;
+  width: 100%;
+}
+
+.auth-hero-decor__figure {
+  bottom: 0;
+  display: block;
+  height: auto;
+  image-rendering: auto;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  opacity: var(--auth-figure-opacity);
+  position: absolute;
+  width: auto;
+}
+
+.auth-hero-decor__slot--left .auth-hero-decor__figure {
+  inset-inline-end: 0;
+  object-fit: contain;
+  object-position: right bottom;
+  width: auto;
+  min-width: 140%;
+  max-width: none;
+}
+
+.auth-hero-decor__slot--right .auth-hero-decor__figure {
+  background: transparent;
+  inset-inline-start: 0;
+  object-fit: contain;
+  object-position: left bottom;
+  width: auto;
+  min-width: 140%;
+  max-width: none;
+}
+
+.auth-hero-decor__slot--center .auth-hero-decor__figure {
+  /* Size by intrinsic ratio — never stretch a small PNG to fill 100%×100% (Windows object-fit bugs). */
+  height: auto;
+  inset-inline: 0;
+  left: 50%;
+  margin-inline: 0;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  transform: translateX(-50%);
+  width: auto;
+}
+
+/*
+ * Narrow adaptive: prefer breathing room over a cramped triptych.
+ * ≤480px — only the center statue (sides off).
+ * 481–767px — sides peek from off-canvas with a clear gap to center.
+ * ≥768px — full layered triptych (desktop rules above).
+ */
+@media (max-width: 767px) {
+  .auth-screen {
+    --auth-slot-inset: 0px;
+    --auth-figure-opacity: 0.9;
+    padding-block: max(8px, env(safe-area-inset-top, 0px))
+      max(16px, env(safe-area-inset-bottom, 0px));
+    place-items: center;
+  }
+
+  .auth-hero-decor__slot {
+    height: min(88dvh, 760px);
+  }
+
+  .auth-hero-decor__slot--left {
+    inset-inline-start: -8%;
+    width: 26%;
+  }
+
+  .auth-hero-decor__slot--center {
+    width: min(48%, 280px);
+  }
+
+  .auth-hero-decor__slot--right {
+    inset-inline-end: calc(-8% + var(--auth-right-nudge));
+    width: 26%;
+  }
+
+  .auth-hero-decor__slot--left .auth-hero-decor__figure,
+  .auth-hero-decor__slot--right .auth-hero-decor__figure {
+    min-width: 112%;
+    opacity: 0.68;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-hero-decor__slot--left,
+  .auth-hero-decor__slot--right {
+    visibility: hidden;
+  }
+
+  .auth-hero-decor__slot--center {
+    width: min(68%, 280px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-hero-decor__figure {
+    opacity: min(1, calc(var(--auth-figure-opacity) + 0.06));
+  }
 }
 
 .auth-stage {
   position: relative;
-  width: min(100%, 440px);
+  /* INBOX 2238 — narrow column over full-viewport hero */
+  width: min(100% - 32px, var(--auth-form-max, 398px));
+  z-index: 1;
+}
+
+/* Desktop: true geometric center — beat short-viewport / landscape mobile overrides */
+@media (min-width: 768px) {
+  .auth-screen {
+    align-items: center;
+    justify-items: center;
+    place-items: center;
+  }
 }
 
 .auth-stage > .auth-card {
@@ -17,7 +290,8 @@
 .auth-motion {
   align-items: center;
   bottom: calc(100% + 40px);
-  color: var(--text);
+  color: var(--auth-motion-text);
+  color-scheme: dark;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -29,7 +303,7 @@
 
 .auth-motion__brand {
   color: var(--theory-accent);
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -56,8 +330,8 @@
 }
 
 .auth-motion__bar {
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  background: color-mix(in srgb, #fff 8%, transparent);
+  border: var(--border-width) solid color-mix(in srgb, #fff 12%, transparent);
   border-radius: 8px;
   height: 32px;
   max-width: 28px;
@@ -129,8 +403,8 @@
 
 .auth-motion__number,
 .auth-motion__caption {
-  color: var(--muted);
-  font-family: 'Inter', sans-serif;
+  color: var(--auth-motion-muted);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
 }
 
 .auth-motion__number {
@@ -171,17 +445,83 @@
 }
 
 .auth-card {
-  background: var(--card);
-  border: none;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: var(--glass-radius-panel);
   max-width: 440px;
+  padding: 24px;
+  transform: translateZ(0);
+}
+
+/* Dark form on black canvas — explicit so toggle off light restores charcoal card */
+html[data-theme='dark'] .auth-screen .auth-card,
+html:not([data-theme='light']) .auth-screen .auth-card {
+  color-scheme: dark;
+  --card: #1c1c20;
+  --surface: #1c1c20;
+  --surface-raised: #242428;
+  --text: rgba(255, 255, 255, 0.92);
+  --text-strong: #ffffff;
+  --text-soft: rgba(255, 255, 255, 0.72);
+  --text-placeholder: rgba(255, 255, 255, 0.45);
+  --muted: rgba(255, 255, 255, 0.52);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --theory-surface: #242428;
+  --theory-text: rgba(255, 255, 255, 0.92);
+  --theory-muted: rgba(255, 255, 255, 0.52);
+  --theory-border: rgba(255, 255, 255, 0.12);
+  --theory-border-strong: rgba(255, 255, 255, 0.18);
+  --ta-text-muted: rgba(255, 255, 255, 0.52);
+  --ta-error: #f87171;
+  --glass-bg-auth-card: rgba(22, 22, 26, 0.94);
+  --glass-bg-auth-shell: rgba(16, 16, 18, 0.92);
+  /* rgba first: color-mix is missing on older Windows Chrome and made the card invisible. */
+  background: rgba(22, 22, 26, 0.94);
+  background: var(--glass-bg-auth-card);
+  border: var(--border-width) solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .auth-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/*
+ * Light form on the black statue canvas.
+ * Hero/motion stay light-on-dark; card, tabs, and inputs follow html[data-theme].
+ * Values mirror src/styles/base/light-theme.css.
+ */
+html[data-theme='light'] .auth-screen .auth-card {
+  color-scheme: light;
+  --card: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #f5f5f5;
+  --text: #1a1a1a;
+  --text-strong: #0a0a0a;
+  --text-soft: #4a4a4a;
+  --text-placeholder: #6b6b6b;
+  --muted: #6b6b6b;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --theory-surface: #f5f5f5;
+  --theory-text: #1a1a1a;
+  --theory-muted: #6b6b6b;
+  --theory-border: #e5e5e5;
+  --theory-border-strong: #d4d4d4;
+  --ta-text-muted: #6b6b6b;
+  --glass-bg-auth-card: #ffffff;
+  --glass-bg-auth-shell: #ffffff;
+  background: var(--card);
+  border: var(--border-width) solid var(--border);
+  box-shadow: var(--shadow-2);
 }
 .auth-tabs {
   display: flex;
-  background: var(--surface-raised);
+  background: color-mix(in srgb, var(--surface-raised) 92%, transparent);
   border-bottom: none;
-  border-radius: 8px;
+  border-radius: var(--glass-radius-inner);
   gap: 0;
   margin-bottom: 24px;
   padding: 2px;
@@ -189,11 +529,11 @@
 .auth-tab {
   background: none;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--glass-radius-inner);
   color: var(--muted);
   cursor: pointer;
   flex: 1;
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0;
@@ -210,8 +550,9 @@
   }
 }
 .auth-tab-active {
-  background: var(--surface-raised);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, var(--surface-raised) 96%, transparent);
+  border: var(--border-width) solid color-mix(in srgb, var(--accent) 28%, transparent);
+  box-shadow: none;
   color: var(--text-strong);
 }
 .auth-form {
@@ -219,6 +560,110 @@
   flex-direction: column;
   gap: 16px;
 }
+
+/* Opaque inputs — readable over glass card + statue (dark). Light: wells on the card. */
+.auth-card .pi-wrapper {
+  background: color-mix(in srgb, var(--surface-raised) 96%, transparent);
+}
+
+.auth-card .pi-input {
+  background: transparent;
+  color: var(--theory-text, var(--text));
+}
+
+.auth-card .ta-password-input {
+  background: color-mix(in srgb, var(--surface-raised) 96%, transparent);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .auth-tabs {
+  background: var(--surface-raised);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .auth-tab {
+  color: var(--muted);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .auth-tab-active {
+  background: var(--card);
+  border: var(--border-width) solid var(--border);
+  color: var(--text-strong);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-wrapper,
+html[data-theme='light'] .auth-screen .auth-card .ta-password-input {
+  background: var(--surface-raised);
+  border-color: var(--border);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-input {
+  background: transparent;
+  color: var(--text);
+  color-scheme: light;
+}
+
+html[data-theme='light'] .auth-screen .auth-card .ta-password-input {
+  background: var(--surface-raised);
+  color: var(--text);
+  color-scheme: light;
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-input::placeholder,
+html[data-theme='light'] .auth-screen .auth-card .ta-password-input::placeholder {
+  color: var(--text-placeholder);
+  opacity: 1;
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-input:-webkit-autofill,
+html[data-theme='light'] .auth-screen .auth-card .pi-input:-webkit-autofill:hover,
+html[data-theme='light'] .auth-screen .auth-card .pi-input:-webkit-autofill:focus,
+html[data-theme='light'] .auth-screen .auth-card .ta-password-input:-webkit-autofill,
+html[data-theme='light'] .auth-screen .auth-card .ta-password-input:-webkit-autofill:hover,
+html[data-theme='light'] .auth-screen .auth-card .ta-password-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  box-shadow: inset 0 0 0 1000px var(--surface-raised);
+  caret-color: var(--text);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-label {
+  color: var(--muted);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-label--focused {
+  color: var(--accent);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .pi-wrapper:hover {
+  border-color: var(--border-strong);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .ta-password-field__label {
+  color: var(--text-soft);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .ta-password-toggle {
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--text-soft);
+}
+
+html[data-theme='light'] .auth-screen .auth-card .ta-password-meter__label,
+html[data-theme='light'] .auth-screen .auth-card .ta-password-meter__criterion {
+  color: var(--ta-text-muted);
+}
+
+/* Primary CTA — reuse calculator `.btn.calc-test__submit` (see calc-test-approach.css) */
+.auth-card .btn.auth-submit {
+  width: 100%;
+  margin-top: 8px;
+}
+
+html[data-theme='light'] .auth-screen .auth-card .btn.auth-submit:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--card, #ffffff),
+    0 0 0 4px color-mix(in srgb, var(--color-accent) 72%, transparent),
+    0 8px 20px -6px color-mix(in srgb, var(--color-accent) 42%, transparent);
+}
+
 .auth-error {
   background: none;
   border: none;
@@ -253,7 +698,7 @@
 
 .ta-password-input {
   background: var(--surface-raised);
-  border: 1px solid transparent;
+  border: var(--border-width) solid transparent;
   border-radius: var(--radius-sm);
   color: var(--text-strong);
   font-size: 16px;
@@ -280,7 +725,7 @@
 
 .ta-password-toggle {
   background: transparent;
-  border: 1px solid var(--theory-border);
+  border: var(--border-width) solid var(--theory-border);
   border-radius: var(--radius-sm);
   color: var(--ta-text-muted);
   cursor: pointer;
@@ -348,7 +793,7 @@
 
 .ta-password-meter__segment {
   background: color-mix(in srgb, var(--text) 8%, transparent);
-  border-radius: 999px;
+  border-radius: var(--glass-radius-badge);
   height: 4px;
 }
 
@@ -420,10 +865,6 @@
 }
 
 @media (max-width: 520px) {
-  .auth-screen {
-    min-height: calc(100svh - 64px);
-  }
-
   .auth-motion {
     bottom: calc(100% + 24px);
     gap: 8px;
@@ -454,20 +895,173 @@
   }
 }
 
-@media (max-height: 600px) {
+/* Short mobile viewports + phone landscape: stack motion in flow, scroll-friendly */
+@media (max-height: 840px) and (max-width: 767px), (orientation: landscape) and (max-width: 767px) {
   .auth-screen {
-    align-items: start;
-    min-height: calc(100svh - 112px);
-    padding-top: 96px;
+    align-items: center;
+    justify-items: center;
+    min-height: var(--app-content-min-height, calc(var(--app-min-height, 100svh) - 112px));
+    padding-block: max(8px, var(--sat, env(safe-area-inset-top, 0px)))
+      max(16px, var(--sab, env(safe-area-inset-bottom, 0px)));
+    place-items: center;
+    width: 100%;
   }
 
   .auth-stage {
     display: flex;
     flex-direction: column;
+    gap: 12px;
   }
 
   .auth-motion {
-    margin-bottom: 24px;
+    bottom: auto;
+    gap: 6px;
+    inset-inline: auto;
+    margin-bottom: 0;
     position: static;
+  }
+
+  .auth-motion__brand {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .auth-motion__caption {
+    display: none;
+  }
+
+  .auth-motion__timeline {
+    gap: 4px;
+    margin-inline: auto;
+    max-width: min(100%, 320px);
+    padding-inline: 0;
+  }
+
+  .auth-motion__week {
+    gap: 0;
+    grid-template-rows: 20px;
+  }
+
+  .auth-motion__bar {
+    max-width: 16px;
+  }
+
+  .auth-motion__week:nth-child(1) .auth-motion__bar {
+    height: 12px;
+  }
+  .auth-motion__week:nth-child(2) .auth-motion__bar {
+    height: 14px;
+  }
+  .auth-motion__week:nth-child(3) .auth-motion__bar {
+    height: 16px;
+  }
+  .auth-motion__week:nth-child(4) .auth-motion__bar {
+    height: 18px;
+  }
+  .auth-motion__week:nth-child(5) .auth-motion__bar {
+    height: 20px;
+  }
+  .auth-motion__week:nth-child(6) .auth-motion__bar {
+    height: 18px;
+  }
+  .auth-motion__week:nth-child(7) .auth-motion__bar {
+    height: 16px;
+  }
+  .auth-motion__week:nth-child(8) .auth-motion__bar {
+    height: 14px;
+  }
+
+  .auth-motion__number {
+    display: none;
+  }
+
+  .auth-card {
+    padding: 16px;
+  }
+
+  .auth-tabs {
+    margin-bottom: 16px;
+  }
+
+  .auth-form {
+    gap: 12px;
+  }
+}
+
+/* Landscape phones: extra horizontal breathing room for safe areas */
+@media (orientation: landscape) and (max-width: 932px) {
+  #root:has(.auth-screen),
+  html.auth-open #root {
+    padding-bottom: max(8px, calc(var(--sab, env(safe-area-inset-bottom, 0px)) + 8px));
+    padding-top: max(8px, calc(var(--sat, env(safe-area-inset-top, 0px)) + 8px));
+  }
+
+  .auth-screen {
+    padding-inline: max(12px, var(--sal, env(safe-area-inset-left, 0px)))
+      max(12px, var(--sar, env(safe-area-inset-right, 0px)));
+  }
+
+  .auth-stage {
+    width: min(100%, 400px);
+  }
+
+  .auth-card {
+    padding: 12px;
+  }
+
+  .auth-tabs {
+    margin-bottom: 12px;
+  }
+
+  .auth-form {
+    gap: 8px;
+  }
+}
+
+/* INBOX 2238 — auth full-bleed: beat app-layout landscape #root gutters on guest/auth */
+@media (orientation: landscape) and (max-width: 932px) {
+  #root:has(.auth-screen),
+  html.auth-open #root {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+
+.auth-motion--enter {
+  animation: auth-motion-in 600ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+.auth-card--enter {
+  animation: auth-card-in 560ms var(--ease-out, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+
+@keyframes auth-motion-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-motion--enter,
+  .auth-card--enter {
+    animation: none !important;
   }
 }

@@ -6,88 +6,29 @@ alwaysApply: true
 # React Training App + Memory Bank
 
 ## Проект
+- Vite+React (`src/`), `packages/shared`, `server/` (Express+SQLite), Electron desktop, Expo mobile (`apps/mobile/`, `apps/macos/`).
 
-Монорепозиторий **Training Calculator / Периодизация**: Vite+React (`src/`), `packages/shared`, `server/` (Express+SQLite), Electron desktop, Expo mobile (`apps/mobile/`, `apps/macos/`).
+## Memory Bank & Workflow (Обязательно)
+- **Перед задачей**: Прочитать `memory-bank/tasks.md`, `activeContext.md`, `projectbrief.md`.
+- **UI/Стили**: Прочитать `memory-bank/style-guide.md` и `CLAUDE.md`.
+- **Архитектура**: Прочитать `techContext.md`, `systemPatterns.md`.
+- **Запуск**: Обновлять `tasks.md` и `progress.md` во время `/build`, `/reflect`, `/archive`.
+- **Hook стандартов**: Перед созданием/перестройкой UI обязательно прочитать `memory-bank/reference/README.md` + matching `*-standard.md` (или `.cursor/rules/theory-design-reference.mdc`).
 
-## Memory Bank — ОБЯЗАТЕЛЬНО (постоянное использование)
+## Среда & Превью
+- **Браузер**: Использовать только MCP `cursor-ide-browser` (URL: `http://localhost:5173`). Не открывать системный Safari/Chrome.
+- **Пути**: Файлы памяти строго в `memory-bank/`. Не создавать их в корне.
 
-**Перед любой задачей** — включая багфиксы, вопросы, UI-правки и фазовый workflow — агент **MUST**:
+## Workflow Схемы
+- `/van` (bug fix) → `/build` → `/reflect` → `/archive`
+- `/plan` (enhancement) → `/build` → ...
+- `/plan` → `/creative` (feature/system) → `/build` → ...
+- Команды находятся в `.cursor/commands/`.
 
-1. Прочитать `memory-bank/tasks.md`, `memory-bank/activeContext.md`, `memory-bank/projectbrief.md`
-2. При UI/стилях — также `memory-bank/style-guide.md` и корневой `CLAUDE.md`
-3. При технических решениях — `memory-bank/techContext.md`, `memory-bank/systemPatterns.md`
-4. Обновлять `tasks.md` и `progress.md` в фазах `/build`, `/reflect`, `/archive`
+## Dev Команды
+- Dev: `npm run dev` | API: `npm run server` | Tests/Types: `npm test && npm run typecheck`
+- Docker: `npm run docker:up` | Tunnel: `npm run public:stable`
 
-### Design standards hook (обязательно для нового UI)
-
-Перед **созданием или существенной перестройкой** UI (секция, компонент, форма, чарт, список) в калькуляторе, тренировках, журнале или Theory shell агент **MUST**:
-
-1. Открыть **`memory-bank/reference/README.md`** (индекс эталонов)
-2. Для **вкладки «Калькулятор»** — **MUST** прочитать **`calculator-tab-standard.md`** (umbrella) + matching partial standard
-3. Прочитать **matching** reference doc из `memory-bank/reference/` (или `.cursor/rules/theory-design-reference.mdc` для `--ta-*`)
-4. Применить паттерны эталона: tokens, spacing, структура hook/parts/CSS, a11y — **не** legacy siblings и **не** ad hoc layout
-5. При утверждённом новом gold standard — добавить `*-standard.md` в `memory-bank/reference/` и обновить индекс + `systemPatterns.md`
-
-Без прохождения hook **запрещено** начинать `/build` новых UI-структур (багфиксы внутри существующего эталона — reference как контекст).
-
-### Источник правды
-
-- **Канон:** `memory-bank/` + `.cursor/rules/` + `.cursor/commands/`
-- **Не канон:** `cursor-memory-bank-main/` — upstream-шаблон Memory Bank v0.8; использовать только как справочник, не копировать файлы в корень
-
-## Превью UI — только встроенный браузер Cursor
-
-При проверке UI, скриншотах, интерактивном тестировании:
-
-1. **MUST** использовать MCP `cursor-ide-browser` (`browser_navigate`, `browser_snapshot`, `browser_tabs`, `browser_click`, …)
-2. **MUST NOT** открывать системный браузер: macOS `open http…`, `xdg-open`, Windows `start https…`
-3. Dev preview по умолчанию: `http://localhost:5173` (предварительно `npm run dev`)
-4. Для открытия URL в Glass: MCP `cursor-app-control` → `open_resource` (не shell `open`)
-
-### Пути (строго)
-
-- Все core-файлы **только** в `memory-bank/` (см. `.cursor/rules/isolation_rules/Core/memory-bank-paths.mdc`)
-- Не создавать `tasks.md` / `activeContext.md` в корне, `src/` или elsewhere
-- Creative → `memory-bank/creative/`; reflection → `memory-bank/reflection/`; archive → `memory-bank/archive/`
-
-### Workflow Cursor 2.0 (установлен v0.8)
-
-```
-/van → /plan → /creative → /build → /reflect → /archive
-```
-
-| Complexity | Путь |
-|------------|------|
-| L1 (bug fix) | `/van` → `/build` → `/reflect` → `/archive` |
-| L2 (enhancement) | `/van` → `/plan` → `/build` → `/reflect` → `/archive` |
-| L3–4 (feature/system) | `/van` → `/plan` → `/creative` → `/build` → `/reflect` → `/archive` |
-
-Команды: `.cursor/commands/` (van, plan, creative, build, reflect, archive).  
-Правила: `.cursor/rules/isolation_rules/`.
-
-После `/archive` — очистить `tasks.md` для следующей задачи.
-
-## Дизайн и код
-
-- Тихий UI: один акцент, 4px spacing, semantic tokens
-- Functional components, логика в hooks/utils, strict TypeScript
-- a11y: keyboard, focus-visible, prefers-reduced-motion
-- Ответы пользователю на **русском**; код/идентификаторы — English
-- **Design standards hook:** `memory-bank/reference/README.md` → matching `*-standard.md` перед любым новым UI
-- **Reference docs (канон UI):** `memory-bank/reference/` — **Calculator tab umbrella** (`calculator-tab-standard.md`), **секция 02 Прогрессия** (`calc-progression-result-standard.md`), **exercise picker** (`calc-exercise-select-standard.md`), **saved list sec 03** (`calc-saved-exercises-standard.md`), charts, calculator forms (см. индекс)
-
-## Dev quick reference
-
-```sh
-npm run dev      # Vite :5173 + proxy /api
-npm run server   # API :3001 (отдельный терминал)
-npm test && npm run typecheck && npm run lint
-npm run docker:up          # Docker full stack :3001 (или APP_PORT)
-npm run public:stable      # Cloudflare tunnel (см. README)
-```
-
-## Что не делать
-
-- Коммиты только по явной просьбе пользователя
-- Не коммитить `.env`, секреты, `gym.db`
-- Не дублировать Memory Bank в `cursor-memory-bank-main/` — канон в `.cursor/` + `memory-bank/`
+## Запрещено
+- Делать коммиты без просьбы пользователя.
+- Коммитить `.env`, `gym.db`.

@@ -1,0 +1,46 @@
+.locked-calc-result {
+  margin-top: 12px;
+}
+
+.locked-calc-result__card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--color-border-default);
+  background: var(--color-bg-elevated);
+}
+
+.locked-calc-result__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.locked-calc-result__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.locked-calc-result__copy {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.locked-calc-result__cta {
+  justify-self: start;
+  min-height: 44px;
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locked-calc-result__cta:active {
+    transform: none;
+  }
+}

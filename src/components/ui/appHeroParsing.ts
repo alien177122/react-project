@@ -1,8 +1,9 @@
-/** Parses hero titles for display emphasis (RPE–RIR accent or legacy week count). */
+/** Parses hero titles for editorial kinetic emphasis (RPE–RIR, week count, or trailing word). */
 export function parseAppHeroTitle(title: string): {
   lead: string;
   num: string | null;
   tail: string | null;
+  ringLabel: string | null;
 } {
   const rpeMatch = title.match(/^(.+?)\s+(RPE[–-]RIR)$/iu);
   if (rpeMatch) {
@@ -10,6 +11,7 @@ export function parseAppHeroTitle(title: string): {
       lead: rpeMatch[1].trim(),
       num: rpeMatch[2].replace('-', '–'),
       tail: null,
+      ringLabel: 'RPE·RIR',
     };
   }
 
@@ -19,10 +21,23 @@ export function parseAppHeroTitle(title: string): {
       lead: weekMatch[1].trim(),
       num: weekMatch[2],
       tail: weekMatch[3].trim(),
+      ringLabel: weekMatch[2],
     };
   }
 
-  return {lead: title, num: null, tail: null};
+  const trailingAccent = title.match(/^(.+?)\s+(\S+)$/u);
+  if (trailingAccent && trailingAccent[1].trim() !== trailingAccent[2].trim()) {
+    const tail = trailingAccent[2].trim();
+    // Full word in aside — never truncate to "ТРЕ" / "СПЛ".
+    return {
+      lead: trailingAccent[1].trim(),
+      num: tail,
+      tail: null,
+      ringLabel: tail.toUpperCase(),
+    };
+  }
+
+  return {lead: title, num: null, tail: null, ringLabel: null};
 }
 
 export function appHeroChipsFromSubtitle(subtitle: string): string[] | null {

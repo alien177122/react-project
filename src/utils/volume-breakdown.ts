@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/utils/volume-breakdown.ts'
+export * from '@training/shared/utils/volume-breakdown'

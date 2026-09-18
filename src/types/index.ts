@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/types/index.ts'
+export * from '@training/shared/types/index'

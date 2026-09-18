@@ -1,5 +1,5 @@
 import {useMemo} from 'react';
-import {filterProgramV3ChartWeeks, type ProgramV3ChartRow} from '@shared/program/v3/chartProgress';
+import {filterProgramV3ChartWeeks, type ProgramV3ChartRow} from '@training/shared/program/v3/chartProgress';
 
 export type {ProgramV3ChartRow};
 
@@ -161,7 +161,7 @@ export function useProgramV3Progress(rows: ProgramV3ChartRow[]) {
       linePath: linePath(intensityPoints),
       areaPath: areaPath(intensityPoints),
       viewBox: `0 0 ${VIEW.width} 280`,
-      grid: [0, 1, 2, 3].map(i => VIEW.top + i * (chartHeight / 3)),
+      grid: Array.from({length: 7}, (_, i) => VIEW.top + i * (chartHeight / 6)),
     };
   }, [rows]);
 }

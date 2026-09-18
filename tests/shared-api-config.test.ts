@@ -121,3 +121,14 @@ test('buildApiConfig preserves platform defaults when optional flags are absent'
   assert.equal(macosConfig.retryCount, 1)
   assert.equal(macosConfig.enableLogging, false)
 })
+
+test('buildApiConfig appends /api when absolute URL has no path', () => {
+  const config = buildApiConfig({
+    platform: 'ios',
+    env: { VITE_API_URL: 'http://127.0.0.1:3002' },
+    dev: true,
+  })
+
+  assert.equal(config.baseUrl, 'http://127.0.0.1:3002/api')
+})
+

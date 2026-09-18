@@ -7,9 +7,17 @@ interface ExerciseWheelProps {
   value: string;
   onChange: (key: string) => void;
   savedExercises?: SavedExercise[];
+  triggerId?: string;
+  ariaLabelledBy?: string;
 }
 
-export default function ExerciseWheel({value, onChange, savedExercises = []}: ExerciseWheelProps) {
+export default function ExerciseWheel({
+  value,
+  onChange,
+  savedExercises = [],
+  triggerId,
+  ariaLabelledBy,
+}: ExerciseWheelProps) {
   const items = useMemo(
     () =>
       WHEEL_ORDER.map(key => {
@@ -30,6 +38,8 @@ export default function ExerciseWheel({value, onChange, savedExercises = []}: Ex
       onChange={onChange}
       items={items}
       savedExercises={savedExercises}
+      triggerId={triggerId}
+      ariaLabelledBy={ariaLabelledBy}
     />
   );
 }

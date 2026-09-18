@@ -14,7 +14,7 @@ export function useAuthSession({storage, apiBaseUrl}: AuthSessionOptions) {
   // are referentially equal until `apiBaseUrl` actually changes. This is
   // what lets us include them in the effect dependency array below
   // without re-fetching on every render.
-  const {loadUser, apiAuth} = useMemo(() => createApiClient(apiBaseUrl), [apiBaseUrl]);
+  const {loadUser, apiAuth, apiLogout} = useMemo(() => createApiClient(apiBaseUrl), [apiBaseUrl]);
 
   const [token, setToken] = useState('');
   const [userName, setUserName] = useState('');
@@ -79,6 +79,13 @@ export function useAuthSession({storage, apiBaseUrl}: AuthSessionOptions) {
         if (data) {
           setSessionError('');
           setUserData(data);
+          if (typeof localStorage !== 'undefined') {
+            try {
+              localStorage.setItem(`gym_user_data_${userName}`, JSON.stringify(data));
+            } catch (e) {
+              console.error('Failed to cache user data:', e);
+            }
+          }
           return;
         }
 
@@ -92,6 +99,22 @@ export function useAuthSession({storage, apiBaseUrl}: AuthSessionOptions) {
       })
       .catch(error => {
         if (cancelled) return;
+
+        if (typeof localStorage !== 'undefined') {
+          try {
+            const cached = localStorage.getItem(`gym_user_data_${userName}`);
+            if (cached) {
+              const data = JSON.parse(cached) as UserData;
+              setSessionError('');
+              setUserData(data);
+              console.info('Loaded user data from localStorage cache (offline fallback)');
+              return;
+            }
+          } catch (e) {
+            console.error('Failed to parse cached user data:', e);
+          }
+        }
+
         const isApiUnavailable = error instanceof Error && error.message === 'API_UNAVAILABLE';
         setSessionError(
           isApiUnavailable
@@ -104,6 +127,16 @@ export function useAuthSession({storage, apiBaseUrl}: AuthSessionOptions) {
       cancelled = true;
     };
   }, [loadUser, sessionLoading, storage, token, userName]);
+
+  useEffect(() => {
+    if (userData && userName && typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(`gym_user_data_${userName}`, JSON.stringify(userData));
+      } catch (e) {
+        console.error('Failed to save user data to localStorage:', e);
+      }
+    }
+  }, [userData, userName]);
 
   async function handleAuth() {
     const name = nameInput.trim();
@@ -155,6 +188,14 @@ export function useAuthSession({storage, apiBaseUrl}: AuthSessionOptions) {
   }
 
   async function handleLogout() {
+    const activeToken = token;
+    if (activeToken) {
+      try {
+        await apiLogout(activeToken);
+      } catch {
+        // Local clear still proceeds — revoke is best-effort if API is down.
+      }
+    }
     await storage.clear();
     setToken('');
     setUserName('');

@@ -1,4 +1,4 @@
-import {EXERCISES, TRAINING_DAYS} from '../data/exercises.ts';
+import {CATALOG_EXERCISES, TRAINING_DAYS} from '../data/exercises.ts';
 import {
   DEFAULT_LEG_EXERCISES,
   EXERCISES_BY_MUSCLE,
@@ -31,8 +31,9 @@ export function distributeSets(total: number, days: number, minPerDay = 2): numb
     const result = Array<number>(days).fill(minPerDay);
     let excess = result.reduce((sum, value) => sum + value, 0) - roundedTotal;
     for (let i = result.length - 1; excess > 0 && i >= 0; i -= 1) {
-      const reduceBy = Math.min(excess, result[i] - 1);
-      result[i] -= reduceBy;
+      const current = result[i] ?? minPerDay;
+      const reduceBy = Math.min(excess, current - 1);
+      result[i] = current - reduceBy;
       excess -= reduceBy;
     }
     return result;
@@ -42,7 +43,7 @@ export function distributeSets(total: number, days: number, minPerDay = 2): numb
   let remainder = roundedTotal - minTotal;
   let index = 0;
   while (remainder > 0) {
-    result[index] += 1;
+    result[index] = (result[index] ?? minPerDay) + 1;
     remainder -= 1;
     index = (index + 1) % days;
   }
@@ -54,7 +55,7 @@ export function getBaselineSetsPerMuscle(weekIndex: number): Record<SplitMuscleI
 
   for (const day of TRAINING_DAYS) {
     for (const exerciseKey of day.exerciseKeys) {
-      const config = EXERCISES[exerciseKey];
+      const config = CATALOG_EXERCISES[exerciseKey];
       if (!config) continue;
       const scheme = config.weekSchemes[weekIndex];
       if (!scheme) continue;
@@ -63,7 +64,7 @@ export function getBaselineSetsPerMuscle(weekIndex: number): Record<SplitMuscleI
   }
 
   for (const exerciseKey of TRICEPS_CONTRIB_KEYS) {
-    const config = EXERCISES[exerciseKey];
+    const config = CATALOG_EXERCISES[exerciseKey];
     const contrib = MUSCLE_CONTRIB[exerciseKey]?.triceps;
     if (!config || !contrib) continue;
 
@@ -88,18 +89,6 @@ function daysForMuscle(split: CustomSplit, muscle: SplitMuscleId): SplitDayConfi
     .sort((a, b) => a.dayNumber - b.dayNumber);
 }
 
-function intensityMultiplier(
-  split: CustomSplit,
-  muscle: SplitMuscleId,
-  dayNumber: 1 | 2 | 3,
-): number {
-  if (!split.varyIntensity) return 1;
-  const ordered = daysForMuscle(split, muscle);
-  const index = ordered.findIndex(day => day.dayNumber === dayNumber);
-  if (index <= 0) return 1;
-  return 0.9;
-}
-
 export interface BuildPreviewParams {
   split: CustomSplit;
   dayNumber: 1 | 2 | 3;
@@ -107,11 +96,19 @@ export interface BuildPreviewParams {
   savedExercises: SavedExercise[];
 }
 
-/** Exercise keys allowed on a day (max 4, max 2 legs from split.legExercises). */
+function excludedKeysForDay(split: CustomSplit, dayNumber: 1 | 2 | 3): Set<string> {
+  return new Set(split.excludedExercisesByDay?.[dayNumber] ?? []);
+}
+
 export function exerciseKeysForDay(split: CustomSplit, dayNumber: 1 | 2 | 3): string[] {
+  if (split.customExercisesByDay) {
+    return (split.customExercisesByDay[dayNumber] ?? []).filter(key => Boolean(CATALOG_EXERCISES[key]));
+  }
+
   const day = split.days.find(entry => entry.dayNumber === dayNumber);
   if (!day) return [];
 
+  const excluded = excludedKeysForDay(split, dayNumber);
   const legKeys = new Set<string>(normalizeLegExercises(split.legExercises));
   const keys: string[] = [];
 
@@ -122,16 +119,18 @@ export function exerciseKeysForDay(split: CustomSplit, dayNumber: 1 | 2 | 3): st
 
     for (const exerciseKey of pool) {
       if (keys.length >= SPLIT_DAY_LIMITS.MAX_EXERCISES_PER_DAY) break;
-      if (!EXERCISES[exerciseKey]) continue;
+      if (!CATALOG_EXERCISES[exerciseKey]) continue;
+      if (excluded.has(exerciseKey)) continue;
       if (keys.includes(exerciseKey)) continue;
       keys.push(exerciseKey);
     }
   }
 
   for (const [exerciseKey, overrideDay] of Object.entries(split.exerciseDayOverrides ?? {})) {
-    if (overrideDay !== dayNumber || !EXERCISES[exerciseKey]) continue;
+    if (overrideDay !== dayNumber || !CATALOG_EXERCISES[exerciseKey]) continue;
+    if (excluded.has(exerciseKey)) continue;
     if (keys.includes(exerciseKey)) continue;
-    const config = EXERCISES[exerciseKey];
+    const config = CATALOG_EXERCISES[exerciseKey];
     if (config.primaryMuscle === 'legs' && !legKeys.has(exerciseKey)) continue;
     if (keys.length >= SPLIT_DAY_LIMITS.MAX_EXERCISES_PER_DAY) {
       keys.pop();
@@ -140,6 +139,29 @@ export function exerciseKeysForDay(split: CustomSplit, dayNumber: 1 | 2 | 3): st
   }
 
   return keys.slice(0, SPLIT_DAY_LIMITS.MAX_EXERCISES_PER_DAY);
+}
+
+/** Exercise keys removed from a day but available for restore in the constructor UI. (Deprecated) */
+export function excludedExerciseKeysForDay(split: CustomSplit, dayNumber: 1 | 2 | 3): string[] {
+  return (split.excludedExercisesByDay?.[dayNumber] ?? []).filter(key => CATALOG_EXERCISES[key]);
+}
+
+/** Migrates a legacy muscle-based split to the explicit customExercisesByDay structure. */
+export function migrateToCustomExercises(split: CustomSplit): CustomSplit {
+  if (split.customExercisesByDay) return split;
+
+  const migrated: Partial<Record<1 | 2 | 3, string[]>> = {};
+  for (const day of split.days) {
+    migrated[day.dayNumber] = exerciseKeysForDay(split, day.dayNumber);
+  }
+
+  return {
+    ...split,
+    customExercisesByDay: migrated,
+    legExercises: undefined,
+    excludedExercisesByDay: undefined,
+    exerciseDayOverrides: undefined,
+  };
 }
 
 export function buildDayPreview(params: BuildPreviewParams): TrainingExerciseRow[] {
@@ -152,7 +174,7 @@ export function buildDayPreview(params: BuildPreviewParams): TrainingExerciseRow
   const rows: TrainingExerciseRow[] = [];
 
   for (const exerciseKey of allowedKeys) {
-    const config = EXERCISES[exerciseKey];
+    const config = CATALOG_EXERCISES[exerciseKey];
     if (!config) continue;
 
     const overrideDay = split.exerciseDayOverrides?.[exerciseKey];
@@ -165,22 +187,20 @@ export function buildDayPreview(params: BuildPreviewParams): TrainingExerciseRow
       targetDays = overrideConfig ? [overrideConfig] : [];
     }
 
-    if (!targetDays.some(entry => entry.dayNumber === dayNumber)) continue;
-    if (!day.muscles.includes(muscle) && !overrideDay) continue;
+    // Bypass legacy muscle group checks if the split uses explicit custom exercises
+    if (!split.customExercisesByDay) {
+      if (!targetDays.some(entry => entry.dayNumber === dayNumber)) continue;
+      if (!day.muscles.includes(muscle) && !overrideDay) continue;
+    }
 
     const schemeBase = config.weekSchemes[weekIndex];
     if (!schemeBase) continue;
 
     const weeklySets = schemeBase.sets;
-    const dayIndex = targetDays.findIndex(entry => entry.dayNumber === dayNumber);
-    if (dayIndex < 0) continue;
-
-    const distributed = distributeSets(weeklySets, targetDays.length);
-    const sets = distributed[dayIndex] ?? weeklySets;
+    const sets = weeklySets;
     if (sets <= 0) continue;
 
     const scheme: WeekScheme = {sets, reps: schemeBase.reps};
-    const intensityMul = intensityMultiplier(split, muscle, dayNumber);
     const percentage = config.percentages[weekIndex];
     const saved = savedByKey.get(exerciseKey);
 
@@ -193,10 +213,9 @@ export function buildDayPreview(params: BuildPreviewParams): TrainingExerciseRow
       const fixed = split.fixedWeights?.[exerciseKey]?.[weekIndex];
       weight = typeof fixed === 'number' && fixed > 0 ? fixed : 0;
     } else if (saved && typeof percentage === 'number') {
-      const adjustedPct = percentage * intensityMul;
-      const totalWeight = calcWorkingWeight(saved.oneRM, adjustedPct, config);
+      const totalWeight = calcWorkingWeight(saved.oneRM, percentage, config);
       weight = totalWeight;
-      if (config.isPullup && saved.bodyWeight != null) {
+      if (config.usesBodyWeight && saved.bodyWeight != null) {
         extraWeight = totalWeight - saved.bodyWeight;
       }
     }
@@ -212,6 +231,7 @@ export function buildDayPreview(params: BuildPreviewParams): TrainingExerciseRow
       exerciseType: config.type,
       warmupStep: config.warmupStep,
       isPullup: config.isPullup,
+      usesBodyWeight: config.usesBodyWeight,
       extraWeight,
       progressionMode: 'linear',
       workingSets,
@@ -276,11 +296,8 @@ export function allMusclesAssigned(split: CustomSplit): boolean {
   return assigned.size === 6;
 }
 
-export function validateSplit(split: CustomSplit): string | null {
-  if (!split.name.trim()) return 'Укажите название сплита';
-  if (split.name.length > 40) return 'Название не длиннее 40 символов';
-  if (split.daysPerWeek !== 2 && split.daysPerWeek !== 3) return 'Недопустимое число дней';
-  if (split.days.length !== split.daysPerWeek) return 'Число дней не совпадает с настройкой';
-  if (!allMusclesAssigned(split)) return 'Назначьте все 6 групп мышц по одному разу';
+export function validateSplit(_split: CustomSplit): string | null {
+  void _split;
+  // All validation bans are disabled per user request
   return null;
 }

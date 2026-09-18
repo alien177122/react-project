@@ -1,12 +1,12 @@
 .ta-share-btn {
   align-items: center;
   background: var(--theory-card);
-  border: 1px solid var(--theory-border);
+  border: var(--border-width) solid var(--theory-border);
   border-radius: var(--radius-sm);
   color: var(--theory-text);
   cursor: pointer;
   display: inline-flex;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   gap: var(--space-2);
   letter-spacing: 0.02em;

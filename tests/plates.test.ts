@@ -18,16 +18,16 @@ test('decomposePlates handles minimum Olympic increment', () => {
   if (result.ok) assert.deepEqual(result.plates, [1.25])
 })
 
-test('decomposePlates uses greedy standard gym loading', () => {
+test('decomposePlates uses greedy standard gym loading with 20 kg plates', () => {
   const result = decomposePlates(100)
   assert.equal(result.ok, true)
-  if (result.ok) assert.deepEqual(result.plates, [25, 15])
+  if (result.ok) assert.deepEqual(result.plates, [20, 20])
 })
 
-test('decomposePlates supports repeated plates for heavy loads', () => {
+test('decomposePlates supports repeated 20 kg plates for heavy loads', () => {
   const result = decomposePlates(180)
   assert.equal(result.ok, true)
-  if (result.ok) assert.deepEqual(result.plates, [25, 25, 25, 5])
+  if (result.ok) assert.deepEqual(result.plates, [20, 20, 20, 20])
 })
 
 test('decomposePlates supports non-20kg bars', () => {

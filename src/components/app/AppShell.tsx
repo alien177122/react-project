@@ -1,15 +1,14 @@
-import {useCallback, useMemo, useState, type CSSProperties} from 'react';
-import {resolveProgramSettings} from '@shared/program/resolveProgramSettings';
+import {lazy, Suspense, useCallback, useMemo, useState, useEffect, type CSSProperties} from 'react';
+import {resolveProgramSettings} from '@training/shared/program/resolveProgramSettings';
+import {EXERCISES} from '@training/shared/data/exercises';
 import {useKeyboardAvoid} from '../../hooks/useKeyboardAvoid';
 import {HeroSection} from '../ui/HeroSection';
 import {OpenGraph} from '../seo/OpenGraph';
-import AuthScreen from '../../screens/AuthScreen';
 import {useAuthSession} from '../../hooks/useAuthSession';
 import {useCalculatorState} from '../../hooks/useCalculatorState';
-import {useTrainingProgram} from '../../hooks/useTrainingProgram';
+import {useBilling} from '../../hooks/useBilling';
 import {useURLState} from '../../hooks/useURLState';
 import {PROGRAM_DAYS_PER_WEEK} from '../../types';
-import {saveUser} from '../../utils/api';
 import {LoadingView} from './LoadingView';
 import {TabNav} from './TabNav';
 import {TabPanel} from './TabPanel';
@@ -17,7 +16,10 @@ import {UserBar} from './UserBar';
 import {isAppTab, type AppTab} from './tabs';
 import {usePageMeta} from '../../hooks/usePageMeta';
 import {ThemeToggle} from '../shared/ThemeToggle';
+import {AppAmbientBackground} from './AppAmbientBackground';
 import '../../styles/animations.css';
+
+const AuthScreen = lazy(() => import('../../screens/AuthScreen'));
 
 export function AppShell() {
   const pageMeta = usePageMeta();
@@ -25,52 +27,104 @@ export function AppShell() {
   const [saveToast, setSaveToast] = useState('');
   const {keyboardHeight} = useKeyboardAvoid();
   const tabState = useURLState<AppTab>('tab');
+  const {value: paymentValue, setValue: setPaymentValue} = useURLState<'success' | 'failed'>(
+    'payment',
+  );
   const activeTab = isAppTab(tabState.value) ? tabState.value : 'calculator';
   const shellStyle = {
     '--keyboard-inset': `${keyboardHeight}px`,
   } as CSSProperties;
 
-  const calculator = useCalculatorState({
-    token: auth.token,
-    userName: auth.userName,
-    userData: auth.userData,
-    setUserData: auth.setUserData,
-  });
+  const billing = useBilling(auth.token ?? '');
 
-  const training = useTrainingProgram({
-    token: auth.token,
+  const calculator = useCalculatorState({
+    token: auth.token ?? '',
+    userName: auth.userName ?? '',
     userData: auth.userData,
     setUserData: auth.setUserData,
+    onLimitReached: () => {
+      void billing.refresh();
+    },
+    onCalculateSuccess: () => {
+      void billing.refresh();
+    },
   });
 
   const programSettings = resolveProgramSettings(auth.userData);
 
-  const heroCopy = useMemo(
-    () => ({
-      title: 'ПЕРИОДИЗАЦИЯ RPE–RIR',
-      subtitle: `Оптимальная · ${PROGRAM_DAYS_PER_WEEK} дня · введи тестовый вес — калькулятор построит рабочие веса на 8 недель`,
-    }),
-    [],
-  );
+  useEffect(() => {
+    document.documentElement.setAttribute('data-active-tab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (!auth.token || !paymentValue) return;
+    billing.handleReturnFromPayment(paymentValue);
+    setPaymentValue(null);
+  }, [auth.token, billing, paymentValue, setPaymentValue]);
+
+  const billingReady = billing.state.status === 'ready' ? billing.state.billing : null;
+  const billingError = billing.state.status === 'error' ? billing.state.message : null;
+  const {clearPaywallLock} = calculator;
+
+  const handleCheckout = useCallback(() => {
+    void billing.openCheckout();
+  }, [billing]);
+
+  const handleRefreshBilling = useCallback(() => {
+    void billing.refresh();
+  }, [billing]);
+
+  useEffect(() => {
+    if (billingReady?.premium) {
+      clearPaywallLock();
+    }
+  }, [billingReady?.premium, clearPaywallLock]);
+
+  const heroCopy = useMemo(() => {
+    switch (activeTab) {
+      case 'calculator':
+        return {
+          label: 'Калькулятор',
+          title: 'ПЕРИОДИЗАЦИЯ RPE–RIR',
+          subtitle: 'Тестовый вес → 1ПМ и рабочие веса на 8 недель',
+        };
+      case 'theory':
+        return {
+          label: 'Справочник',
+          title: 'ТЕОРИЯ ТРЕНИНГА',
+          subtitle: 'Прогрессия · mTOR · ориентиры и tier-лист добавок в одном месте',
+        };
+      case 'training':
+        return {
+          label: 'Программа',
+          title: 'ТРЕНИРОВОЧНЫЙ ПРОЦЕСС',
+          subtitle: `8 недель · ${PROGRAM_DAYS_PER_WEEK} дня · волновая прогрессия`,
+        };
+      case 'split':
+        return {
+          label: 'Конструктор',
+          title: 'СОСТАВЛЕНИЕ СПЛИТА',
+          subtitle: 'Неделя — единица прогрессии · рабочий вес фиксирован · без ограничений групп',
+        };
+      case 'journal':
+        return {
+          label: 'История',
+          title: 'ЖУРНАЛ ТРЕНИРОВОК',
+          subtitle: 'Фактические подходы · личный тренд 1ПМ · без плана калькулятора',
+        };
+      default:
+        return {
+          label: 'Тренировочный калькулятор',
+          title: 'ПЕРИОДИЗАЦИЯ RPE–RIR',
+          subtitle: `Оптимальная · ${PROGRAM_DAYS_PER_WEEK} дня · волновая прогрессия`,
+        };
+    }
+  }, [activeTab]);
 
   const handleSaveError = useCallback((message: string) => {
     setSaveToast(message || 'Не удалось сохранить данные');
     window.setTimeout(() => setSaveToast(''), 4000);
   }, []);
-
-  function updateProgramSettings() {
-    if (!auth.userData || !auth.token) return;
-
-    const updated = {
-      ...auth.userData,
-      activeProgram: '2.0' as const,
-      programSettings,
-    };
-    auth.setUserData(updated);
-    void saveUser(updated, auth.token).catch(() => {
-      handleSaveError('Не удалось сохранить настройки программы');
-    });
-  }
 
   function changeTab(tab: AppTab) {
     tabState.setValue(tab);
@@ -79,13 +133,13 @@ export function AppShell() {
   function handleLogout() {
     void auth.handleLogout();
     calculator.resetCalculatorState();
-    training.resetTrainingState();
     changeTab('calculator');
   }
 
   if (auth.sessionLoading) {
     return (
       <>
+        <AppAmbientBackground activeTab={activeTab} />
         <ThemeToggle />
         <LoadingView message="Восстанавливаем сессию..." />
       </>
@@ -97,20 +151,22 @@ export function AppShell() {
       <>
         <ThemeToggle />
         <OpenGraph {...pageMeta} />
-        <AuthScreen
-          authMode={auth.authMode}
-          setAuthMode={auth.setAuthMode}
-          nameInput={auth.nameInput}
-          setNameInput={auth.setNameInput}
-          passInput={auth.passInput}
-          setPassInput={auth.setPassInput}
-          pass2Input={auth.pass2Input}
-          setPass2Input={auth.setPass2Input}
-          authError={auth.authError}
-          setAuthError={auth.setAuthError}
-          authLoading={auth.authLoading}
-          handleAuth={auth.handleAuth}
-        />
+        <Suspense fallback={<LoadingView message="Загрузка формы входа..." />}>
+          <AuthScreen
+            authMode={auth.authMode}
+            setAuthMode={auth.setAuthMode}
+            nameInput={auth.nameInput}
+            setNameInput={auth.setNameInput}
+            passInput={auth.passInput}
+            setPassInput={auth.setPassInput}
+            pass2Input={auth.pass2Input}
+            setPass2Input={auth.setPass2Input}
+            authError={auth.authError}
+            setAuthError={auth.setAuthError}
+            authLoading={auth.authLoading}
+            handleAuth={auth.handleAuth}
+          />
+        </Suspense>
       </>
     );
   }
@@ -118,51 +174,85 @@ export function AppShell() {
   if (!auth.userData) {
     return (
       <>
+        <AppAmbientBackground activeTab={activeTab} />
         <ThemeToggle />
         <LoadingView message={auth.sessionError || 'Загрузка данных...'} />
       </>
     );
   }
 
+  const userData = auth.userData;
+  const trainingSavedCount = userData.exercises.filter(exercise =>
+    Object.prototype.hasOwnProperty.call(EXERCISES, exercise.exerciseKey),
+  ).length;
+  const allTrainingExercisesSaved = Object.keys(EXERCISES).every(key =>
+    userData.exercises.some(exercise => exercise.exerciseKey === key),
+  );
+
   return (
     <div className="app-shell" style={shellStyle}>
+      <AppAmbientBackground activeTab={activeTab} />
       <ThemeToggle />
       <OpenGraph {...pageMeta} />
-      <HeroSection
-        className="app-hero"
-        label="Тренировочный калькулятор"
-        title={heroCopy.title}
-        subtitle={heroCopy.subtitle}
+      <div className="app-hero-container" style={{width: '100%', overflow: 'hidden'}}>
+        <div key={activeTab} className="app-hero-swap app-hero-swap--enter">
+          <HeroSection
+            className="app-hero"
+            label={heroCopy.label}
+            title={heroCopy.title}
+            subtitle={heroCopy.subtitle}
+            tab={activeTab}
+          />
+        </div>
+      </div>
+      <UserBar
+        userName={auth.userName}
+        onLogout={handleLogout}
+        billingState={billing.state}
+        isPolling={billing.isPolling}
+        checkoutDisabled={billing.state.status !== 'ready' || Boolean(billingReady?.premium)}
+        onOpenCheckout={handleCheckout}
+        onRefreshBilling={handleRefreshBilling}
       />
-      <UserBar userName={auth.userName} onLogout={handleLogout} />
+      <main className="app-shell__main">
+        <TabPanel
+          activeTab={activeTab}
+          userData={userData}
+          programSettings={programSettings}
+          calculator={{
+            ...calculator,
+            token: auth.token,
+            billingStatus: billingReady,
+            billingLoading: billing.state.status === 'loading',
+            billingError,
+            billingPolling: billing.isPolling,
+            checkoutDisabled: billing.state.status !== 'ready' || Boolean(billingReady?.premium),
+            onCheckout: handleCheckout,
+            onRefreshBilling: handleRefreshBilling,
+          }}
+          training={{
+            token: auth.token,
+            setUserData: value => auth.setUserData(value),
+            onGoCalculator: () => changeTab('calculator'),
+            programSubtitle: `8 недель · ${PROGRAM_DAYS_PER_WEEK} дня · волновая прогрессия`,
+          }}
+          journal={{
+            setUserData: value => auth.setUserData(value),
+            token: auth.token,
+            onSaveError: handleSaveError,
+          }}
+          split={{
+            setUserData: value => auth.setUserData(value),
+            token: auth.token,
+            onSaveError: handleSaveError,
+          }}
+        />
+      </main>
       <TabNav
         activeTab={activeTab}
-        allSaved={training.allSaved}
-        savedCount={auth.userData.exercises.length}
+        allSaved={allTrainingExercisesSaved}
+        savedCount={trainingSavedCount}
         onTabChange={changeTab}
-      />
-      <TabPanel
-        activeTab={activeTab}
-        userData={auth.userData}
-        programSettings={programSettings}
-        onProgramSettingsChange={updateProgramSettings}
-        calculator={calculator}
-        training={{
-          ...training,
-          onGoCalculator: () => changeTab('calculator'),
-          totalSessions: training.totalSessions,
-          programSubtitle: `8 недель · ${PROGRAM_DAYS_PER_WEEK} дня · волновая прогрессия`,
-        }}
-        journal={{
-          setUserData: value => auth.setUserData(value),
-          token: auth.token,
-          onSaveError: handleSaveError,
-        }}
-        split={{
-          setUserData: value => auth.setUserData(value),
-          token: auth.token,
-          onSaveError: handleSaveError,
-        }}
       />
       {saveToast ? (
         <p className="app-toast" role="alert">

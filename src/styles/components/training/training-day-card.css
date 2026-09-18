@@ -1,7 +1,7 @@
 /* ===== TRAINING DAY CARD ===== */
 .training-card {
   background: var(--card);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -11,7 +11,7 @@
   gap: 12px;
   padding: 12px 16px;
   background: var(--surface-raised);
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--border-width-hairline) solid var(--border);
 }
 .training-card-day {
   font-family: 'Bebas Neue', sans-serif;
@@ -25,9 +25,11 @@
   flex: 1;
 }
 .training-card-week {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-display);
   font-size: 12px;
-  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: var(--tracking-caps);
   color: var(--accent);
   text-transform: uppercase;
   white-space: nowrap;
@@ -36,16 +38,15 @@
 /* Preview (next day) */
 .training-card-preview {
   opacity: 0.55;
-  border-color: #1e1e1e;
+  border-color: var(--border);
 }
 .training-card-preview:hover {
   opacity: 0.75;
 }
 
-/* Deload week accent */
+/* Deload week accent — full perimeter, no left rail */
 .training-card-deload {
-  border-color: var(--deload-border);
-  border-left: 3px solid var(--green);
+  border-color: var(--green);
 }
 .training-card-deload .training-card-head {
   background: var(--deload-bg);
@@ -100,6 +101,12 @@
   .training-exercise-trigger:hover {
     background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 9%, transparent);
   }
+
+  /* Split preview: row tint only — no accent fill on trigger (avoids dark/contrast flash) */
+  .split-preview .training-card--split-preview .training-exercise-trigger:hover {
+    background: transparent;
+    color: var(--text);
+  }
 }
 
 .training-exercise-trigger:focus-visible {
@@ -113,8 +120,8 @@
 }
 
 .training-exercise-trigger__hint {
-  border: 1px solid var(--ta-border, var(--border));
-  border-radius: var(--ta-radius-pill, var(--radius-pill));
+  border: var(--border-width) solid var(--ta-border, var(--border));
+  border-radius: var(--glass-radius-badge, 6px);
   color: var(--ta-text-dim, var(--muted));
   flex: 0 0 auto;
   font-size: 12px;
@@ -127,7 +134,7 @@
 
 .training-load-row > td {
   background: var(--ta-bg, var(--bg));
-  border-bottom: 1px solid var(--ta-border, var(--border));
+  border-bottom: var(--border-width-hairline) solid var(--ta-border, var(--border));
   padding: 0 10px 12px;
   text-align: left;
 }
@@ -135,7 +142,7 @@
 .training-load-menu.ta-shell {
   animation: trainingMenuIn var(--ta-duration-component, 400ms) var(--ta-ease, var(--ease-out)) both;
   background: var(--ta-surface, var(--surface));
-  border: 1px solid var(--ta-border, var(--border));
+  border: var(--border-width) solid var(--ta-border, var(--border));
   border-radius: 16px;
   box-shadow:
     0 18px 44px color-mix(in srgb, var(--ta-bg, var(--bg)) 52%, transparent),
@@ -143,6 +150,8 @@
   color: var(--ta-text, var(--text));
   display: flex;
   flex-direction: column;
+  font-family: var(--font-system);
+  font-feature-settings: normal;
   gap: 16px;
   margin: 12px 0 4px;
   overflow: hidden;
@@ -186,7 +195,7 @@
 
 .training-load-menu__work {
   align-items: flex-end;
-  border: 1px solid color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 26%, transparent);
+  border: var(--border-width) solid color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 26%, transparent);
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -198,18 +207,21 @@
 
 .training-load-menu__work span {
   color: var(--ta-text, var(--text));
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 20px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-family: var(--training-weight-font);
+  font-size: var(--type-20);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
   line-height: 1;
 }
 
 .training-load-menu__work small {
   color: var(--ta-text-muted, var(--muted));
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--training-weight-font);
+  font-size: var(--training-weight-size);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
 }
 
 .training-load-menu .ta-calc-plates {
@@ -231,9 +243,19 @@
   width: 100%;
 }
 
+.training-working-sets__slot {
+  display: block;
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0;
+  width: 100%;
+}
+
 .training-working-sets--pyramid .training-working-sets__item {
   background: var(--overlay-soft, color-mix(in srgb, var(--ta-text, var(--text)) 4%, transparent));
-  border: 1px solid var(--border-subtle, var(--ta-border, var(--border)));
+  border: var(--border-width) solid var(--border-subtle, var(--ta-border, var(--border)));
   border-radius: var(--radius-sm, 8px);
   box-sizing: border-box;
   max-width: 100%;
@@ -241,13 +263,66 @@
   width: 100%;
 }
 
-.training-working-sets--pyramid .training-working-sets__item:first-child {
-  background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 8%, transparent);
+/* Interactive set rows drive PlateDiagram weight (pyramid kg differs per row). */
+.training-working-sets__item.is-interactive {
+  appearance: none;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  max-width: 100%;
+  text-align: inherit;
+  transition:
+    background-color 160ms var(--ease-micro, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 160ms var(--ease-micro, cubic-bezier(0.22, 1, 0.36, 1));
+  width: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-working-sets__item.is-interactive:hover {
+    background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 10%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--ta-calc-accent, var(--accent)) 32%,
+      var(--ta-border, var(--border))
+    );
+  }
+}
+
+.training-working-sets__item.is-interactive:focus-visible {
+  background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 12%, transparent);
   border-color: color-mix(
     in srgb,
-    var(--ta-calc-accent, var(--accent)) 22%,
+    var(--ta-calc-accent, var(--accent)) 40%,
     var(--ta-border, var(--border))
   );
+  outline: 2px solid color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.training-working-sets__item.is-interactive:active {
+  transform: scale(0.98);
+}
+
+.training-working-sets__item.is-active,
+.training-working-sets--pyramid .training-working-sets__item.is-active {
+  background: color-mix(in srgb, var(--ta-calc-accent, var(--accent)) 14%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--ta-calc-accent, var(--accent)) 42%,
+    var(--ta-border, var(--border))
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .training-working-sets__item.is-interactive {
+    transition: none;
+  }
+
+  .training-working-sets__item.is-interactive:active {
+    transform: none;
+  }
 }
 
 .training-working-sets--pyramid .training-working-sets__set {
@@ -256,21 +331,33 @@
 
 .training-working-sets--pyramid .training-working-sets__weight {
   color: var(--ta-text, var(--text));
-  font-weight: 600;
+  font-family: var(--training-weight-font);
+  font-size: var(--training-weight-size);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
 }
 
 .training-working-sets--pyramid .training-working-sets__reps {
   color: var(--ta-text-muted, var(--text-secondary, var(--muted)));
+  font-family: var(--training-weight-font);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
 }
 
 .training-load-menu__note {
   background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 7%, transparent);
-  border: 1px solid var(--ta-border, var(--border));
+  border: var(--border-width) solid var(--ta-border, var(--border));
   border-radius: 12px;
-  color: var(--ta-text-muted, var(--muted));
-  font-size: 12px;
-  line-height: 1.5;
-  padding: 12px;
+  color: var(--ta-text-muted, var(--text-secondary, var(--muted)));
+  font-family: var(--font-system);
+  font-feature-settings: normal;
+  font-size: var(--type-14);
+  font-variant-numeric: normal;
+  font-weight: 400;
+  line-height: 1.65;
+  padding: 14px 16px;
 }
 
 .training-warmups {
@@ -285,7 +372,7 @@
 .training-warmups__item {
   align-items: center;
   background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 6%, transparent);
-  border: 1px solid var(--ta-border, var(--border));
+  border: var(--border-width) solid var(--ta-border, var(--border));
   border-radius: 12px;
   display: grid;
   gap: 8px;
@@ -294,17 +381,11 @@
   padding: 10px 12px;
 }
 
-.training-warmups__label,
-.training-warmups__weight,
-.training-warmups__reps,
-.training-warmups__rest {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-variant-numeric: tabular-nums;
-}
-
 .training-warmups__label {
   color: var(--ta-text-dim, var(--muted));
-  font-size: 12px;
+  font-family: var(--font-system);
+  font-size: var(--training-weight-size);
+  font-variant-numeric: normal;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -312,15 +393,28 @@
 
 .training-warmups__weight {
   color: var(--ta-text, var(--text));
-  font-size: 12px;
-  font-weight: 600;
+  font-family: var(--training-weight-font);
+  font-size: var(--training-weight-size);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
 }
 
 .training-warmups__reps,
-.training-warmups__rest,
+.training-warmups__rest {
+  color: var(--ta-text-muted, var(--muted));
+  font-family: var(--training-weight-font);
+  font-size: var(--training-weight-size);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
+}
+
 .training-warmups__purpose {
   color: var(--ta-text-muted, var(--muted));
-  font-size: 12px;
+  font-family: var(--font-system);
+  font-size: var(--training-weight-size);
+  font-variant-numeric: normal;
 }
 
 @keyframes trainingMenuIn {
@@ -361,7 +455,7 @@
   }
 
   .training-card .training-row {
-    border-bottom: 1px solid var(--ta-border, var(--border));
+    border-bottom: var(--border-width-hairline) solid var(--ta-border, var(--border));
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -388,16 +482,29 @@
   .training-card .training-row td:last-child {
     align-items: baseline;
     background: color-mix(in srgb, var(--ta-text-muted, var(--muted)) 6%, transparent);
-    border: 1px solid var(--ta-border, var(--border));
+    border: var(--border-width) solid var(--ta-border, var(--border));
     border-radius: 12px;
     color: var(--ta-text-muted, var(--muted));
     display: inline-flex;
-    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
     font-size: 12px;
-    font-variant-numeric: tabular-nums;
     gap: 6px;
     min-height: 36px;
     padding: 8px 10px;
+  }
+
+  .training-card .training-row .w-kg {
+    font-family: var(--training-weight-font);
+    font-variant-numeric: var(--training-weight-numeric);
+    font-weight: var(--training-weight-weight);
+    letter-spacing: var(--training-weight-spacing);
+  }
+
+  .training-card .training-row .w-sr,
+  .training-card .training-row td:last-child {
+    font-family: var(--training-weight-font);
+    font-variant-numeric: var(--training-weight-numeric);
+    font-weight: var(--training-weight-weight);
+    letter-spacing: var(--training-weight-spacing);
   }
 
   .training-card .training-row .w-kg::before,
@@ -433,7 +540,7 @@
   }
 
   .training-load-row {
-    border-bottom: 1px solid var(--ta-border, var(--border));
+    border-bottom: var(--border-width-hairline) solid var(--ta-border, var(--border));
   }
 
   .training-load-row > td {
@@ -488,6 +595,52 @@
 
   .training-working-sets--pyramid .training-working-sets__reps {
     font-size: 12px;
+  }
+}
+
+.training-load-menu__split-schemes {
+  display: flex;
+  gap: var(--space-4);
+  align-items: stretch;
+  width: 100%;
+}
+
+.training-load-menu__scheme-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.training-load-menu__scheme-col .training-working-sets,
+.training-load-menu__scheme-col .training-working-sets__slot,
+.training-load-menu__scheme-col .training-working-sets__item {
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
+}
+
+.training-load-menu__scheme-col .training-working-sets__item.is-interactive {
+  align-self: stretch;
+  display: grid;
+  width: 100%;
+}
+
+.training-load-menu__scheme-col-title {
+  font-size: var(--type-12);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 600px) {
+  .training-load-menu__split-schemes {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

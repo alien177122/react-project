@@ -1,22 +1,44 @@
 /* INSIGHT BOX */
 .insight {
-  background: var(--insight-bg);
-  border: 1px solid var(--insight-border);
-  border-left: 3px solid var(--accent);
+  background: var(--color-insight-bg);
+  border: var(--border-width) solid var(--color-insight-border);
+  border-left: 3px solid var(--color-insight-text);
   border-radius: 8px;
   padding: 16px 20px;
   font-size: 12px;
-  color: var(--insight-text);
+  color: var(--color-insight-text);
   line-height: 1.75;
   margin-bottom: 24px;
 }
-.insight strong { color: var(--accent); }
+.insight strong { color: var(--color-insight-strong); }
 .insight code {
-  font-family: 'Courier New', monospace;
-  background: var(--insight-code-bg);
+  font-family: var(--font-mono);
+  background: var(--color-insight-code-bg);
   padding: 1px 5px;
   border-radius: 8px;
   font-size: 12px;
+  color: var(--color-insight-strong);
+}
+
+/* Light theme — opaque warm panel, clear separation from frosted shell */
+html[data-theme='light'] .insight {
+  background: var(--insight-bg);
+  border-color: var(--insight-border);
+  border-left-color: var(--accent-text, #b45309);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(120, 53, 15, 0.08);
+  color: var(--insight-text);
+  font-size: 13px;
+}
+
+html[data-theme='light'] .insight strong {
+  color: var(--insight-strong);
+}
+
+html[data-theme='light'] .insight code {
+  background: var(--insight-code-bg);
+  border: var(--border-width) solid color-mix(in srgb, var(--insight-border) 60%, transparent);
   color: var(--insight-strong);
 }
 

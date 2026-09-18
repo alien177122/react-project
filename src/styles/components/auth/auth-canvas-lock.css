@@ -1,0 +1,30 @@
+/* Auth canvas lock — last in cascade; wins over light-theme gunmetal (ba94ffd7) */
+html:has(.auth-screen),
+html.auth-open {
+  --bg: #0a0a0b;
+  --app-ambient-canvas: #0a0a0b;
+  --theory-bg: #0a0a0b;
+  --ta-bg: #0a0a0b;
+}
+
+html:has(.auth-screen),
+html:has(.auth-screen) body,
+html:has(.auth-screen) .app-root,
+#root:has(.auth-screen),
+html.auth-open,
+html.auth-open body,
+html.auth-open .app-root,
+html.auth-open #root {
+  background-color: #0a0a0b !important;
+}
+
+html[data-theme='light']:has(.auth-screen),
+html[data-theme='light']:has(.auth-screen) body,
+html[data-theme='light']:has(.auth-screen) .app-root,
+html[data-theme='light'] #root:has(.auth-screen),
+html[data-theme='light'].auth-open,
+html[data-theme='light'].auth-open body,
+html[data-theme='light'].auth-open .app-root,
+html[data-theme='light'].auth-open #root {
+  background-color: #0a0a0b !important;
+}

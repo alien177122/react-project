@@ -4,7 +4,7 @@ import {
   sessionPeak,
   sessionTopWeight,
   sessionVolume,
-} from '../../../packages/shared/src/utils/journalMetrics.ts';
+} from '@training/shared/utils/journalMetrics';
 
 interface JournalSessionListProps {
   sessions: JournalSession[];
@@ -17,7 +17,12 @@ export function JournalSessionList({sessions, onEdit, onDelete}: JournalSessionL
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (sessions.length === 0) {
-    return <p className="journal-history-empty">Пока нет записей по этому упражнению.</p>;
+    return (
+      <div className="journal-history-empty">
+        <p className="journal-history-empty__text">История тренировок пуста</p>
+        <span className="journal-history-empty__sub">Здесь будут отображаться ваши прошедшие занятия</span>
+      </div>
+    );
   }
 
   return (
@@ -33,13 +38,7 @@ export function JournalSessionList({sessions, onEdit, onDelete}: JournalSessionL
               type="button"
               className="journal-history-trigger"
               aria-expanded={expanded}
-              onClick={() => setOpenId(expanded ? null : session.id)}
-              onKeyDown={event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  setOpenId(expanded ? null : session.id);
-                }
-              }}>
+              onClick={() => setOpenId(expanded ? null : session.id)}>
               <time className="journal-history-date" dateTime={session.date}>
                 {session.date}
               </time>
@@ -68,13 +67,13 @@ export function JournalSessionList({sessions, onEdit, onDelete}: JournalSessionL
                 <div className="journal-history-actions">
                   <button
                     type="button"
-                    className="journal-btn journal-btn--ghost"
+                    className="journal-btn journal-btn--edit"
                     onClick={() => onEdit(session)}>
                     Редактировать
                   </button>
                   {confirmDeleteId === session.id ? (
-                    <div className="journal-history-delete-confirm">
-                      <span>Удалить запись?</span>
+                    <div className="journal-history-confirm">
+                      <span className="journal-history-confirm-label">Уверены?</span>
                       <button
                         type="button"
                         className="journal-btn journal-btn--danger"

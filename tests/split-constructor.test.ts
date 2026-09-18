@@ -8,6 +8,7 @@ import {
   createDefaultSplit,
   distributeSets,
   exerciseKeysForDay,
+  excludedExerciseKeysForDay,
   getBaselineSetsPerMuscle,
 } from '@training/shared/utils/split-constructor';
 
@@ -63,9 +64,9 @@ test('buildDayPreview puts chest exercises on each chest day', () => {
   const split = createDefaultSplit();
   split.daysPerWeek = 3;
   split.days = [
-    {dayNumber: 1, muscles: ['chest', 'biceps', 'legs', 'shoulders', 'back', 'triceps']},
+    {dayNumber: 1, muscles: ['chest', 'biceps']},
     {dayNumber: 2, muscles: ['chest']},
-    {dayNumber: 3, muscles: []},
+    {dayNumber: 3, muscles: ['back']},
   ];
 
   const day1Bench = buildDayPreview({split, dayNumber: 1, weekIndex: 0, savedExercises: []}).find(
@@ -77,10 +78,23 @@ test('buildDayPreview puts chest exercises on each chest day', () => {
 
   assert.ok(day1Bench);
   assert.ok(day2Bench);
-  assert.equal(
-    day1Bench!.scheme.sets + day2Bench!.scheme.sets,
-    EXERCISES.bench.weekSchemes[0].sets,
-  );
+  assert.equal(day1Bench!.scheme.sets, EXERCISES.bench.weekSchemes[0].sets);
+  assert.equal(day2Bench!.scheme.sets, EXERCISES.bench.weekSchemes[0].sets);
+  assert.equal(day1Bench!.weight, day2Bench!.weight);
+});
+
+test('exerciseKeysForDay exposes dips; deadlift is in the legs pool', () => {
+  const split = createDefaultSplit();
+  split.days = [
+    {dayNumber: 1, muscles: ['chest', 'biceps']},
+    {dayNumber: 2, muscles: ['legs', 'shoulders']},
+    {dayNumber: 3, muscles: ['back', 'triceps']},
+  ];
+  split.legExercises = ['squat', 'deadlift'];
+
+  assert.ok(exerciseKeysForDay(split, 1).includes('dips'));
+  assert.ok(exerciseKeysForDay(split, 2).includes('deadlift'));
+  assert.equal(exerciseKeysForDay(split, 3).includes('deadlift'), false);
 });
 
 test('default leg day uses exactly two selected leg exercises', () => {
@@ -119,4 +133,28 @@ test('buildDayPreview never returns more than four rows per day', () => {
   ];
   const rows = buildDayPreview({split, dayNumber: 1, weekIndex: 0, savedExercises: []});
   assert.ok(rows.length <= 4);
+});
+
+test('excludedExercisesByDay removes exercise from day list and preview', () => {
+  const split = createDefaultSplit();
+  split.excludedExercisesByDay = {2: ['lateralRaise']};
+
+  const keys = exerciseKeysForDay(split, 2);
+  assert.ok(!keys.includes('lateralRaise'));
+
+  const excluded = excludedExerciseKeysForDay(split, 2);
+  assert.deepEqual(excluded, ['lateralRaise']);
+
+  const rows = buildDayPreview({split, dayNumber: 2, weekIndex: 0, savedExercises: []});
+  assert.ok(!rows.some(row => row.key === 'lateralRaise'));
+});
+
+test('excluded exercise can be restored via clearing exclusion', () => {
+  const split = createDefaultSplit();
+  split.excludedExercisesByDay = {2: ['ohp']};
+
+  assert.ok(!exerciseKeysForDay(split, 2).includes('ohp'));
+
+  split.excludedExercisesByDay = {};
+  assert.ok(exerciseKeysForDay(split, 2).includes('ohp'));
 });

@@ -1,44 +1,25 @@
-import { TimelineConnector } from './TimelineConnector'
+import {TENDON_PROTOCOL_CONCEPTS} from '../data/theory';
+import {RevealTimeline, type TimelineNode} from './RevealTimeline';
 
-const PROTOCOL_STEPS = [
-  {
-    num: '1',
-    color: '#ff6b35',
-    title: 'Высокая интенсивность',
-    body: '85-90% ПМ: работай на тяжёлых весах, где можешь контролировать каждое повторение.',
-  },
-  {
-    num: '2',
-    color: '#ff9f40',
-    title: 'Низкий объём',
-    body: '5x4 повторения: много подходов, но мало повторений в каждом. Это сохраняет качество и нужную деформацию.',
-  },
-  {
-    num: '3',
-    color: '#ff4d4d',
-    title: 'Время под нагрузкой',
-    body: 'Удержание 3-4 секунды в пике момента силы: именно здесь сухожилие получает рабочий стимул для ремоделирования.',
-  },
-  {
-    num: '4',
-    color: '#5ba4ff',
-    title: 'Частота',
-    body: '3 раза в неделю: достаточно для адаптации, но с паузами, которые позволяют ткани восстанавливаться.',
-  },
-] as const
+const TENDON_NODES: TimelineNode[] = TENDON_PROTOCOL_CONCEPTS.map(c => ({
+  id: c.id,
+  title: c.title,
+  definition: c.definition,
+  pattern: c.pattern,
+  bullets: [...c.bullets],
+}));
 
+/**
+ * Tendons protocol as sequential textbook cards (definition → scheme → practice).
+ * Why: thin bullet list hid the central cue — isometric hold 3–6 s under heavy load.
+ */
 export function TendonProtocolSection() {
   return (
-    <TimelineConnector gradient="linear-gradient(to bottom, #ff6b35, #ff4d4d, #5ba4ff)">
-      {PROTOCOL_STEPS.map(step => (
-        <div key={step.num} className="timeline-step">
-          <div className="timeline-dot" style={{ background: step.color }} />
-          <h3 className="theory-top-name" style={{ color: step.color, marginBottom: 6 }}>
-            {step.num}. {step.title}
-          </h3>
-          <p className="theory-card-body">{step.body}</p>
-        </div>
-      ))}
-    </TimelineConnector>
-  )
+    <RevealTimeline
+      items={TENDON_NODES}
+      asideEyebrow="Статическая работа"
+      asideQuote="Тяжёлый вес + удержание 3–6 секунд в пике момента силы."
+      asideNote="Изометрия на контролируемых 85–90% ПМ даёт сухожилию рабочую деформацию. Ориентир — качество удержания и TUT, не отказ."
+    />
+  );
 }

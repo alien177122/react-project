@@ -80,12 +80,11 @@ export const drawLine: Variants = {
 
 /** App hero — accent digit pops in with spring */
 export const appHeroNumPop: Variants = {
-  hidden: {opacity: 0, scale: 0.6, y: 8, filter: 'blur(8px)'},
+  hidden: {opacity: 0, scale: 0.6, y: 8},
   show: {
     opacity: 1,
     scale: 1,
     y: 0,
-    filter: 'blur(0px)',
     transition: {
       type: 'spring',
       stiffness: 320,

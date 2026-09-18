@@ -1,0 +1,3 @@
+@import '../components/split/split-constructor.css';
+/* TrainingDayCard is shared with Split preview — keep card layout with this tab chunk. */
+@import '../components/training/training-day-card.css';

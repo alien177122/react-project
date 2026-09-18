@@ -1,1 +1,0 @@
-../../../../../../../../node_modules/react-native-macos/ReactCommon/react/renderer/graphics/platform/ios/react/renderer/graphics/HostPlatformColor.h

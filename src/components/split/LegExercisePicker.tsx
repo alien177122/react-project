@@ -1,4 +1,4 @@
-import {EXERCISES} from '@training/shared/data/exercises';
+import {CATALOG_EXERCISES} from '@training/shared/data/exercises';
 import {LEG_EXERCISE_KEYS} from '@training/shared/data/split-exercises';
 import type {LegExerciseKey} from '@training/shared/data/split-exercises';
 
@@ -31,7 +31,7 @@ export function LegExercisePicker({selected, onToggle}: LegExercisePickerProps) 
               className={`split-chip split-chip--leg${isSelected ? ' is-active' : ''}`}
               aria-pressed={isSelected}
               onClick={() => onToggle(key)}>
-              {EXERCISES[key]?.name ?? key}
+              {CATALOG_EXERCISES[key]?.name ?? key}
             </button>
           );
         })}

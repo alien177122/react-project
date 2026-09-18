@@ -2,7 +2,8 @@
 
 :root {
   --font-system:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+    'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui,
+    sans-serif;
   --type-12: 12px;
   --type-14: 14px;
   --type-16: 16px;
@@ -10,41 +11,67 @@
   --type-24: 24px;
   --type-32: 32px;
   --type-48: 48px;
+  /* Numeric typography — canon: td.w-kg in progression table */
+  --training-weight-font: var(--font-system);
+  --training-weight-size: var(--type-12);
+  --training-weight-weight: 600;
+  --training-weight-spacing: normal;
+  --training-weight-numeric: tabular-nums;
+  /* Aliases for .u-num utility */
+  --type-num-family: var(--training-weight-font);
+  --type-num-size: var(--training-weight-size);
+  --type-num-weight: var(--training-weight-weight);
+  --type-num-spacing: var(--training-weight-spacing);
+  --type-num-variant: var(--training-weight-numeric);
   --app-min-height: 100vh;
   --keyboard-inset: 0px;
-}
-
-@supports (height: 100dvh) {
-  :root {
-    --app-min-height: 100dvh;
-  }
+  --root-padding-block-start: max(56px, calc(var(--sat) + 24px));
+  --root-padding-block-end: max(56px, var(--sab));
+  --root-padding-block: calc(var(--root-padding-block-start) + var(--root-padding-block-end));
+  --app-content-min-height: calc(var(--app-min-height) - var(--root-padding-block));
 }
 
 @supports (height: 100svh) {
   :root {
-    --app-min-height: 100svh;
+    --app-min-height: max(100vh, 100svh);
+  }
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-min-height: max(100vh, 100svh, 100dvh);
   }
 }
 
 html {
   scroll-behavior: smooth;
   overscroll-behavior-y: none; /* iOS-SAFARI: reduce rubber-band conflicts with sticky chrome */
+  scroll-padding-top: calc(var(--sat, env(safe-area-inset-top, 0px)) + 72px);
 }
 
 body {
-  font-family: var(--font-system);
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   min-height: var(--app-min-height);
+}
+
+/* Weight/rep/1RM numbers — system sans + tabular-nums, never monospace */
+.u-num {
+  font-family: var(--type-num-family);
+  font-variant-numeric: var(--type-num-variant);
+  font-weight: var(--type-num-weight);
+  letter-spacing: var(--type-num-spacing);
 }
 
 @supports (padding: env(safe-area-inset-top)) {
   #root {
-    padding-top: max(56px, calc(env(safe-area-inset-top) + 24px));
+    padding-top: var(--root-padding-block-start);
     padding-right: max(24px, env(safe-area-inset-right));
-    padding-bottom: max(56px, calc(env(safe-area-inset-bottom) + var(--keyboard-inset)));
+    padding-bottom: var(--root-padding-block-end);
     padding-left: max(24px, env(safe-area-inset-left));
+  }
+
+  /* Fixed bottom TabNav owns safe-area — don't double-pad #root under the dock */
+  #root:has(.app-shell) {
+    padding-bottom: 0;
   }
 }
 
@@ -52,22 +79,126 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-3);
   min-height: calc(var(--app-min-height) - var(--keyboard-inset));
   min-width: 0;
   position: relative;
+  top: 0;
+  left: 0;
   width: 100%;
   max-width: none;
+  overflow-x: clip;
+  z-index: 1;
+  isolation: isolate; /* ensure background layer stays behind content */
+}
+
+.app-shell > :not(.app-ambient-bg):not(.theme-toggle) {
+  position: relative;
   z-index: 1;
 }
+
+/* Gradient orbs removed — AppAmbientBackground + auth-style statue carry atmosphere */
 
 .app-shell__nav {
   position: sticky;
   top: max(var(--space-2), var(--sat));
   z-index: 30;
+  flex-shrink: 0;
   transform: translateZ(0);
   overscroll-behavior: contain;
   width: 100%;
+  background: color-mix(in srgb, var(--bg, #0a0a0b) 88%, transparent);
+  backdrop-filter: blur(var(--glass-blur-chrome));
+  -webkit-backdrop-filter: blur(var(--glass-blur-chrome));
+}
+
+.app-shell__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  /* Horizontal padding stays 0: full-bleed shell. Bare headers like
+     .training-progress carry their own 16px gutter (app-layout.css). */
+}
+
+/* iPhone / narrow — fixed bottom tab bar (iOS-style). Etalon: memory-bank/reference/mobile-tab-nav-background-standard.md
+ *
+ * Why high specificity: app-layout `.tab-bar.ta-mode-nav { padding: 0; background: transparent }`
+ * loads later and must NOT wipe safe-area padding or glass fill — otherwise the bar floats
+ * above the home-indicator gap and content shows through below the chrome.
+ *
+ * Safe-area is padding INSIDE the bar (bottom: 0 flush to physical screen). Never offset with
+ * bottom: var(--sab) — that doubles the inset on iOS / in-app WebViews.
+ */
+@media (max-width: 899px) {
+  /*
+   * Phone + tablet (≤899): full-bleed content shell.
+   * Laptop/desktop (≥900) keeps framed #root gutters + section inset.
+   * Why: side gutters look fine on laptop but steal usable width for steppers/forms.
+   */
+  :root {
+    --section-inset-inline: 0px;
+  }
+
+  #root:has(.app-shell) {
+    padding-left: max(0px, var(--sal));
+    padding-right: max(0px, var(--sar));
+    padding-bottom: 0;
+  }
+
+  .app-shell > nav.tab-bar.ta-mode-nav.app-shell__nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 50;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+    transform: translateZ(0);
+    /* Home indicator / notch — inside the frosted chrome, not as a bottom offset */
+    padding-top: var(--space-2);
+    padding-left: max(var(--space-1), var(--sal));
+    padding-right: max(var(--space-1), var(--sar));
+    padding-bottom: max(var(--space-2), var(--sab));
+    border-radius: 0;
+    background: var(--glass-bg);
+    border: none;
+    border-top: var(--border-width-hairline) solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lift, none);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+
+  .app-shell__main {
+    /* Tab row (~64px) + chrome pad + safe-area so last cards clear the dock */
+    padding-bottom: calc(72px + max(var(--space-3), var(--sab)) + var(--space-2));
+  }
+
+  .app-toast {
+    bottom: calc(72px + max(var(--space-2), var(--sab)));
+  }
+}
+
+/* Desktop — tab nav between user bar and content */
+@media (min-width: 900px) {
+  .app-hero-container {
+    order: 1;
+  }
+
+  .user-bar {
+    order: 2;
+  }
+
+  .app-shell__nav {
+    order: 3;
+  }
+
+  .app-shell__main {
+    order: 4;
+    padding-bottom: 0;
+  }
 }
 
 .app-toast {
@@ -80,7 +211,7 @@ body {
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
-  border: 1px solid var(--red);
+  border: var(--border-width) solid var(--red);
   color: #ffdede;
   font-size: var(--type-14);
   font-weight: 500;
@@ -90,9 +221,21 @@ body {
 }
 
 @media (max-width: 600px) {
+  :root {
+    --root-padding-block-start: max(24px, calc(var(--sat) + 16px));
+    --root-padding-block-end: max(24px, calc(var(--sab) + var(--keyboard-inset)));
+    --root-padding-block: calc(var(--root-padding-block-start) + var(--root-padding-block-end));
+    --app-content-min-height: calc(var(--app-min-height) - var(--root-padding-block));
+  }
+
   #root {
-    padding-top: max(24px, calc(var(--sat) + 16px));
-    padding-bottom: max(24px, calc(var(--sab) + var(--keyboard-inset)));
+    padding-top: var(--root-padding-block-start);
+    padding-bottom: var(--root-padding-block-end);
+  }
+
+  /* Fixed TabNav owns the bottom dock — avoid double inset under the bar */
+  #root:has(.app-shell) {
+    padding-bottom: 0;
   }
 }
 

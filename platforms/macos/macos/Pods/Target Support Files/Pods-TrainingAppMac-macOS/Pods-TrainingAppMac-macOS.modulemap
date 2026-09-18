@@ -1,6 +1,0 @@
-module Pods_TrainingAppMac_macOS {
-  umbrella header "Pods-TrainingAppMac-macOS-umbrella.h"
-
-  export *
-  module * { export * }
-}

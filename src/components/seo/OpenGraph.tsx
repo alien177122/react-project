@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import type {OgMeta} from '../../types/seo';
 
-interface OpenGraphProps extends OgMeta {}
+type OpenGraphProps = OgMeta;
 
 function upsertMeta(attribute: 'name' | 'property', key: string, content: string) {
   const selector = `meta[${attribute}="${key}"]`;

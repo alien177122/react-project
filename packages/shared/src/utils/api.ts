@@ -1,4 +1,4 @@
-import {EXERCISES} from '../data/exercises.ts';
+import {CATALOG_EXERCISES} from '../data/exercises.ts';
 import {isV3ExerciseKey} from '../program/v3/exercises.ts';
 import {normalizeLegExercises} from '../data/split-exercises.ts';
 import type {
@@ -7,12 +7,22 @@ import type {
   FileWorkspaceResponse,
   JournalSession,
   JournalSet,
+  SavedExercise,
+  SplitCalculation,
   SplitMuscleId,
   TestResult,
   TestWeekNumber,
   UserData,
 } from '../types/index.ts';
 import type {AuthResult} from '../types/auth.ts';
+import type {
+  BillingStatus,
+  CalculationHistoryItem,
+  CalculationRequestPayload,
+  CalculationSuccessResponse,
+  CheckoutResponse,
+} from '../types/billing.ts';
+import {CalculatorApiError} from '../types/billing.ts';
 import {JOURNAL_LIMITS} from './journalLimits.ts';
 
 const AUTH_EXPIRED = 'AUTH_EXPIRED';
@@ -67,6 +77,30 @@ function trimNote(value: unknown): string | undefined {
   return trimmed.slice(0, JOURNAL_LIMITS.MAX_NOTE_LENGTH);
 }
 
+function normalizeLoadedExercise(exercise: unknown): SavedExercise | null {
+  if (!isRecord(exercise)) return null;
+
+  const exerciseKey = typeof exercise.exerciseKey === 'string' ? exercise.exerciseKey.trim() : '';
+  const date = typeof exercise.date === 'string' ? exercise.date.trim() : '';
+  if (!exerciseKey || !date) return null;
+  if (!CATALOG_EXERCISES[exerciseKey] && !isV3ExerciseKey(exerciseKey)) return null;
+
+  const testWeight = positiveNumber(exercise.testWeight);
+  const testReps = positiveInteger(exercise.testReps);
+  const oneRM = positiveNumber(exercise.oneRM);
+  if (testWeight === null || testReps === null || oneRM === null) return null;
+
+  const bodyWeight = positiveNumber(exercise.bodyWeight);
+  return {
+    exerciseKey,
+    testWeight,
+    testReps,
+    oneRM,
+    date,
+    ...(bodyWeight !== null ? {bodyWeight} : {}),
+  };
+}
+
 function normalizeJournalSet(set: unknown, index: number): JournalSet | null {
   if (!isRecord(set)) return null;
 
@@ -102,7 +136,7 @@ function normalizeJournalSession(session: unknown): JournalSession | null {
   const createdAt = typeof session.createdAt === 'string' ? session.createdAt.trim() : '';
 
   if (!id || !exerciseKey || !date || !ISO_DATE_RE.test(date)) return null;
-  if (!EXERCISES[exerciseKey]) return null;
+  if (!CATALOG_EXERCISES[exerciseKey]) return null;
   if (!createdAt) return null;
   if (!Array.isArray(session.sets) || session.sets.length === 0) return null;
 
@@ -139,35 +173,9 @@ export function normalizeLoadedUser(input: unknown, fallbackName: string): UserD
     typeof input.name === 'string' && input.name.trim() ? input.name.trim() : fallbackName;
 
   const exercises = Array.isArray(input.exercises)
-    ? input.exercises.flatMap(exercise => {
-        if (!isRecord(exercise)) return [];
-
-        const exerciseKey =
-          typeof exercise.exerciseKey === 'string' ? exercise.exerciseKey.trim() : '';
-        const date = typeof exercise.date === 'string' ? exercise.date.trim() : '';
-
-        if (!exerciseKey || !date) return [];
-        if (!EXERCISES[exerciseKey] && !isV3ExerciseKey(exerciseKey)) return [];
-
-        const testWeight = positiveNumber(exercise.testWeight);
-        const testReps = positiveInteger(exercise.testReps);
-        const oneRM = positiveNumber(exercise.oneRM);
-
-        if (testWeight === null || testReps === null || oneRM === null) return [];
-
-        return [
-          {
-            exerciseKey,
-            testWeight,
-            testReps,
-            oneRM,
-            date,
-            ...(positiveNumber(exercise.bodyWeight) !== null
-              ? {bodyWeight: positiveNumber(exercise.bodyWeight)!}
-              : {}),
-          },
-        ];
-      })
+    ? input.exercises
+        .map(exercise => normalizeLoadedExercise(exercise))
+        .filter((exercise): exercise is SavedExercise => exercise !== null)
     : [];
 
   const completedSessions = isRecord(input.trainingProgress)
@@ -189,6 +197,15 @@ export function normalizeLoadedUser(input: unknown, fallbackName: string): UserD
   const activeSplitId =
     typeof input.activeSplitId === 'string' && input.activeSplitId.trim()
       ? input.activeSplitId.trim()
+      : null;
+  const splitCalculations = Array.isArray(input.splitCalculations)
+    ? input.splitCalculations
+        .map(entry => normalizeLoadedSplitCalculation(entry))
+        .filter((entry): entry is SplitCalculation => entry !== null)
+    : [];
+  const activeSplitCalculationId =
+    typeof input.activeSplitCalculationId === 'string' && input.activeSplitCalculationId.trim()
+      ? input.activeSplitCalculationId.trim()
       : null;
 
   const activeProgram: ActiveProgram | undefined =
@@ -243,6 +260,8 @@ export function normalizeLoadedUser(input: unknown, fallbackName: string): UserD
   if (journal.length > 0) base.journal = journal;
   if (splits.length > 0) base.splits = splits;
   if (activeSplitId) base.activeSplitId = activeSplitId;
+  if (splitCalculations.length > 0) base.splitCalculations = splitCalculations;
+  if (activeSplitCalculationId) base.activeSplitCalculationId = activeSplitCalculationId;
 
   return base;
 }
@@ -309,7 +328,71 @@ function normalizeLoadedSplit(input: unknown): CustomSplit | null {
     split.legExercises = normalizeLegExercises(input.legExercises);
   }
 
+  if (isRecord(input.customExercisesByDay)) {
+    const customExercisesByDay: Partial<Record<1 | 2 | 3, string[]>> = {};
+    for (const dayNum of [1, 2, 3] as const) {
+      const keys = input.customExercisesByDay[dayNum];
+      if (!Array.isArray(keys)) continue;
+      const trimmed = keys
+        .filter((key): key is string => typeof key === 'string' && Boolean(key.trim()))
+        .map(key => key.trim());
+      if (trimmed.length > 0) customExercisesByDay[dayNum] = trimmed;
+    }
+    if (Object.keys(customExercisesByDay).length > 0) {
+      split.customExercisesByDay = customExercisesByDay;
+    }
+  }
+
+  // Server already persists these on PUT /api/users/:name — must survive loadUser
+  // or week/day progress looks empty after every login.
+  if (Array.isArray(input.completedWeeks)) {
+    const completedWeeks = [
+      ...new Set(
+        input.completedWeeks.filter(
+          (week): week is number =>
+            typeof week === 'number' && Number.isInteger(week) && week >= 0 && week <= 7,
+        ),
+      ),
+    ].sort((a, b) => a - b);
+    if (completedWeeks.length > 0) split.completedWeeks = completedWeeks;
+  }
+
+  if (Array.isArray(input.completedDays)) {
+    const seen = new Set<string>();
+    const completedDays: Array<{week: number; day: 1 | 2 | 3}> = [];
+    for (const entry of input.completedDays) {
+      if (!isRecord(entry)) continue;
+      const week = entry.week;
+      const day = entry.day;
+      if (typeof week !== 'number' || !Number.isInteger(week) || week < 0 || week > 7) continue;
+      if (day !== 1 && day !== 2 && day !== 3) continue;
+      const key = `${week}:${day}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      completedDays.push({week, day});
+    }
+    completedDays.sort((a, b) => a.week - b.week || a.day - b.day);
+    if (completedDays.length > 0) split.completedDays = completedDays;
+  }
+
   return split;
+}
+
+function normalizeLoadedSplitCalculation(input: unknown): SplitCalculation | null {
+  if (!isRecord(input)) return null;
+
+  const id = typeof input.id === 'string' ? input.id.trim() : '';
+  const calculatedAt = typeof input.calculatedAt === 'string' ? input.calculatedAt.trim() : '';
+  const split = normalizeLoadedSplit(input.split);
+  if (!id || !calculatedAt || !split) return null;
+
+  const exercises = Array.isArray(input.exercises)
+    ? input.exercises
+        .map(exercise => normalizeLoadedExercise(exercise))
+        .filter((exercise): exercise is SavedExercise => exercise !== null)
+    : [];
+
+  return {id, calculatedAt, split, exercises};
 }
 
 async function apiJson<T>(
@@ -341,6 +424,35 @@ async function apiJson<T>(
     }
 
     throw new Error(message);
+  }
+
+  return response.json();
+}
+
+async function apiJsonCalculator<T>(
+  baseUrl: string,
+  path: string,
+  token: string,
+  init?: RequestInit,
+): Promise<T> {
+  const response = await fetch(`${baseUrl}${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...(init?.headers || {}),
+    },
+  });
+
+  if (response.status === 401 || response.status === 403) {
+    throw new Error('Сессия истекла');
+  }
+
+  if (!response.ok) {
+    const body = await parseJsonSafe(response);
+    const message =
+      isRecord(body) && typeof body.error === 'string' ? body.error : 'Ошибка запроса';
+    throw new CalculatorApiError(response.status, message, body);
   }
 
   return response.json();
@@ -379,7 +491,7 @@ export function createApiClient(baseUrl: string) {
     }
   }
 
-  async function saveUser(data: UserData, token: string): Promise<{ok: boolean}> {
+  async function saveUser(data: UserData, token: string): Promise<{ok: boolean; error?: string}> {
     try {
       const response = await fetch(`${baseUrl}/users/${encodeURIComponent(data.name)}`, {
         method: 'PUT',
@@ -389,9 +501,23 @@ export function createApiClient(baseUrl: string) {
         },
         body: JSON.stringify(data),
       });
-      return {ok: response.ok};
-    } catch {
-      return {ok: false};
+      if (!response.ok) {
+        let error = `HTTP ${response.status}`;
+        try {
+          const body = await response.json();
+          if (body && typeof body.error === 'string') {
+            error = body.error;
+          }
+        } catch {
+          // Keep the HTTP status when the API did not return a JSON error body.
+        }
+        console.error('saveUser failed on API side:', error);
+        return {ok: false, error};
+      }
+      return {ok: true};
+    } catch (err) {
+      console.error('saveUser network/unknown error:', err);
+      return {ok: false, error: err instanceof Error ? err.message : 'Network error'};
     }
   }
 
@@ -413,6 +539,13 @@ export function createApiClient(baseUrl: string) {
           return {error: payload.error.trim()};
         }
 
+        if (response.status === 404) {
+          return {
+            error:
+              'API не найден. Проверь VITE_API_URL — нужен суффикс /api (например http://127.0.0.1:3002/api).',
+          };
+        }
+
         return {
           error: response.status >= 500 ? 'Ошибка сервера' : 'Ошибка авторизации',
         };
@@ -429,6 +562,20 @@ export function createApiClient(baseUrl: string) {
       };
     } catch {
       return {error: 'Нет соединения с сервером'};
+    }
+  }
+
+  async function apiLogout(token: string): Promise<{ok: boolean}> {
+    try {
+      const response = await fetch(`${baseUrl}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return {ok: response.ok};
+    } catch {
+      return {ok: false};
     }
   }
 
@@ -449,13 +596,40 @@ export function createApiClient(baseUrl: string) {
     });
   }
 
+  function getBillingStatus(token: string): Promise<BillingStatus> {
+    return apiJson(baseUrl, '/billing/status', token);
+  }
+
+  function createCheckout(token: string): Promise<CheckoutResponse> {
+    return apiJson(baseUrl, '/billing/checkout', token, {method: 'POST'});
+  }
+
+  function calculate(
+    payload: CalculationRequestPayload,
+    token: string,
+  ): Promise<CalculationSuccessResponse> {
+    return apiJsonCalculator(baseUrl, '/calculator/calculate', token, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  function getCalculationHistory(token: string): Promise<CalculationHistoryItem[]> {
+    return apiJson(baseUrl, '/calculator/history', token);
+  }
+
   return {
     jwtName,
     loadUser,
     saveUser,
     apiAuth,
+    apiLogout,
     loadFileWorkspace,
     analyzeFileWorkspace,
     analyzeSingleWorkspaceFile,
+    getBillingStatus,
+    createCheckout,
+    calculate,
+    getCalculationHistory,
   };
 }

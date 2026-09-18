@@ -1,6 +1,6 @@
 /* Volume colour coding */
 .v-hi { color: var(--orange); font-weight: 600; }
-.v-md { color: #aaa; }
+.v-md { color: var(--text-secondary); }
 .v-lo { color: var(--red); font-weight: 600; }
 
 /* Deload row */

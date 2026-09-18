@@ -24,7 +24,7 @@ export interface ExerciseSlot {
   label: string;
 }
 
-/** 12 unlock slots (deadlift and gluteBridge share one). */
+/** Unlock slots — alt groups first (e.g. deadlift | gluteBridge share one). */
 export function buildExerciseSlots(
   allExerciseKeys: readonly string[],
   nameOf: (key: string) => string,

@@ -5,6 +5,10 @@
       {
         "command": "node .cursor/hooks/memory-bank-session.mjs",
         "timeout": 10
+      },
+      {
+        "command": "node .cursor/hooks/venus-inbox-session.mjs",
+        "timeout": 20
       }
     ],
     "beforeShellExecution": [

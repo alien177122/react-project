@@ -1,7 +1,8 @@
 # Эталон: график прогрессии в Журнале (факт, не план)
 
-> **Статус:** продуктовое правило + целевой паттерн (2026-05-27).  
-> **Не путать** с `PeriodizationChart` / `ProgressionPreviewChart` — те **планируют** нагрузку; журнал **фиксирует** факт.
+> **Статус:** продуктовое правило + реализация (2026-05-31 · palette lock 2026-07-09).  
+> **Не путать** с `PeriodizationChart` / `ProgressionPreviewChart` — те **планируют** нагрузку; журнал **фиксирует** факт.  
+> **Палитра chart:** locked gold из `periodization-chart-standard.md` — orange `--ta-sec-01` / blue `--ta-sec-02`. **Без** cyan overrides в `journal.css`.
 
 ---
 
@@ -49,7 +50,7 @@
 
 | Token                              | Значение                 | Где на экране                                |
 | ---------------------------------- | ------------------------ | -------------------------------------------- |
-| `--ta-calc-accent` → `--ta-sec-01` | `#ff9f40`                | **линия e1RM**, точки, active listbox border |
+| `--ta-calc-accent` → `--ta-sec-01` | `#ffb020`                | **линия e1RM**, точки, active listbox border |
 | `--ta-sec-02`                      | `#5ba4ff`                | **столбцы объёма** (opacity 0.72)            |
 | `--ta-calc-surface`                | `#151a22`                | fill активной точки (stroke = accent)        |
 | `--ta-calc-border`                 | `rgba(148,163,184,0.14)` | listbox «Запись N»                           |
@@ -60,7 +61,7 @@
 
 | Элемент                  | Token                                  |
 | ------------------------ | -------------------------------------- |
-| Активная иконка «Журнал» | `--ta-calc-accent` (`#ff9f40`)         |
+| Активная иконка «Журнал» | `--ta-calc-accent` (`#ffb020`)         |
 | Sliding indicator border | `color-mix(..., --ta-calc-accent 32%)` |
 | Неактивные табы          | `--ta-text-dim` / `--text-secondary`   |
 
@@ -69,7 +70,7 @@
 | Token              | Hex       | Роль                                |
 | ------------------ | --------- | ----------------------------------- |
 | `--accent`         | `#ff6b35` | UI shell: дельта, CTA, focus        |
-| `--ta-calc-accent` | `#ff9f40` | Chart + nav: линия e1RM, active tab |
+| `--ta-calc-accent` | `#ffb020` | Chart + nav: линия e1RM, active tab |
 
 Визуально близки; **не унифицировать** без design-задачи — chart наследует калькулятор/Theory, shell — глобальный accent.
 

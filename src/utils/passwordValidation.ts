@@ -1,1 +1,1 @@
-export {passwordPolicyError, validatePassword} from '@shared/utils/passwordValidation';
+export {passwordPolicyError, validatePassword} from '@training/shared/utils/passwordValidation';

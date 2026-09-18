@@ -1,1 +1,0 @@
-../../../../../../../../node_modules/react-native-macos/ReactCommon/react/renderer/imagemanager/platform/ios/react/renderer/imagemanager/RCTSyncImageManager.h

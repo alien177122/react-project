@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties} from 'react';
 import type {SavedExercise} from '../../types';
+import {EwTriggerChevron} from '../ui/EwTriggerChevron';
 
 export interface ExercisePickerItem {
   key: string;
@@ -88,7 +89,7 @@ export function ExercisePicker({
           {activeItem ? <span className="ew-trigger-meta">{activeItem.typeLabel}</span> : null}
         </span>
         <span className={`ew-trigger-icon${open ? ' is-open' : ''}`} aria-hidden="true">
-          ⌄
+          <EwTriggerChevron />
         </span>
       </button>
 

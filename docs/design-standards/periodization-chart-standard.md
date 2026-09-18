@@ -1,8 +1,9 @@
 # Эталон: PeriodizationChart (`section.ta-period`)
 
 > **Статус:** канонический reference implementation для dual-axis SVG-чартов периодизации в web-калькуляторе (Program 2.0).  
-> **Дата фиксации:** 2026-05-25 · **MAX expansion:** 2026-05-28  
-> **Не модифицировать** без явной задачи; новые чарты — копировать паттерны отсюда.
+> **Дата фиксации:** 2026-05-25 · **MAX expansion:** 2026-05-28 · **palette lock:** 2026-07-09  
+> **Не модифицировать** без явной задачи; новые чарты — копировать паттерны отсюда.  
+> **Locked gold:** orange `%` line + markers (`--ta-sec-01` `#ffb020`), blue bars (`--ta-sec-02`), phase chips ACCUMULATION/DELOAD/INTENSIFICATION/PEAK. Canon copy: `memory-bank/reference/periodization-chart-standard.md`.
 
 **Родительский partial:** [`calc-progression-result-standard.md`](./calc-progression-result-standard.md) (секция 02 «Прогрессия»).  
 **Umbrella tab:** [`calculator-tab-standard.md`](./calculator-tab-standard.md) §02d.
@@ -135,7 +136,7 @@ interface PeriodizationChartProps {
 | Accumulation    | `Accumulation`    | `--ta-sec-02` | `--ta-sec-02-tint` | `#5ba4ff` (blue)   | 6% mix → `#0a0a0b` |
 | Deload          | `Deload`          | `--ta-sec-03` | `--ta-sec-03-tint` | `#3affb8` (mint)   | 6% mix             |
 | Intensification | `Intensification` | `--ta-sec-06` | `--ta-sec-06-tint` | `#ff6b6b` (red)    | 6% mix             |
-| Peak            | `Peak`            | `--ta-sec-01` | `--ta-sec-01-tint` | `#ff9f40` (orange) | 6% mix             |
+| Peak            | `Peak`            | `--ta-sec-01` | `--ta-sec-01-tint` | `#ffb020` (orange) | 6% mix             |
 
 **Pill styling** (`.ta-period__phase`):
 
@@ -184,13 +185,13 @@ const VIEW = {left: 56, right: 56, top: 28, bottom: 238, width: 800, barWidth: 4
 | `stepX`       | `chartWidth / max(1, N-1)`      | 688/7 ≈ **98.29** для 8 нед    |
 | Plot X range  | `x1=56` … `x2=744` (grid lines) | matches `left` / `width-right` |
 
-### 4.3 Grid (4 horizontal lines)
+### 4.3 Grid (7 horizontal lines)
 
 ```ts
-grid: [0, 1, 2, 3].map(i => VIEW.top + i * ((VIEW.bottom - VIEW.top) / 3));
+grid: Array.from({length: 7}, (_, i) => VIEW.top + i * ((VIEW.bottom - VIEW.top) / 6));
 ```
 
-Y positions: **28**, **98**, **168**, **238** (равные трети plot height).
+Y positions: **28**, **63**, **98**, **133**, **168**, **203**, **238** (равные шестые plot height). Синхрон с `useJournalProgressChart` (`Y_GRID_COUNT = 7`).
 
 CSS `.ta-period__grid`: `stroke: rgba(255,255,255,0.05)`, `stroke-width: 1`, `x1="56"` `x2="744"`.
 
@@ -209,7 +210,7 @@ Week numbers under points: `.ta-period__week-label`, `y="264"`, `textAnchor="mid
 
 **Line** (`.ta-period__line`):
 
-- `stroke: var(--ta-sec-01)` (#ff9f40)
+- `stroke: var(--ta-sec-01)` (#ffb020)
 - `stroke-width: 3`; `stroke-linecap/join: round`
 - `pathLength={1}` + `stroke-dasharray: 1` + animated `stroke-dashoffset` → draw effect
 - Animation: `ta-period-line-in` **900ms** `var(--ta-ease)` delay **120ms**
@@ -331,11 +332,7 @@ tipX = clamp(active.x - TIP_WIDTH / 2, TIP_MARGIN, CHART_WIDTH - TIP_WIDTH - TIP
 
 ### 5.3 Active / focus states
 
-`.ta-period-week.is-active` **и** `:focus-visible`:
-
-- `background: var(--ta-calc-accent-tint)`
-- `border-left-color: var(--ta-calc-accent)` (2px left rail)
-- `outline: none`
+`.ta-period-week` — uniform 1px border (no left rail). Hover / `.is-active` / `:focus-visible` recolor **full perimeter** with `border-color: var(--ta-calc-accent)`; active/focus also use `background: var(--ta-calc-accent-tint)` and `outline: none`.
 
 Sync with chart: `onFocus` / `onMouseEnter` → `setActiveIndex(index)`; `onMouseLeave` → null; `onClick` → toggle (click active again → deselect).
 
@@ -453,7 +450,7 @@ Length of `config.percentages` drives week count (typically **8**). Each index p
 
 ### 9.3 Row `.ta-period-week`
 
-- `border: 1px solid var(--ta-calc-border)`; `border-left: 2px solid transparent`
+- `border: 1px solid var(--ta-calc-border)` (uniform; hover/active recolor full perimeter — no left rail)
 - `border-radius: 8px`; `color: var(--ta-text-muted)`; `cursor: pointer`
 - `strong`: `font-variant-numeric: tabular-nums`; `color: var(--ta-text)`
 - `em`: `font-style: normal`; `color: var(--ta-text-dim)`; `justify-self: end`

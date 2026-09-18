@@ -2,11 +2,22 @@
 <html lang="ru" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('app-theme');
+          if (t === 'dark' || t === 'light') {
+            document.documentElement.setAttribute('data-theme', t);
+            document.documentElement.style.colorScheme = t;
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#fafafa" />
+    <meta name="theme-color" content="#282c31" />
     <meta
       name="description"
       content="Тренировочный калькулятор: расчёт 1ПМ и 8-недельная периодизация." />
@@ -25,7 +36,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Периодизация" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet" />
     <title>Периодизация 8 недель</title>
   </head>

@@ -1,6 +1,7 @@
 ---
 description: Brief in-UI explanations for chart metrics and calculation algorithms
-alwaysApply: true
+globs: src/**/*.{tsx,ts}
+alwaysApply: false
 ---
 
 # Metrics & algorithm explanations

@@ -15,7 +15,7 @@
   appearance: none;
   -webkit-appearance: none;
   background: var(--theory-surface, var(--surface));
-  border: 1px solid var(--theory-border, var(--border));
+  border: var(--border-width) solid var(--theory-border, var(--border));
   border-radius: 12px;
   color: var(--theory-text, var(--text));
   cursor: pointer;

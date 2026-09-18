@@ -30,16 +30,19 @@ export function normalizeProgressionPreset(value: unknown): ProgressionPreset {
 }
 
 export function getActiveProgramForPreset(_preset: ProgressionPreset = 'general'): ActiveProgram {
+  void _preset;
   return '2.0';
 }
 
 export function getPresetForActiveProgram(_program: ActiveProgram = '2.0'): ProgressionPreset {
+  void _program;
   return 'general';
 }
 
 export function getDefaultDaysForPreset(
   _preset: ProgressionPreset = 'general',
 ): typeof PROGRAM_DAYS_PER_WEEK {
+  void _preset;
   return PROGRAM_DAYS_PER_WEEK;
 }
 
@@ -60,6 +63,8 @@ export function applyProgramSettingsPatch(
   _current: ProgramSettings,
   _patch: Partial<ProgramSettings>,
 ): ProgramSettingsChangeResult {
+  void _current;
+  void _patch;
   return {
     programSettings: canonicalProgramSettings(),
     activeProgram: '2.0',
@@ -82,6 +87,7 @@ export function applyProgressionPresetToPercent(
   basePercent: number,
   _preset: ProgressionPreset = 'general',
 ): number {
+  void _preset;
   return basePercent;
 }
 
@@ -91,6 +97,7 @@ export function applyProgressionPresetToScheme(
   reps: number,
   _preset: ProgressionPreset = 'general',
 ): {sets: number; reps: number} {
+  void _preset;
   return {sets, reps};
 }
 

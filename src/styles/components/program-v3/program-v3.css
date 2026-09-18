@@ -15,7 +15,7 @@
   overflow: auto;
   padding: 20px 16px;
   border-radius: 12px;
-  border: 1px solid var(--border, #e5e5e5);
+  border: var(--border-width) solid var(--border, #e5e5e5);
   background: var(--surface, #fff);
   animation: program-selector-reveal 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -64,7 +64,7 @@
   width: 100%;
   padding: 16px;
   border-radius: 12px;
-  border: 1px solid var(--border, #e5e5e5);
+  border: var(--border-width) solid var(--border, #e5e5e5);
   background: var(--surface-muted, #fafafa);
   text-align: left;
   cursor: pointer;
@@ -74,19 +74,19 @@
 }
 
 .program-selector__card--selected {
-  border-color: var(--accent, #2563eb);
-  box-shadow: 0 0 0 1px var(--accent, #2563eb);
+  border-color: var(--accent, #ffb020);
+  box-shadow: 0 0 0 1px var(--accent, #ffb020);
 }
 
 .program-selector__card:focus-visible {
-  outline: 2px solid var(--accent, #2563eb);
+  outline: 2px solid var(--accent, #ffb020);
   outline-offset: 2px;
 }
 
 .program-selector__badge {
   font-size: 12px;
   font-weight: 500;
-  color: var(--accent, #2563eb);
+  color: var(--accent, #ffb020);
 }
 
 .program-selector__card-title {
@@ -112,75 +112,75 @@
 }
 
 /* Program 3.0 calculator — chart overrides only (forms use calc-test-approach.css) */
-@layer components {
-  .program-v3-calculator .program-v3-progress.ta-period {
-    margin-bottom: 0;
-  }
+.program-v3-calculator .program-v3-progress.ta-period {
+  margin-bottom: 0;
+}
 
-  /* Phase strip — match PeriodizationChart etalon (single border, tint fill) */
-  .program-v3-calculator .progression-preview .ta-period__phases {
-    gap: 4px;
-  }
+/* Phase strip — match PeriodizationChart etalon (single border, tint fill) */
+.program-v3-calculator .progression-preview .ta-period__phases {
+  gap: 4px;
+}
 
-  .program-v3-calculator .progression-preview .ta-period__phase {
-    box-sizing: border-box;
-    flex: 1 1 0;
-    min-width: 0;
-  }
+.program-v3-calculator .progression-preview .ta-period__phase {
+  box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 0;
+}
 
-  .program-v3-progress__empty {
-    margin: 0;
-    font-size: var(--type-14, 0.875rem);
-    line-height: 1.5;
-    color: var(--ta-text-muted, #99a1ad);
-  }
+.program-v3-progress__empty {
+  margin: 0;
+  font-size: var(--type-14, 0.875rem);
+  line-height: 1.5;
+  color: var(--ta-text-muted, #99a1ad);
+}
 
+.program-v3-calculator .progression-preview .ta-period__weeks--preview {
+  margin-top: var(--space-3, 12px);
+}
+
+.program-v3-calculator .progression-preview .ta-period-week {
+  grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
+}
+
+.program-v3-calculator .progression-preview .ta-period-week em {
+  color: var(--phase-color, var(--ta-text-dim));
+  font-size: 14px;
+  font-weight: 600;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.program-v3-calculator .progression-preview .ta-period-week.is-test strong {
+  color: var(--ta-calc-accent);
+}
+
+.program-v3-calculator .progression-preview__sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@media (max-width: 600px) {
   .program-v3-calculator .progression-preview .ta-period__weeks--preview {
-    margin-top: var(--space-3, 12px);
+    -webkit-overflow-scrolling: touch;
+    overflow-x: visible;
   }
 
   .program-v3-calculator .progression-preview .ta-period-week {
-    grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-width: 0;
+    width: 100%;
   }
 
   .program-v3-calculator .progression-preview .ta-period-week em {
-    color: var(--phase-color, var(--ta-text-dim));
-    font-size: 14px;
-    font-weight: 600;
-    justify-self: end;
-    white-space: nowrap;
-  }
-
-  .program-v3-calculator .progression-preview .ta-period-week.is-test strong {
-    color: var(--ta-calc-accent);
-  }
-
-  .program-v3-calculator .progression-preview__sr-only {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    white-space: nowrap;
-    width: 1px;
-  }
-
-  @media (max-width: 600px) {
-    .program-v3-calculator .progression-preview .ta-period__weeks--preview {
-      -webkit-overflow-scrolling: touch;
-      overflow-x: auto;
-    }
-
-    .program-v3-calculator .progression-preview .ta-period-week {
-      grid-template-columns: 54px minmax(72px, 1fr) 72px 72px minmax(96px, 140px);
-      min-width: min(100%, 420px);
-    }
-
-    .program-v3-calculator .progression-preview .ta-period-week em {
-      justify-self: end;
-    }
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 }
 

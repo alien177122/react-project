@@ -253,22 +253,21 @@ section.ta-section.ta-calc-section.reveal-section[.is-visible]
 | `padding`               | `14px 16px`                                                                                             |
 | `border-radius`         | `12px`                                                                                                  |
 | `background`            | `var(--ta-calc-surface)` → alias `var(--ta-surface)`                                                    |
-| `border`                | `1px solid var(--ta-calc-border)`                                                                       |
-| `border-left`           | `2px solid transparent`                                                                                 |
+| `border`                | `1px solid var(--ta-calc-border)` (uniform all sides — no left rail)                                    |
 | `color`                 | `var(--ta-text-muted)` (baseline на card; name overrides)                                               |
 | `cursor`                | `pointer`                                                                                               |
 | `transition`            | `transform`, `border-color`, `background` — each `var(--ta-duration-micro)` `var(--ta-ease-transition)` |
 
 ### 6.2 States (полная матрица)
 
-| State           | Selector                | `background`                 | `border`                  | `border-left`           | `transform`        | `outline` |
-| --------------- | ----------------------- | ---------------------------- | ------------------------- | ----------------------- | ------------------ | --------- |
-| default         | `.ta-calc-saved-card`   | surface                      | `1px calc-border`         | `2px transparent`       | —                  | —         |
-| hover           | `@media (hover: hover)` | unchanged                    | `var(--ta-border-strong)` | unchanged               | `translateY(-2px)` | —         |
-| focus-visible   | `:focus-visible`        | `var(--ta-calc-accent-tint)` | inherited                 | `var(--ta-calc-accent)` | —                  | `none`    |
-| active/selected | `.is-active`            | **same as focus-visible**    | inherited                 | `var(--ta-calc-accent)` | —                  | `none`    |
+| State           | Selector                | `background`                 | `border`                            | `transform`        | `outline` |
+| --------------- | ----------------------- | ---------------------------- | ----------------------------------- | ------------------ | --------- |
+| default         | `.ta-calc-saved-card`   | surface                      | `1px calc-border`                   | —                  | —         |
+| hover           | `@media (hover: hover)` | unchanged                    | `var(--ta-border-strong)`           | `translateY(-2px)` | —         |
+| focus-visible   | `:focus-visible`        | `var(--ta-calc-accent-tint)` | `1px var(--ta-calc-accent)` (full)  | —                  | `none`    |
+| active/selected | `.is-active`            | **same as focus-visible**    | `1px var(--ta-calc-accent)` (full)  | —                  | `none`    |
 
-**Правило:** keyboard focus и selected row **визуально идентичны** — tint + orange left rail 2px.
+**Правило:** keyboard focus и selected row **визуально идентичны** — tint + orange **full perimeter** border. Never left-only rail.
 
 ### 6.3 Mobile `max-width: 600px`
 
@@ -445,7 +444,7 @@ Global `.btn-sm`: `min-height: 36px`, `font-size: 12px`, UPPERCASE — **пер�
 | Row activation        | `role="button"`, `tabIndex={0}`, Enter/Space              | ✅                                      |
 | Selected row          | `aria-current="true"` when `.is-active`                   | ✅                                      |
 | Delete                | `aria-label="Удалить {name}"`; glyph `aria-hidden`        | ✅                                      |
-| Focus card            | `:focus-visible` tint + left rail                         | ✅                                      |
+| Focus card            | `:focus-visible` tint + full perimeter accent border      | ✅                                      |
 | Focus delete          | scoped outline accent 2px + offset 2px                    | ✅                                      |
 | Touch targets         | delete 44×44; row height ≈ padding 14×2 + content ≥ ~52px | ✅                                      |
 | Nested interactive    | card `role="button"` + inner `<button>`                   | ⚠️ тестировать tab order (row → delete) |
@@ -481,7 +480,7 @@ Tone: factual; без «1ПМ» в label если значение self-evident 
 - [ ] Desktop grid **`1fr auto`**: primary left, metrics+actions right
 - [ ] **Один** hero metric с `var(--ta-calc-accent)` на row
 - [ ] Secondary meta **12px** `var(--ta-text-muted)` под title
-- [ ] Active: `--ta-calc-accent-tint` + **2px** `border-left-color: --ta-calc-accent`
+- [ ] Active: `--ta-calc-accent-tint` + full `border-color: --ta-calc-accent`
 - [ ] Destructive: `Button danger sm`, `aria-label` с именем сущности, `stopPropagation`
 - [ ] Delete/control **≥44×44px** на touch
 - [ ] `:focus-visible`, `@media (hover: hover)`, `prefers-reduced-motion`
@@ -523,7 +522,7 @@ Reuse `.ta-calc-saved-*` или extracted `calc-saved-list.css` — не ad hoc 
 | Критерий   | **CalculatorTab (эталон)**         | Mobile RN / macOS legacy |
 | ---------- | ---------------------------------- | ------------------------ |
 | 1RM accent | `--ta-calc-accent`                 | text/mono, no accent     |
-| Active     | left rail + tint                   | border only              |
+| Active     | full perimeter accent + tint       | border only              |
 | Delete     | 44×44 scoped                       | ActionButton varies      |
 | Shell      | `SectionBlock apple` + Theory pill | plain / RN               |
 | Title      | `(N/M)`                            | `· N/M`                  |
@@ -540,7 +539,7 @@ Reuse `.ta-calc-saved-*` или extracted `calc-saved-list.css` — не ad hoc 
 - [ ] Прочитать этот файл + `calculator-tab-standard.md` §03 + section shell из `calc-test-approach-standard.md`
 - [ ] Сверить title `(N/M)` и meta template с доменом
 - [ ] Tab: row → delete; Enter/Space select; 320px; delete 44px
-- [ ] Active: tint + left rail в dark shell
+- [ ] Active: tint + full perimeter accent border в dark shell
 - [ ] `prefers-reduced-motion`: no lift, no stagger
 - [ ] Превью: MCP `cursor-ide-browser` @ `http://localhost:5173` → Calculator → сохранить ≥1 упражнение
 - [ ] При изменении паттерна — обновить этот reference + `activeContext.md` + `README.md`

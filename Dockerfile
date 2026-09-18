@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 COPY packages/shared/package.json ./packages/shared/package.json
 RUN npm install
 
-COPY App.tsx index.html index.tsx vite.config.ts eslint.config.js postcss.config.js tailwind.config.ts tsconfig.base.json tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY App.tsx index.html index.tsx vite.config.ts eslint.config.js postcss.config.js tsconfig.base.json tsconfig.json tsconfig.app.json tsconfig.node.json ./
 COPY packages/shared ./packages/shared
 COPY public ./public
 COPY src ./src

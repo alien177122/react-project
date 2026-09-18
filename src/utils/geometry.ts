@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/utils/geometry.ts'
+export * from '@training/shared/utils/geometry'

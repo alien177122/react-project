@@ -1,12 +1,14 @@
 .theme-toggle {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  top: max(16px, var(--sat, env(safe-area-inset-top, 0px)));
+  right: max(16px, var(--sar, env(safe-area-inset-right, 0px)));
+  left: auto;
   z-index: 100;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .theme-toggle__track {
@@ -17,8 +19,9 @@
   padding: 2px;
   border-radius: 999px;
   background: var(--surface-raised);
-  border: 1px solid var(--border);
-  transition: background var(--duration-micro) var(--ease-out),
+  border: var(--border-width) solid var(--border);
+  transition:
+    background var(--duration-micro) var(--ease-out),
     border-color var(--duration-micro) var(--ease-out);
 }
 
@@ -32,7 +35,8 @@
   color: var(--text-strong);
   background: var(--card);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: transform var(--duration-short) var(--ease-out),
+  transition:
+    transform var(--duration-short) var(--ease-out),
     background var(--duration-micro) var(--ease-out);
 }
 

@@ -34,9 +34,9 @@ export function volumeClass(t: number): string {
 }
 
 export function barColor(t: number): string {
-  if (t >= 28) return '#ff6b35';
+  if (t >= 28) return '#ffb020';
   if (t <= 16) return '#ff4d4d';
-  return '#ff9f40';
+  return '#ffc94d';
 }
 
 type WarmupTemplate = {pct: number; reps: number; rest: string; purpose: string};
@@ -64,11 +64,14 @@ const WARMUP_TEMPLATES: Record<'A' | 'B' | 'C' | 'D', WarmupTemplate[]> = {
 };
 
 export function calcWarmupSets(workingWeight: number, cfg: ExerciseConfig): WarmupSet[] {
-  if (cfg.isPullup) return [];
+  if (cfg.usesBodyWeight || cfg.isPullup) return [];
+  if (!Number.isFinite(workingWeight) || workingWeight <= 0) return [];
+  const step = cfg.warmupStep > 0 ? cfg.warmupStep : cfg.step > 0 ? cfg.step : 0;
+  if (!(step > 0)) return [];
   const templates = WARMUP_TEMPLATES[cfg.type];
   return templates.map((t, i) => ({
     label: `Разм ${i + 1}`,
-    weight: Math.floor((workingWeight * t.pct) / cfg.warmupStep) * cfg.warmupStep,
+    weight: Math.floor((workingWeight * t.pct) / step) * step,
     reps: t.reps,
     rest: t.rest,
     purpose: t.purpose,

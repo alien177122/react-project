@@ -44,7 +44,7 @@ export function validatePassword(pw: string): PasswordValidationResult {
   return {
     criteria,
     score,
-    label: labels[score],
+    label: labels[score] ?? 'weak',
     isValid: criteria.minLength && score >= 2,
   };
 }

@@ -1,1 +1,1 @@
-export * from '../../packages/shared/src/utils/calc.ts'
+export * from '@training/shared/utils/calc'

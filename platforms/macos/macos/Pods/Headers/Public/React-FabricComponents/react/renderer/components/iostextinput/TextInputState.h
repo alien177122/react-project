@@ -1,1 +1,0 @@
-../../../../../../../../../node_modules/react-native-macos/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/TextInputState.h

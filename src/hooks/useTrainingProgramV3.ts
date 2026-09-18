@@ -1,5 +1,5 @@
-import {useTrainingProgramV3 as useSharedTrainingProgramV3} from '../../packages/shared/src/hooks/useTrainingProgramV3.ts';
-import type {UseTrainingProgramV3Options as SharedOptions} from '../../packages/shared/src/hooks/useTrainingProgramV3.ts';
+import {useTrainingProgramV3 as useSharedTrainingProgramV3} from '@training/shared/hooks/useTrainingProgramV3';
+import type {UseTrainingProgramV3Options as SharedOptions} from '@training/shared/hooks/useTrainingProgramV3';
 import {saveUser} from '../utils/api';
 
 type UseTrainingProgramV3Options = Omit<SharedOptions, 'saveUser'>;

@@ -33,8 +33,15 @@
 Before opening a pull request:
 
 ```bash
-bunx gitleaks detect --source . --verbose
-bun run typecheck && bun run lint && bun test
+npm run secrets:scan          # or: bunx gitleaks detect --source . --verbose
+npm run quality:quick         # typecheck + unit (Uncle Bob tier B)
+npm run audit:prod:critical   # fail only on critical in production tree
+# Tier A domain: npm run quality
 ```
 
+Auth interim (Phase 2): access JWT default **24h** (`JWT_EXPIRES_IN`); logout bumps `token_version` (server revoke). Existing tokens without `tv` need re-login once.
+
 Never commit `.env*`, `gym.db`, API keys, or JWT secrets.
+
+Phased hardening plan: `audit/hardening-plan-2026-08.md`  
+Constitution articles: `memory-bank/constitution/articles/`

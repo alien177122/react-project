@@ -1,5 +1,5 @@
 import type {TrainingDayDef, TrainingPreferences, UserData} from '../types';
-import {HeroSection} from '../components/ui/HeroSection';
+
 import type {TrainingExerciseRow} from '../utils/training';
 import TrainingStateRouter from '../components/training/TrainingStateRouter';
 import {deriveTrainingState} from '../components/training/trainingState';
@@ -48,13 +48,9 @@ export default function TrainingTab(props: TrainingTabProps) {
   });
 
   return (
-    <div className="theory-shell">
-      <HeroSection
-        label="Training"
-        title="Программа тренировок"
-        subtitle={props.programSubtitle ?? '8 недель · 2 дня в неделю · волновая прогрессия'}
-      />
-      <div className="theory-stack">
+    <div className="ta-shell">
+
+      <div className="ta-stack">
         <TrainingStateRouter
           state={state}
           totalSessions={props.totalSessions}

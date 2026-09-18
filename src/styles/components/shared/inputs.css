@@ -7,7 +7,7 @@
 }
 .input-field {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
   color: var(--text);

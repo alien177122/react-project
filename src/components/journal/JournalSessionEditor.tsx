@@ -1,4 +1,4 @@
-import type {DraftSet} from '../../../packages/shared/src/hooks/useJournal.ts';
+import type {DraftSet} from '@training/shared/hooks/useJournal';
 import {JournalSetForm} from './JournalSetForm.tsx';
 
 interface JournalSessionEditorProps {
@@ -23,7 +23,6 @@ export function JournalSessionEditor({
   saving,
   hasHistory,
   isEditing,
-  editingDate,
   onSessionNoteChange,
   onAddSet,
   onUpdateSet,
@@ -32,26 +31,20 @@ export function JournalSessionEditor({
   onCopyLast,
   onCancelEdit,
 }: JournalSessionEditorProps) {
-  const sectionTitle = isEditing && editingDate ? `Редактирование · ${editingDate}` : 'Запись';
-
   return (
-    <section className="app-tab-section journal-form-section" aria-labelledby="journal-entry-title">
-      <div className="app-tab-section__head">
-        <h2 id="journal-entry-title" className="app-tab-section__title">
-          {sectionTitle}
-        </h2>
-        <span className="app-tab-section__meta">
-          {draftSets.length > 0 ? `${draftSets.length} подх.` : 'Новая запись'}
-        </span>
-      </div>
+    <div className="journal-form-section">
+
 
       {draftSets.length === 0 ? (
-        <p className="journal-sets-empty">Нажми «Добавить подход», чтобы начать сессию.</p>
+        <p className="journal-sets-empty">
+          Сначала внизу в «Тренд 1ПМ» выберите упражнение — например, жим лёжа. Затем нажмите «Добавить
+          подход» и записывайте каждый подход.
+        </p>
       ) : (
         <div className="journal-sets">
           {draftSets.map((set, index) => (
             <JournalSetForm
-              key={`draft-${index}`}
+              key={set.id}
               index={index}
               set={set}
               onChange={patch => onUpdateSet(index, patch)}
@@ -74,26 +67,26 @@ export function JournalSessionEditor({
       </div>
 
       <div className="journal-actions">
-        <button type="button" className="journal-btn journal-btn--add" onClick={onAddSet}>
+        <button type="button" className="btn btn-ghost journal-actions__add" onClick={onAddSet}>
           + Добавить подход
         </button>
         <div className="journal-actions__row">
           <button
             type="button"
-            className="journal-btn journal-btn--primary"
+            className="btn journal-actions__save"
             disabled={saving}
             aria-busy={saving}
             onClick={onSave}>
             {saving ? 'Сохранение…' : 'Сохранить'}
           </button>
           {isEditing ? (
-            <button type="button" className="journal-btn journal-btn--ghost" onClick={onCancelEdit}>
+            <button type="button" className="btn btn-ghost journal-actions__secondary" onClick={onCancelEdit}>
               Отмена
             </button>
           ) : (
             <button
               type="button"
-              className="journal-btn journal-btn--ghost"
+              className="btn btn-ghost journal-actions__secondary"
               onClick={onCopyLast}
               disabled={!hasHistory}>
               Как в прошлый раз
@@ -101,6 +94,6 @@ export function JournalSessionEditor({
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

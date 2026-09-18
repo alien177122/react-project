@@ -1,1 +1,0 @@
-../../../../../../../node_modules/react-native-macos/ReactCommon/yoga/yoga/config/Config.h

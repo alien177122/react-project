@@ -1,14 +1,12 @@
 {
   "name": "react-project",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "packageManager": "npm@11.6.0",
   "type": "module",
   "workspaces": [
-    "packages/*",
-    "apps/*"
+    "packages/*"
   ],
-  "main": "desktop/main.cjs",
   "scripts": {
     "dev": "node scripts/dev-all.mjs",
     "server": "node server/index.js",
@@ -16,9 +14,6 @@
     "typecheck": "tsc -b --noEmit",
     "icons:generate": "node scripts/generate-pwa-icons.mjs",
     "og:generate": "node scripts/generate-og-images.mjs",
-    "desktop": "node scripts/desktop-dev.mjs",
-    "desktop:dir": "node scripts/desktop-build.mjs --dir",
-    "desktop:pack": "node scripts/desktop-build.mjs",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "lint:fix": "eslint . --fix",
@@ -31,6 +26,8 @@
     "public:status": "node scripts/public-status.mjs",
     "public:launchd:install": "node scripts/public-launchd-install.mjs",
     "public:launchd:remove": "node scripts/public-launchd-remove.mjs",
+    "tunnel:quick": "node scripts/quick-tunnel-5173.mjs",
+    "tunnel:notify": "node scripts/notify-tunnel-telegram.mjs",
     "docker:build": "docker compose --env-file .env.docker build",
     "docker:up": "docker compose --env-file .env.docker up --build -d",
     "docker:down": "docker compose --env-file .env.docker down",
@@ -40,8 +37,23 @@
     "files:analyze": "node scripts/files-analyze.mjs",
     "files:watch": "node scripts/files-watch.mjs",
     "ollama:pull-glm-ocr": "ollama pull glm-ocr",
+    "pdf:md": "node scripts/pdf-to-md.mjs",
     "test": "node --test --experimental-strip-types tests/**/*.test.ts",
-    "seed:journal-demo": "node scripts/seed-journal-demo.mjs"
+    "test:e2e": "playwright test",
+    "test:acceptance": "node --experimental-strip-types scripts/quality/gherkin-acceptance.mjs",
+    "test:crap": "node scripts/quality/crap-check.mjs",
+    "test:mutate": "node --experimental-strip-types scripts/quality/mutate-shared.mjs",
+    "quality": "node scripts/quality/quality-gate.mjs --tier=a",
+    "quality:quick": "node scripts/quality/quality-gate.mjs",
+    "audit:prod": "node scripts/quality/audit-prod.mjs",
+    "audit:prod:critical": "node scripts/quality/audit-prod.mjs --allow-high",
+    "secrets:scan": "gitleaks detect --source . --verbose",
+    "seed:journal-demo": "node scripts/seed-journal-demo.mjs",
+    "backup": "./scripts/backup.sh",
+    "release:pack": "bash scripts/release-pack-lan.sh",
+    "release:pack:serve": "bash scripts/release-pack-lan.sh --serve",
+    "update:apply": "bash scripts/apply-update-preserve-tunnel.sh",
+    "auth:triptych:sync": "node scripts/sync-auth-triptych-public.mjs"
   },
   "dependencies": {
     "@training/shared": "0.1.0",
@@ -50,14 +62,11 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.1",
-    "framer-motion": "^12.38.0",
-    "jsonwebtoken": "^9.0.3",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@playwright/test": "^1.59.1",
+    "@playwright/test": "^1.62.1",
     "@types/cors": "^2",
     "@types/express": "^5",
     "@types/jsonwebtoken": "^9",
@@ -66,46 +75,33 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.2.2",
     "autoprefixer": "^10.4.27",
-    "electron": "^41.1.0",
-    "electron-builder": "^26.8.1",
+    "eruda": "^3.4.3",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "framer-motion": "^12.38.0",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "playwright": "^1.58.2",
+    "lucide-react": "^1.23.0",
+    "playwright": "^1.62.1",
     "postcss": "^8.5.8",
     "postcss-import": "^16.1.1",
     "prettier": "^3.8.3",
-    "tailwindcss": "^3.4.19",
+    "react": "19.1.0",
+    "react-doctor": "^0.5.8",
+    "react-dom": "19.1.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"
   },
-  "build": {
-    "appId": "com.stevegordiyenko.trainingcalculator",
-    "productName": "Training Calculator",
-    "directories": {
-      "output": "desktop-dist"
-    },
-    "files": [
-      "dist/**/*",
-      "server/**/*",
-      "desktop/**/*",
-      "package.json"
-    ],
-    "asarUnpack": [
-      "node_modules/better-sqlite3/**/*"
-    ],
-    "mac": {
-      "category": "public.app-category.healthcare-fitness",
-      "target": [
-        "dmg",
-        "zip"
-      ]
-    },
-    "artifactName": "${productName}-${version}-${arch}.${ext}"
+  "overrides": {
+    "tar": "^7.5.22"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.8.0": true,
+    "@swc/core@1.15.41": true,
+    "esbuild@0.27.7": true
   }
 }

@@ -7,7 +7,7 @@ function formatWeight(value: number): string {
 }
 
 function weightLabel(config: ExerciseConfig, week: PeriodWeek): string {
-  if (!config.isPullup) return `${formatWeight(week.weight)} кг`
+  if (!config.usesBodyWeight && !config.isPullup) return `${formatWeight(week.weight)} кг`
   return `${week.weight >= 0 ? '+' : ''}${formatWeight(week.weight)} кг`
 }
 
@@ -119,7 +119,7 @@ export default function PeriodizationChart({
         </svg>
       </div>
 
-      <div className="ta-period__weeks" role="listbox" aria-label="Недели периода" onKeyDown={keyDown}>
+      <div className="ta-period__weeks" role="listbox" aria-label="Недели периода" tabIndex={0} onKeyDown={keyDown}>
         {weeks.map((week, index) => (
           <button
             key={week.week}

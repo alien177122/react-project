@@ -227,6 +227,7 @@ export default function ProgramV3ProgressChart({exerciseName, rows}: ProgramV3Pr
         role="listbox"
         aria-label="Недели программы"
         aria-describedby="program-v3-progress-list-desc"
+        tabIndex={0}
         onKeyDown={keyDown}>
         {listWeeks.map(week => {
           const isActive = activeWeek === week.week;

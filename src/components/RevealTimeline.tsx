@@ -1,54 +1,47 @@
-import { useScrollReveal } from '../hooks/useScrollReveal'
+import {useScrollReveal} from '../hooks/useScrollReveal';
 
 export interface TimelineNode {
-  id: string
-  title: string
-  definition: string
-  pattern?: string
-  bullets?: readonly string[]
+  id: string;
+  title: string;
+  definition: string;
+  pattern?: string;
+  bullets?: readonly string[];
 }
 
 interface RevealTimelineProps {
-  items: readonly TimelineNode[]
-  asideEyebrow: string
-  asideQuote: string
-  asideNote?: string
+  items: readonly TimelineNode[];
+  asideEyebrow?: string;
+  asideQuote?: string;
+  asideNote?: string;
 }
 
-export function RevealTimeline({
-  items,
-  asideEyebrow,
-  asideQuote,
-  asideNote,
-}: RevealTimelineProps) {
-  const { ref, isVisible } = useScrollReveal<HTMLDivElement>({
+/**
+ * Sequential rounded blocks (intro + step cards). Used by mTOR + special methods + basics groups.
+ * Why: vertical stack reads top→bottom; optional intro for section framing.
+ */
+export function RevealTimeline({items, asideEyebrow, asideQuote, asideNote}: RevealTimelineProps) {
+  const {ref, isVisible} = useScrollReveal<HTMLDivElement>({
     rootMargin: '0px 0px -20% 0px',
-  })
+  });
+  const showIntro = Boolean(asideQuote);
 
   return (
-    <div
-      ref={ref}
-      className={`ta-timeline${isVisible ? ' is-visible' : ''}`}
-    >
-      <aside className="ta-timeline-aside">
-        <span className="ta-timeline-aside-eyebrow">{asideEyebrow}</span>
-        <p className="ta-timeline-aside-quote">{asideQuote}</p>
-        {asideNote && <p className="ta-timeline-aside-note">{asideNote}</p>}
-      </aside>
+    <div ref={ref} className={`ta-timeline${isVisible ? ' is-visible' : ''}`}>
+      {showIntro ? (
+        <header className="ta-timeline-intro">
+          {asideEyebrow ? <span className="ta-timeline-intro-eyebrow">{asideEyebrow}</span> : null}
+          <p className="ta-timeline-intro-quote">{asideQuote}</p>
+          {asideNote ? <p className="ta-timeline-intro-note">{asideNote}</p> : null}
+        </header>
+      ) : null}
 
-      <div className="ta-timeline-list">
-        <div className="ta-timeline-line" aria-hidden="true" />
+      <ol className="ta-timeline-list">
         {items.map((item, index) => (
-          <TimelineNodeCard
-            key={item.id}
-            item={item}
-            index={index}
-            parentVisible={isVisible}
-          />
+          <TimelineNodeCard key={item.id} item={item} index={index} parentVisible={isVisible} />
         ))}
-      </div>
+      </ol>
     </div>
-  )
+  );
 }
 
 function TimelineNodeCard({
@@ -56,41 +49,54 @@ function TimelineNodeCard({
   index,
   parentVisible,
 }: {
-  item: TimelineNode
-  index: number
-  parentVisible: boolean
+  item: TimelineNode;
+  index: number;
+  parentVisible: boolean;
 }) {
-  const { ref, isVisible } = useScrollReveal<HTMLDivElement>({
+  const {ref, isVisible} = useScrollReveal<HTMLLIElement>({
     rootMargin: '0px 0px -15% 0px',
-  })
-  const show = isVisible || parentVisible
+  });
+  const show = isVisible || parentVisible;
+  const step = String(index + 1).padStart(2, '0');
 
   return (
-    <div
+    <li
       ref={ref}
       className={`ta-timeline-item${show ? ' is-visible' : ''}`}
-      style={{ transitionDelay: `${index * 80}ms` }}
-    >
-      <span className="ta-timeline-dot" aria-hidden="true" />
-      <div className="ta-timeline-card">
-        <h3 className="ta-timeline-card-title">{item.title}</h3>
-        <p className="ta-timeline-card-def">
-          <strong>Определение: </strong>
-          {item.definition}
-        </p>
-        {item.pattern && (
-          <p className="ta-timeline-card-pattern">{item.pattern}</p>
-        )}
-        {item.bullets && item.bullets.length > 0 && (
-          <ul className="ta-timeline-bullets">
-            {item.bullets.map((bullet) => (
-              <li key={bullet} className="ta-timeline-bullet">
-                {bullet}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  )
+      style={{transitionDelay: `${Math.min(index, 8) * 60}ms`}}>
+      <article className="ta-timeline-card">
+        <div className="ta-timeline-card-head">
+          <span className="ta-timeline-step" aria-hidden="true">
+            {step}
+          </span>
+          <h3 className="ta-timeline-card-title">{item.title}</h3>
+        </div>
+
+        <div className="ta-timeline-block">
+          <p className="ta-timeline-label">Определение</p>
+          <p className="ta-timeline-card-def">{item.definition}</p>
+        </div>
+
+        {item.pattern ? (
+          <div className="ta-timeline-block ta-timeline-block--pattern">
+            <p className="ta-timeline-label">Схема</p>
+            <p className="ta-timeline-card-pattern">{item.pattern}</p>
+          </div>
+        ) : null}
+
+        {item.bullets && item.bullets.length > 0 ? (
+          <div className="ta-timeline-block">
+            <p className="ta-timeline-label">Как применять</p>
+            <ul className="ta-timeline-bullets">
+              {item.bullets.map(bullet => (
+                <li key={bullet} className="ta-timeline-bullet">
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </article>
+    </li>
+  );
 }

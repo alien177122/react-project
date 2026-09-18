@@ -1,0 +1,36 @@
+/* Typography — Inter + system stack; monospace reserved for code & formulas */
+
+:root {
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-display:
+    'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --font-prose: var(--font-sans);
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-system: var(--font-sans);
+
+  --tracking-body: -0.011em;
+  --tracking-display: -0.022em;
+  --tracking-prose: -0.012em;
+  --tracking-caps: 0.08em;
+
+  --leading-body: 1.55;
+  --leading-prose: 1.65;
+}
+
+body {
+  font-family: var(--font-system);
+  font-weight: 400;
+  letter-spacing: var(--tracking-body);
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: var(--app-min-height);
+}
+
+/* Tabular numbers without monospace */
+.u-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'kern' 1;
+}

@@ -203,8 +203,67 @@ function normalizeSplit(split) {
     }
   }
 
+  if (isRecord(split.excludedExercisesByDay)) {
+    const excludedExercisesByDay = {};
+    for (const dayNum of [1, 2, 3]) {
+      const keys = split.excludedExercisesByDay[dayNum];
+      if (!Array.isArray(keys)) continue;
+      const trimmed = keys
+        .filter(key => typeof key === 'string' && key.trim())
+        .map(key => key.trim());
+      if (trimmed.length > 0) excludedExercisesByDay[dayNum] = trimmed;
+    }
+    if (Object.keys(excludedExercisesByDay).length > 0) {
+      normalized.excludedExercisesByDay = excludedExercisesByDay;
+    }
+  }
+
   const legExercises = normalizeLegExercisesArray(split.legExercises);
   if (legExercises) normalized.legExercises = legExercises;
+
+  if (isRecord(split.customExercisesByDay)) {
+    const customExercisesByDay = {};
+    for (const dayNum of [1, 2, 3]) {
+      const keys = split.customExercisesByDay[dayNum];
+      if (!Array.isArray(keys)) continue;
+      const trimmed = keys
+        .filter(key => typeof key === 'string' && key.trim())
+        .map(key => key.trim());
+      if (trimmed.length > 0) customExercisesByDay[dayNum] = trimmed;
+    }
+    if (Object.keys(customExercisesByDay).length > 0) {
+      normalized.customExercisesByDay = customExercisesByDay;
+    }
+  }
+
+  if (Array.isArray(split.completedWeeks)) {
+    const completedWeeks = [
+      ...new Set(
+        split.completedWeeks
+          .filter(week => Number.isInteger(week) && week >= 0 && week <= 7)
+          .map(week => Number(week)),
+      ),
+    ].sort((a, b) => a - b);
+    if (completedWeeks.length > 0) normalized.completedWeeks = completedWeeks;
+  }
+
+  if (Array.isArray(split.completedDays)) {
+    const seen = new Set();
+    const completedDays = [];
+    for (const entry of split.completedDays) {
+      if (!isRecord(entry)) continue;
+      const week = entry.week;
+      const day = entry.day;
+      if (!Number.isInteger(week) || week < 0 || week > 7) continue;
+      if (day !== 1 && day !== 2 && day !== 3) continue;
+      const key = `${week}:${day}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      completedDays.push({week, day});
+    }
+    completedDays.sort((a, b) => a.week - b.week || a.day - b.day);
+    if (completedDays.length > 0) normalized.completedDays = completedDays;
+  }
 
   return normalized;
 }
@@ -223,6 +282,31 @@ function normalizeSplitsArray(input) {
   }
 
   return pruneSplits(splits);
+}
+
+function normalizeSplitCalculationsArray(input) {
+  if (!Array.isArray(input)) return [];
+
+  const calculations = [];
+  const seenIds = new Set();
+
+  for (const entry of input) {
+    if (!isRecord(entry)) continue;
+    const id = typeof entry.id === 'string' ? entry.id.trim() : '';
+    const calculatedAt = typeof entry.calculatedAt === 'string' ? entry.calculatedAt.trim() : '';
+    const split = normalizeSplit(entry.split);
+    if (!id || !calculatedAt || !split || seenIds.has(id)) continue;
+
+    const exercises = Array.isArray(entry.exercises)
+      ? entry.exercises.map(normalizeExerciseEntry).filter(Boolean)
+      : [];
+    seenIds.add(id);
+    calculations.push({id, calculatedAt, split, exercises});
+  }
+
+  return calculations
+    .sort((a, b) => b.calculatedAt.localeCompare(a.calculatedAt))
+    .slice(0, SPLIT_LIMITS.MAX_CALCULATIONS);
 }
 
 function normalizeTrainingPreferences(input) {
@@ -300,6 +384,8 @@ function buildStoredUser(
   activeProgram,
   trainingProgressByProgram,
   testResults,
+  splitCalculations,
+  activeSplitCalculationId,
 ) {
   const data = {name, exercises};
   if (trainingProgress) data.trainingProgress = trainingProgress;
@@ -310,6 +396,8 @@ function buildStoredUser(
   if (activeProgram) data.activeProgram = activeProgram;
   if (trainingProgressByProgram) data.trainingProgressByProgram = trainingProgressByProgram;
   if (testResults.length > 0) data.testResults = testResults;
+  if (splitCalculations.length > 0) data.splitCalculations = splitCalculations;
+  if (activeSplitCalculationId) data.activeSplitCalculationId = activeSplitCalculationId;
   return data;
 }
 
@@ -327,9 +415,14 @@ export function normalizeStoredUserData(input, fallbackName) {
 
   const journal = normalizeJournalArray(input.journal);
   const splits = normalizeSplitsArray(input.splits);
+  const splitCalculations = normalizeSplitCalculationsArray(input.splitCalculations);
   const activeSplitId =
     typeof input.activeSplitId === 'string' && input.activeSplitId.trim()
       ? input.activeSplitId.trim()
+      : null;
+  const activeSplitCalculationId =
+    typeof input.activeSplitCalculationId === 'string' && input.activeSplitCalculationId.trim()
+      ? input.activeSplitCalculationId.trim()
       : null;
 
   const trainingProgress =
@@ -357,6 +450,8 @@ export function normalizeStoredUserData(input, fallbackName) {
     activeProgram,
     trainingProgressByProgram,
     testResults,
+    splitCalculations,
+    activeSplitCalculationId,
   );
 }
 
@@ -530,6 +625,28 @@ export function normalizeUserData(input, expectedName) {
     activeSplitId = input.activeSplitId.trim();
   }
 
+  let splitCalculations = [];
+  if (input.splitCalculations !== undefined) {
+    if (!Array.isArray(input.splitCalculations)) {
+      return invalid('Поле splitCalculations должно быть массивом');
+    }
+    splitCalculations = normalizeSplitCalculationsArray(input.splitCalculations);
+    if (input.splitCalculations.length > 0 && splitCalculations.length === 0) {
+      return invalid('Некорректная история расчётов сплита');
+    }
+  }
+
+  let activeSplitCalculationId = null;
+  if (input.activeSplitCalculationId !== undefined && input.activeSplitCalculationId !== null) {
+    if (
+      typeof input.activeSplitCalculationId !== 'string' ||
+      !input.activeSplitCalculationId.trim()
+    ) {
+      return invalid('Некорректный activeSplitCalculationId');
+    }
+    activeSplitCalculationId = input.activeSplitCalculationId.trim();
+  }
+
   let activeProgram;
   if (input.activeProgram !== undefined) {
     if (!ACTIVE_PROGRAMS.has(input.activeProgram)) {
@@ -568,6 +685,8 @@ export function normalizeUserData(input, expectedName) {
       activeProgram,
       trainingProgressByProgram,
       testResults,
+      splitCalculations,
+      activeSplitCalculationId,
     ),
   };
 }

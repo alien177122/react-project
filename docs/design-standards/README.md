@@ -19,7 +19,7 @@
 | Selectable list, карточки метрик, journal/training rows (03 Сохранённые)     | `calc-saved-exercises-standard.md` — MAX: SectionBlock→card grid, 1RM accent, delete 44px        |
 | **Journal progress chart** (факт из записей, не план калькулятора)           | `journal-progress-chart-standard.md`                                                             |
 | UI в визуальном языке Theory (`--ta-*`, `.ta-shell`)                         | `.cursor/rules/theory-design-reference.mdc` + `useTheoryDesign.ts`                               |
-| Mobile parity (`platforms/mobile/`)                                          | Тот же эталон web + `platforms/mobile/src/theme/Theme.ts`                                        |
+| Mobile parity (`apps/mobile/`)                                               | Тот же эталон web + theme в apps/mobile                                                          |
 | **Anime.js v4** (DOM/SVG анимации, createScope в React)                      | **`animejs/USAGE-INDEX.md`** → `usage/` + IMPLEMENTATIONS + skill + rule                         |
 | Багфикс в существующем эталонном компоненте                                  | Reference doc — контекст; не менять паттерн без задачи                                           |
 

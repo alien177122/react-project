@@ -1,5 +1,6 @@
-import {useEffect, useMemo, useState} from 'react';
-import {LegExercisePicker} from '../components/split/LegExercisePicker.tsx';
+import {GlobalExerciseAdder} from '../components/split/GlobalExerciseAdder.tsx';
+import '../styles/tabs/split-tab.css';
+import {SplitCalculationHistory} from '../components/split/SplitCalculationHistory.tsx';
 import {SplitPreview} from '../components/split/SplitPreview.tsx';
 import {MuscleDayGrid} from '../components/split/MuscleDayGrid.tsx';
 import {SplitToolbar} from '../components/split/SplitToolbar.tsx';
@@ -15,6 +16,8 @@ interface SplitConstructorTabProps {
   onSaveError: (message: string) => void;
 }
 
+import {SectionBlock} from '../components/SectionBlock';
+
 export function SplitConstructorTab({
   userData,
   setUserData,
@@ -22,7 +25,6 @@ export function SplitConstructorTab({
   onSaveError,
 }: SplitConstructorTabProps) {
   const splitState = useURLState('split');
-  const [debouncedDraft, setDebouncedDraft] = useState(0);
 
   const constructor = useSplitConstructor({
     userData,
@@ -34,65 +36,81 @@ export function SplitConstructorTab({
     onSaveError,
   });
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setDebouncedDraft(value => value + 1), 150);
-    return () => window.clearTimeout(timer);
-  }, [constructor.draft]);
-
-  const dayPreviews = useMemo(
-    () => constructor.dayPreviews,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [debouncedDraft, constructor.previewWeek, constructor.draft],
-  );
-
   return (
-    <main className="app-tab-shell app-tab-shell--split" aria-labelledby="split-page-title">
-      <header className="app-tab-header app-tab-header--stacked">
-        <div className="app-tab-header__copy">
-          <h1 id="split-page-title" className="app-tab-title">
-            Конструктор сплита
-          </h1>
-          <p className="app-tab-header__hint">
-            Распредели группы мышц и проверь превью на 8 недель. Перетащи или нажми для назначения.
-          </p>
-        </div>
-      </header>
+    <div className="ta-shell ta-shell--split">
+      <main className="ta-stack" aria-label="Конструктор сплита">
+        <SectionBlock num="01" title="Название и дни" variant="apple">
+          <SplitToolbar
+            draft={constructor.draft}
+            savedSplits={constructor.savedSplits}
+            onNameChange={name => constructor.updateDraft({name})}
+            onSelectSplit={constructor.selectSplit}
+            onCreateNew={constructor.createNewSplit}
+            onDuplicateLast={constructor.duplicateLast}
+            onDaysPerWeek={constructor.setDaysPerWeek}
+            onSave={() => void constructor.saveSplit()}
+          />
+          {constructor.validationError ? (
+            <p className="split-validation" role="alert">
+              {constructor.validationError}
+            </p>
+          ) : null}
+          <SplitCalculationHistory
+            calculations={constructor.calculations}
+            activeId={constructor.activeCalculation?.id}
+            onSelect={constructor.selectCalculation}
+            onDelete={id => void constructor.deleteCalculation(id)}
+          />
+        </SectionBlock>
 
-      <SplitToolbar
-        draft={constructor.draft}
-        savedSplits={constructor.savedSplits}
-        onNameChange={name => constructor.updateDraft({name})}
-        onSelectSplit={constructor.selectSplit}
-        onCreateNew={constructor.createNewSplit}
-        onDuplicateLast={constructor.duplicateLast}
-        onDaysPerWeek={constructor.setDaysPerWeek}
-        onVaryIntensity={value => constructor.updateDraft({varyIntensity: value})}
-        onWeightMode={mode => constructor.updateDraft({weightMode: mode})}
-        onSave={() => void constructor.saveSplit()}
-      />
+        <SectionBlock
+          num="02"
+          title="База упражнений"
+          variant="apple"
+          className="calc-test-section">
+          <GlobalExerciseAdder
+            savedExercises={userData.exercises}
+            daysPerWeek={constructor.draft.daysPerWeek}
+            onAddExercise={constructor.addExerciseToDay}
+            onOneRMChange={constructor.setExerciseOneRM}
+          />
+        </SectionBlock>
 
-      {constructor.validationError ? (
-        <p className="split-validation" role="alert">
-          {constructor.validationError}
-        </p>
-      ) : null}
+        <SectionBlock num="03" title="Распределение по дням" variant="apple">
+          <MuscleDayGrid
+            split={constructor.draft}
+            savedExercises={userData.exercises}
+            onDuplicateExercise={constructor.duplicateExerciseToDay}
+            onRemoveExercise={constructor.removeExercise}
+          />
+          <div className="split-calculate-container">
+            <button
+              type="button"
+              className="btn btn-primary split-calculate-btn"
+              onClick={() => void constructor.calculateSplit()}>
+              {constructor.isEditingCalculation
+                ? 'Пересчитать и обновить'
+                : constructor.calculations.length > 0
+                  ? 'Сохранить новый расчёт'
+                  : 'Сохранить и рассчитать план сплита'}
+            </button>
+          </div>
+        </SectionBlock>
 
-      <MuscleDayGrid split={constructor.draft} onMoveMuscle={constructor.moveMuscle} />
-
-      {constructor.usesLegs ? (
-        <LegExercisePicker
-          selected={constructor.legExercises}
-          onToggle={constructor.toggleLegExercise}
-        />
-      ) : null}
-
-      <SplitPreview
-        split={constructor.draft}
-        previewWeek={constructor.previewWeek}
-        dayPreviews={dayPreviews}
-        onWeekChange={constructor.setPreviewWeek}
-        onFixedWeightChange={constructor.setFixedWeight}
-      />
-    </main>
+        <SectionBlock num="04" title="Прогноз объёма" variant="apple">
+          {constructor.activeCalculation ? (
+            <SplitPreview
+              split={constructor.previewSplit}
+              previewWeek={constructor.previewWeek}
+              dayPreviews={constructor.dayPreviews}
+              onWeekChange={constructor.setPreviewWeek}
+              onToggleWeekDone={constructor.toggleCompletedWeek}
+              onToggleDayDone={constructor.toggleCompletedDay}
+              onFixedWeightChange={constructor.setFixedWeight}
+            />
+          ) : null}
+        </SectionBlock>
+      </main>
+    </div>
   );
 }

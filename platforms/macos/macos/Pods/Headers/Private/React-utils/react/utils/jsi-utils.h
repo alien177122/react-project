@@ -1,1 +1,0 @@
-../../../../../../../node_modules/react-native-macos/ReactCommon/react/utils/jsi-utils.h

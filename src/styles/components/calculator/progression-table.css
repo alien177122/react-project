@@ -12,20 +12,43 @@ table.pt th {
   font-weight: 400;
   padding: 6px 10px;
   text-align: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--border-width-hairline) solid var(--border);
 }
-table.pt th:first-child { text-align: left; }
+table.pt th:first-child {
+  text-align: left;
+}
 table.pt td {
   padding: 6px 10px;
-  border-bottom: 1px solid #1c1c1c;
+  border-bottom: var(--border-width-hairline) solid var(--border-subtle);
   text-align: center;
 }
-table.pt tr:last-child td { border-bottom: none; }
-@media (hover: hover) and (pointer: fine) {
-  table.pt tr:hover td { background: #1e1e1e; }
+table.pt tr:last-child td {
+  border-bottom: none;
 }
-.w-label { color: var(--muted); font-size: 12px; }
-.w-kg { font-family: 'Courier New', monospace; font-weight: 600; color: var(--text-strong); }
-.w-sr { font-family: 'Courier New', monospace; color: #999; }
-.w-sr b { color: var(--text-strong); }
-
+@media (hover: hover) and (pointer: fine) {
+  /* Theme-safe tint — never hardcoded #1e1e1e (breaks light theme) */
+  table.pt tr:hover td {
+    background: color-mix(in srgb, var(--text-strong) 4%, var(--surface));
+  }
+}
+.w-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+.w-kg {
+  color: var(--text-strong);
+  font-family: var(--training-weight-font);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
+}
+.w-sr {
+  color: var(--text-secondary);
+  font-family: var(--training-weight-font);
+  font-variant-numeric: var(--training-weight-numeric);
+  font-weight: var(--training-weight-weight);
+  letter-spacing: var(--training-weight-spacing);
+}
+.w-sr b {
+  color: var(--text-strong);
+}

@@ -1,12 +1,13 @@
-import { useCalculatorState as useSharedCalculatorState } from '../../packages/shared/src/hooks/useCalculatorState.ts'
-import type { UseCalculatorStateOptions as SharedUseCalculatorStateOptions } from '../../packages/shared/src/hooks/useCalculatorState.ts'
-import { saveUser } from '../utils/api'
+import {useCalculatorState as useSharedCalculatorState} from '@training/shared/hooks/useCalculatorState';
+import type {UseCalculatorStateOptions as SharedUseCalculatorStateOptions} from '@training/shared/hooks/useCalculatorState';
+import {calculate, saveUser} from '../utils/api';
 
-type UseCalculatorStateOptions = Omit<SharedUseCalculatorStateOptions, 'saveUser'>
+type UseCalculatorStateOptions = Omit<SharedUseCalculatorStateOptions, 'saveUser' | 'calculate'>;
 
 export function useCalculatorState(options: UseCalculatorStateOptions) {
   return useSharedCalculatorState({
     ...options,
     saveUser,
-  })
+    calculate,
+  });
 }

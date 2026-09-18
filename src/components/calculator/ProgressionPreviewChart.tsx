@@ -1,10 +1,10 @@
-import {useEffect, useState, type CSSProperties, type KeyboardEvent} from 'react';
+import {useState, type CSSProperties, type KeyboardEvent} from 'react';
 import type {ProgramSettings} from '../../types';
 import {
   getProgressionPreviewMeta,
   getTestWeekExplanation,
-} from '@shared/program/progressionPreview';
-import {PROGRESSION_PRESET_META} from '@shared/program/progressionPresets';
+} from '@training/shared/program/progressionPreview';
+import {PROGRESSION_PRESET_META} from '@training/shared/program/progressionPresets';
 import {useProgressionPreview, type PreviewChartWeek} from '../../hooks/useProgressionPreview';
 
 const TIP_WIDTH = 232;
@@ -57,10 +57,17 @@ export default function ProgressionPreviewChart({settings}: ProgressionPreviewCh
   const presetMeta = PROGRESSION_PRESET_META[settings.progressionPreset];
   const testWeekExplanation = getTestWeekExplanation(settings.progressionPreset);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => {
+  const [prevPreset, setPrevPreset] = useState(settings.progressionPreset);
+  const [prevDays, setPrevDays] = useState(settings.daysPerWeek);
+
+  if (settings.progressionPreset !== prevPreset || settings.daysPerWeek !== prevDays) {
+    setPrevPreset(settings.progressionPreset);
+    setPrevDays(settings.daysPerWeek);
     setActiveIndex(null);
-  }, [settings.progressionPreset, settings.daysPerWeek]);
+    setExpanded(false);
+  }
 
   const active = activeIndex == null ? null : weeks[activeIndex];
   const tipX = active
@@ -89,22 +96,40 @@ export default function ProgressionPreviewChart({settings}: ProgressionPreviewCh
     setActiveIndex(Math.max(0, Math.min(weeks.length - 1, current + delta)));
   };
 
+  const sectionLabel = expanded
+    ? `Пример прогрессии: ${meta.title}, ${presetMeta.label}`
+    : `Пример прогрессии, свёрнуто: ${meta.title}`;
+
   return (
     <section
       key={`${settings.progressionPreset}-${settings.daysPerWeek}`}
       className="progression-preview ta-period"
-      aria-label={`Пример прогрессии: ${meta.title}, ${presetMeta.label}`}>
-      <header className="progression-preview__head">
-        <p className="progression-preview__title">{meta.title}</p>
-        <p className="progression-preview__meta">{meta.subtitle}</p>
-        <p className="progression-preview__note">{testWeekExplanation}</p>
-      </header>
+      aria-label={sectionLabel}>
+      <details
+        className="progression-preview__details"
+        open={expanded}
+        onToggle={event => setExpanded(event.currentTarget.open)}>
+        <summary className="progression-preview__summary">
+          <span className="progression-preview__summary-text">
+            <span className="progression-preview__summary-action">
+              {expanded ? 'Скрыть пример прогрессии' : 'Показать пример прогрессии'}
+            </span>
+            <span className="progression-preview__summary-title">{meta.title}</span>
+            <span className="progression-preview__summary-meta">{meta.subtitle}</span>
+          </span>
+        </summary>
 
-      <p id="progression-preview-list-desc" className="progression-preview__sr-only">
-        {presetMeta.description}. {listDesc}
-      </p>
+        <div className="progression-preview__content">
+          <div className="progression-preview__inner">
+            <header className="progression-preview__head">
+              <p className="progression-preview__note">{testWeekExplanation}</p>
+            </header>
 
-      <div className="ta-period__phases" aria-hidden="true">
+            <p id="progression-preview-list-desc" className="progression-preview__sr-only">
+              {presetMeta.description}. {listDesc}
+            </p>
+
+            <div className="ta-period__phases" aria-hidden="true">
         {phases.map(phase => (
           <span
             key={`${phase.label}-${phase.weeks}`}
@@ -226,6 +251,7 @@ export default function ProgressionPreviewChart({settings}: ProgressionPreviewCh
         role="listbox"
         aria-label="Недели примера прогрессии"
         aria-describedby="progression-preview-list-desc"
+        tabIndex={0}
         onKeyDown={keyDown}>
         {weeks.map((week, index) => (
           <button
@@ -253,6 +279,9 @@ export default function ProgressionPreviewChart({settings}: ProgressionPreviewCh
           </button>
         ))}
       </div>
+          </div>
+        </div>
+      </details>
     </section>
   );
 }

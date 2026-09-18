@@ -1,6 +1,6 @@
 # Monorepo Structure (web-first)
 
-Краткая карта: где что лежит после реорганизации 2026-05.
+Краткая карта после cleanup 2026-07-15 (удалены legacy `platforms/`, `training-app-mobile/`).
 
 ## Web core (корень — primary track)
 
@@ -16,32 +16,33 @@
 | `docs/design-standards/` | Public UI design references for contributors                              |
 | `.cursor/`               | Cursor commands + isolation rules                                         |
 
-## Platforms (native / desktop shells)
+## Native / desktop shells (archived)
 
-| Путь                       | Назначение                                            |
-| -------------------------- | ----------------------------------------------------- |
-| `platforms/desktop/`       | `@training/desktop` — Electron shell над web-клиентом |
-| `platforms/mobile/`        | Expo Router mobile (Readiness и др.)                  |
-| `platforms/macos/`         | React Native Android/macOS + release scripts          |
-| `platforms/legacy-mobile/` | Legacy Expo track (не primary mobile)                 |
+Перенесены 2026-08-27 в [`_archive-non-web/`](_archive-non-web/README.md) (не удалены):
+
+| Путь в архиве                          | Назначение       |
+| -------------------------------------- | ---------------- | ---- |
+| `_archive-non-web/desktop/`            | Electron         |
+| `_archive-non-web/ios/`, `android/`    | Capacitor native |
+| `\_archive-non-web/apps/mobile         | macos`           | Expo |
+| `_archive-non-web/capacitor.config.ts` | Capacitor config |
+| `_archive-non-web/fastlane/`           | Fastlane         |
 
 ## Meta (не продуктовый код)
 
 | Путь                             | Назначение                                      |
 | -------------------------------- | ----------------------------------------------- |
 | `_meta/cursor-memory-bank-main/` | Upstream Memory Bank v0.8 template (справочник) |
-| `_meta/subagents/`               | Agent skill definitions                         |
-| `_meta/docs/`                    | Design briefs, prompts                          |
-| `_meta/notes/`                   | Obsidian notes (бывш. MapData)                  |
-| `_meta/archive/`                 | Archived root clutter (TODO, analysis, prompts) |
+| `_meta/archive/`                 | Archived root clutter                           |
+| `docker/agentmemory/`            | Optional agentmemory engine compose             |
 
 ## Workspaces (npm)
 
 ```json
-"workspaces": ["packages/*", "platforms/*"]
+"workspaces": ["packages/*"]
 ```
 
-Root scripts: `npm run dev`, `npm run server`, `npm run build`, `npm run desktop` (→ `@training/desktop`).
+Root scripts: `npm run dev`, `npm run server`, `npm run build`, `npm run desktop`, `npm run docker:up` (optional prod).
 
 ## Не трогать без задачи
 

@@ -1,2 +1,2 @@
-export { useSplitConstructor } from '../../packages/shared/src/hooks/useSplitConstructor.ts'
-export type { UseSplitConstructorOptions } from '../../packages/shared/src/hooks/useSplitConstructor.ts'
+export { useSplitConstructor } from '@training/shared/hooks/useSplitConstructor'
+export type { UseSplitConstructorOptions } from '@training/shared/hooks/useSplitConstructor'

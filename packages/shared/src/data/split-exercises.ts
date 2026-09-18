@@ -5,8 +5,16 @@ export const SPLIT_DAY_LIMITS = {
   MAX_LEG_EXERCISES: 2,
 } as const;
 
-/** All leg exercises available in the program (user picks 2). */
-export const LEG_EXERCISE_KEYS = ['squat', 'legPress', 'legExt', 'legCurl', 'gluteBridge'] as const;
+/** All leg exercises available in the program (user picks 2). Deadlift = glutes/hamstrings. */
+export const LEG_EXERCISE_KEYS = [
+  'deadlift',
+  'gluteBridge',
+  'squat',
+  'legPress',
+  'legCurl',
+  'legExt',
+  'seatedCalfRaise',
+] as const;
 
 export type LegExerciseKey = (typeof LEG_EXERCISE_KEYS)[number];
 
@@ -14,12 +22,12 @@ export const DEFAULT_LEG_EXERCISES: [LegExerciseKey, LegExerciseKey] = ['squat',
 
 /** Program order when a day needs trimming to 4 exercises. */
 export const EXERCISES_BY_MUSCLE: Record<SplitMuscleId, readonly string[]> = {
-  chest: ['bench', 'dbPress'],
+  chest: ['bench', 'dips', 'dbPress'],
   biceps: ['curl'],
   legs: LEG_EXERCISE_KEYS,
   shoulders: ['ohp', 'lateralRaise'],
   back: ['row', 'pullUp'],
-  triceps: [],
+  triceps: ['lyingTricepExt'],
 };
 
 export function isLegExerciseKey(key: string): key is LegExerciseKey {
@@ -40,7 +48,9 @@ export function normalizeLegExercises(
     if (!fallback) break;
     picked.push(fallback);
   }
-  return [picked[0], picked[1]];
+  const first = picked[0] ?? DEFAULT_LEG_EXERCISES[0];
+  const second = picked[1] ?? DEFAULT_LEG_EXERCISES[1] ?? first;
+  return [first, second];
 }
 
 export function splitUsesLegs(days: {muscles: SplitMuscleId[]}[]): boolean {

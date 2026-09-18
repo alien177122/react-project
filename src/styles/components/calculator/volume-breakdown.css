@@ -11,7 +11,7 @@
 .ta-shell .ta-vol__lede {
   margin: 0;
   padding: 14px 16px;
-  border: 1px solid var(--vol-border);
+  border: var(--border-width) solid var(--vol-border);
   border-radius: 12px;
   background: color-mix(in srgb, var(--ta-text) 2%, transparent);
   color: var(--ta-text-muted);
@@ -42,8 +42,8 @@
   display: grid;
   gap: 4px;
   padding: 12px 14px;
-  border: 1px solid var(--vol-border);
-  border-left: 2px solid var(--vol-color, var(--vol-accent));
+  /* Category accent on full perimeter — no left rail */
+  border: var(--border-width) solid color-mix(in srgb, var(--vol-color, var(--vol-accent)) 55%, var(--vol-border));
   border-radius: 12px;
   background: color-mix(in srgb, var(--ta-text) 1.5%, transparent);
   min-width: 0;
@@ -67,10 +67,12 @@
 
 .ta-shell .ta-vol__summary-card em {
   color: var(--ta-text-muted);
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-display);
   font-size: 12px;
   font-style: normal;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .ta-shell .ta-vol__donut {
@@ -132,7 +134,7 @@
 
 .ta-shell .ta-vol__center-value {
   fill: var(--ta-text);
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -154,8 +156,7 @@
   min-height: 52px;
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--vol-border);
-  border-left: 2px solid transparent;
+  border: var(--border-width) solid var(--vol-border);
   border-radius: 12px;
   background: transparent;
   color: var(--ta-text-muted);
@@ -170,26 +171,24 @@
 
 @media (hover: hover) {
   .ta-shell .ta-vol__row:hover {
-    border-left-color: var(--vol-color, var(--vol-accent));
     border-color: color-mix(in srgb, var(--vol-color, var(--vol-accent)) 40%, var(--vol-border));
   }
 }
 
 .ta-shell .ta-vol__row:focus-visible {
-  border-left-color: var(--vol-accent);
+  border-color: var(--vol-accent);
   outline: 2px solid var(--vol-accent);
   outline-offset: -2px;
 }
 
 .ta-shell .ta-vol__row[aria-pressed="true"] {
-  border-left-color: var(--vol-color, var(--vol-accent));
-  border-color: color-mix(in srgb, var(--vol-color, var(--vol-accent)) 44%, var(--vol-border));
+  border-color: color-mix(in srgb, var(--vol-color, var(--vol-accent)) 70%, var(--vol-border));
   color: var(--ta-text);
 }
 
 .ta-shell .ta-vol__rank {
   color: var(--vol-color, var(--vol-accent));
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 600;
 }
@@ -234,7 +233,7 @@
 .ta-shell .ta-vol__row-percent,
 .ta-shell .ta-vol__source-value {
   color: var(--ta-text-muted);
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--font-display);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   justify-self: end;
@@ -253,7 +252,7 @@
   gap: 24px;
   min-height: 120px;
   padding: 18px;
-  border: 1px solid var(--vol-border);
+  border: var(--border-width) solid var(--vol-border);
   border-radius: 16px;
   background: color-mix(in srgb, var(--ta-text) 1.5%, transparent);
   opacity: 0;

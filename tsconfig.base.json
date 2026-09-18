@@ -23,8 +23,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@shared/*": ["packages/shared/src/*"]
+      "@shared/*": ["packages/shared/src/*"],
+      "@training/shared": ["packages/shared/src/index.ts"],
+      "@training/shared/*": ["packages/shared/src/*"]
     }
   }
 }
-

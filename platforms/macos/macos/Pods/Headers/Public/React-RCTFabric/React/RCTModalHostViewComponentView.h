@@ -1,1 +1,0 @@
-../../../../../../node_modules/react-native-macos/React/Fabric/Mounting/ComponentViews/Modal/RCTModalHostViewComponentView.h

@@ -10,6 +10,19 @@ import {
 
 const VIEW = {left: 56, right: 56, top: 28, bottom: 238, width: 800, barWidth: 40};
 const DEFAULT_WEEK_COUNT = 8;
+/** Horizontal Y-grid + left-axis labels — denser than 4, still readable (~35px gaps). */
+const Y_GRID_COUNT = 7;
+const Y_GRID_DIVISIONS = Y_GRID_COUNT - 1;
+/** Extra SVG height under the plot for date + rest-gap labels. */
+const VIEW_HEIGHT = 296;
+const MS_PER_DAY = 86_400_000;
+
+function calendarDaysBetween(prevDate: string, nextDate: string): number | null {
+  const prev = Date.parse(`${prevDate}T12:00:00`);
+  const next = Date.parse(`${nextDate}T12:00:00`);
+  if (!Number.isFinite(prev) || !Number.isFinite(next)) return null;
+  return Math.max(0, Math.round((next - prev) / MS_PER_DAY));
+}
 
 export interface JournalChartWeek {
   week: number;
@@ -20,6 +33,8 @@ export interface JournalChartWeek {
   volume: number | null;
   setCount: number;
   hasData: boolean;
+  /** Calendar days since the previous plotted session; null for the first. */
+  restDaysSincePrev: number | null;
   x: number;
   y: number | null;
   barX: number;
@@ -76,10 +91,10 @@ export function buildJournalProgressChartModel(
   const minWeight = weightValues.length ? Math.min(...weightValues) : 0;
   const maxWeight = weightValues.length ? Math.max(...weightValues) : 1;
   const weightSpan = Math.max(maxWeight - minWeight, 1);
-  const weightTicks = Array.from({length: 4}, (_, index) => {
-    const ratio = 1 - index / 3;
+  const weightTicks = Array.from({length: Y_GRID_COUNT}, (_, index) => {
+    const ratio = 1 - index / Y_GRID_DIVISIONS;
     return {
-      y: VIEW.top + index * (chartHeight / 3),
+      y: VIEW.top + index * (chartHeight / Y_GRID_DIVISIONS),
       value: Math.round((minWeight + weightSpan * ratio) * 10) / 10,
     };
   });
@@ -88,6 +103,11 @@ export function buildJournalProgressChartModel(
     const week = index + 1;
     const session = sessionByWeek.get(week);
     const x = VIEW.left + stepX * index;
+    const prevSession = index > 0 ? sessionByWeek.get(week - 1) : undefined;
+    const restDaysSincePrev =
+      session && prevSession
+        ? calendarDaysBetween(prevSession.date, session.date)
+        : null;
 
     if (!session) {
       return {
@@ -99,6 +119,7 @@ export function buildJournalProgressChartModel(
         volume: null,
         setCount: 0,
         hasData: false,
+        restDaysSincePrev: null,
         x,
         y: null,
         barX: x - VIEW.barWidth / 2,
@@ -121,6 +142,7 @@ export function buildJournalProgressChartModel(
       volume,
       setCount: session.sets.length,
       hasData: true,
+      restDaysSincePrev,
       x,
       y: VIEW.bottom - ((peak - minWeight) / weightSpan) * chartHeight,
       barX: x - VIEW.barWidth / 2,
@@ -141,8 +163,11 @@ export function buildJournalProgressChartModel(
     weekCount: slots,
     journalWeeks,
     journalLinePath: linePath(journalPoints),
-    viewBox: `0 0 ${VIEW.width} 280`,
-    grid: [0, 1, 2, 3].map(i => VIEW.top + i * (chartHeight / 3)),
+    viewBox: `0 0 ${VIEW.width} ${VIEW_HEIGHT}`,
+    grid: Array.from(
+      {length: Y_GRID_COUNT},
+      (_, i) => VIEW.top + i * (chartHeight / Y_GRID_DIVISIONS),
+    ),
     weightTicks,
     latestPeak: latestWithData?.peak ?? null,
   };
